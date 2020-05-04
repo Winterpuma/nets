@@ -12,18 +12,22 @@ namespace PictureWork
         private string path;
         Bitmap bitmap;
         public int id = -1;
-
+        List<DeltaRepresentation> rotated = new List<DeltaRepresentation>();
         
         public Figure(string path, int id)
         {
             this.path = path;
             this.id = id;
             bitmap = new Bitmap(path);
-            
-            //RotateImage(bitmap, 90).Save("tmp.png");
+
+            rotated.Add(new DeltaRepresentation(bitmap));
+            for (int angle = 1; angle < 360; angle++)
+            {
+                rotated.Add(new DeltaRepresentation(RotateImage(bitmap, angle)));
+            }
         }
 
-        public static Image RotateImage(Image img, float rotationAngle)
+        public static Bitmap RotateImage(Image img, float rotationAngle)
         {
             Bitmap bmp = new Bitmap(img.Width, img.Height);
             Graphics gfx = Graphics.FromImage(bmp);
