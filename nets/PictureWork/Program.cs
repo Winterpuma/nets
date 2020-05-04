@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
 
 namespace PictureWork
 {
@@ -16,9 +15,11 @@ namespace PictureWork
             string[] files = Directory.GetFiles("../../../../src");
             List<Figure> data = new List<Figure>();
 
+            int id = 1;
             foreach (string f in files)
             {
-                data.Add(new Figure(f));
+                data.Add(new Figure(f, id));
+                id++;
             }
 
         }
