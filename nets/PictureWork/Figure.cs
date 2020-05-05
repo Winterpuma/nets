@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 
 namespace PictureWork
 {
@@ -42,6 +43,20 @@ namespace PictureWork
             gfx.Dispose();
             
             return bmp;
+        }
+
+        static List<Figure> LoadFigures(string path)
+        {
+            string[] files = Directory.GetFiles(path);
+            List<Figure> data = new List<Figure>();
+
+            int id = 1;
+            foreach (string f in files)
+            {
+                data.Add(new Figure(f, id));
+                id++;
+            }
+            return data;
         }
     }
 }
