@@ -21,18 +21,25 @@ namespace PictureWork
             get { return rotated[i].deltas; }
         }
 
-        public Figure(string path, int id)
+        public Figure(string path, int id, Color figColor)
         {
             this.path = path;
             name = Path.GetFileName(path);
             name = name.Remove(name.IndexOf('.'));
             this.id = id;
+            
             bitmap = new Bitmap(path);
+            // или предварительно обработать в черно-белое
+            //bitmap = HandleImages.MakeBlackAndWhite(new Bitmap(path), figColor);
 
-            rotated.Add(new DeltaRepresentation(bitmap));
-            for (int angle = 1; angle < 360; angle++)
+            rotated.Add(new DeltaRepresentation(bitmap, figColor));
+            int angleStep = 30;
+            for (int angle = angleStep; angle < 360; angle += angleStep)
             {
-                rotated.Add(new DeltaRepresentation(RotateImage(bitmap, angle)));
+                var tmpBmp = RotateImage(bitmap, angle);
+                // сохранить повороты модели:
+                //tmpBmp.Save("../../../../../src2_blackandwhite/" + name + "_" + angle.ToString() + ".png");
+                rotated.Add(new DeltaRepresentation(tmpBmp, figColor));
             }
         }
 
@@ -53,7 +60,7 @@ namespace PictureWork
             return bmp;
         }
 
-        public static List<Figure> LoadFigures(string path)
+        public static List<Figure> LoadFigures(string path, Color figColor)
         {
             string[] files = Directory.GetFiles(path);
             List<Figure> data = new List<Figure>();
@@ -61,7 +68,7 @@ namespace PictureWork
             int id = 1;
             foreach (string f in files)
             {
-                data.Add(new Figure(f, id));
+                data.Add(new Figure(f, id, figColor));
                 id++;
             }
             return data;

@@ -13,7 +13,7 @@ namespace PictureWork
         int xCenter, yCenter;
         public List<Point> deltas = new List<Point>();
 
-        public DeltaRepresentation(Bitmap bmp)
+        public DeltaRepresentation(Bitmap bmp, Color figColor)
         {
             this.bmp = bmp;
 
@@ -25,7 +25,7 @@ namespace PictureWork
                 for (int yCur = 0; yCur < bmp.Height; yCur++)
                 {
                     Color curColor = bmp.GetPixel(xCur, yCur);
-                    if (curColor.R == 0 && curColor.G == 0 && curColor.B == 0)
+                    if (curColor.R == figColor.R && curColor.G == figColor.G && curColor.B == figColor.B)
                     {
                         int xDelta = xCenter - xCur;
                         int yDelta = yCenter - yCur;
