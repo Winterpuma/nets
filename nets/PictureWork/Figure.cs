@@ -25,6 +25,7 @@ namespace PictureWork
         {
             this.path = path;
             name = Path.GetFileName(path);
+            name = name.Remove(name.IndexOf('.'));
             this.id = id;
             bitmap = new Bitmap(path);
 

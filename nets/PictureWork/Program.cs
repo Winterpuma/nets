@@ -17,10 +17,9 @@ namespace PictureWork
 
             List<Figure> data = Figure.LoadFigures("../../../../../src0_simple_test");
             //var s = QueryCreator.GetPrologDeltaRepresentation(data[0][0]);
-            var s = QueryCreator.GetPrologOriginalFigureArrayRepresentation(data);
-            Console.WriteLine(s);
+            //var s = QueryCreator.GetPrologOriginalFigureArrayRepresentation(data);
 
-            //SolutionChecker.GetOverlay();
+            SolutionChecker.GetSolutions(data);
             
             Console.ReadLine();
         }

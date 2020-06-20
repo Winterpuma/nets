@@ -10,7 +10,7 @@ namespace PictureWork
     static class QueryCreator
     {
         /// <summary>
-        /// Формирует строку вида [("name1",[[(X,Y),(X,Y)],[(X,Y),(X,Y)]]),("name2",[[(X,Y),(X,Y)],[(X,Y),(X,Y)]])]
+        /// Формирует строку вида [(name1,[[(X,Y),(X,Y)],[(X,Y),(X,Y)]]),(name2,[[(X,Y),(X,Y)],[(X,Y),(X,Y)]])]
         /// Т.е у каждой фигуры есть массив повернутых представлений.
         /// </summary>
         public static string GetPrologAllRotatedFigureArrayRepresentation(List<Figure> figs)
@@ -23,7 +23,7 @@ namespace PictureWork
         }
 
         /// <summary>
-        /// Формирует строку вида [("name1",[(X,Y),(X,Y)]),("name2",[(X,Y),(X,Y)])]
+        /// Формирует строку вида [(name1,[(X,Y),(X,Y)]),(name2,[(X,Y),(X,Y)])]
         /// </summary>
         public static string GetPrologOriginalFigureArrayRepresentation(List<Figure> figs)
         {
@@ -35,7 +35,7 @@ namespace PictureWork
         }
 
         /// <summary>
-        /// Формирует строку вида ("name",[[(X,Y),(X,Y)],[(X,Y),(X,Y)]])
+        /// Формирует строку вида (name,[[(X,Y),(X,Y)],[(X,Y),(X,Y)]])
         /// Т.е у фигуры есть массив повернутых представлений.
         /// </summary>
         public static string GetPrologAllRotatedFigureRepresentation(Figure fig)
@@ -44,15 +44,15 @@ namespace PictureWork
             for (int i = 0; i < fig.rotated.Count; i++)
                 figPrologRepr[i] = GetPrologDeltaRepresentation(fig[i]);
 
-            return "(\"" + fig.name + "\",[" + String.Join(",", figPrologRepr) + "])";
+            return "(" + fig.name + ",[" + String.Join(",", figPrologRepr) + "])";
         }
 
         /// <summary>
-        /// Формирует строку вида ("name",[(X,Y),(X,Y)])
+        /// Формирует строку вида (name,[(X,Y),(X,Y)])
         /// </summary>
         public static string GetPrologOriginalFigureRepresentation(Figure fig)
         {
-            return "(\"" + fig.name + "\"," + GetPrologDeltaRepresentation(fig[0]) + ")";
+            return "(" + fig.name + "," + GetPrologDeltaRepresentation(fig[0]) + ")";
         }
 
         /// <summary>
