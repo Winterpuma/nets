@@ -11,13 +11,20 @@ namespace PictureWork
     class Figure
     {
         private string path;
+        public string name = "noname";
         Bitmap bitmap;
         public int id = -1;
-        List<DeltaRepresentation> rotated = new List<DeltaRepresentation>();
-        
+        public List<DeltaRepresentation> rotated = new List<DeltaRepresentation>();
+
+        public List<Point> this[int i]
+        {
+            get { return rotated[i].deltas; }
+        }
+
         public Figure(string path, int id)
         {
             this.path = path;
+            name = Path.GetFileName(path);
             this.id = id;
             bitmap = new Bitmap(path);
 
@@ -45,7 +52,7 @@ namespace PictureWork
             return bmp;
         }
 
-        static List<Figure> LoadFigures(string path)
+        public static List<Figure> LoadFigures(string path)
         {
             string[] files = Directory.GetFiles(path);
             List<Figure> data = new List<Figure>();

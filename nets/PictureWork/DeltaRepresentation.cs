@@ -11,7 +11,7 @@ namespace PictureWork
     {
         Bitmap bmp;
         int xCenter, yCenter;
-        List<Point> deltas = new List<Point>();
+        public List<Point> deltas = new List<Point>();
 
         public DeltaRepresentation(Bitmap bmp)
         {

@@ -97,6 +97,7 @@
     <Compile Include="PlEngineExamples.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryCreator.cs" />
     <Compile Include="SolutionChecker.cs" />
   </ItemGroup>
   <ItemGroup>
