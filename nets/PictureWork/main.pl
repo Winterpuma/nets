@@ -14,7 +14,7 @@ retract2(X):-retract(X).
 retract2(X):-asserta(X),fail.
 
 isfree(X,Y):-between(0,5,X)
-            ,between(0,2,Y)
+            ,between(0,3,Y)
             , not(taken(X,Y)).
 taken(-1,-1).
 %taken(X,Y).
@@ -35,7 +35,7 @@ takefig(X,Y,Lst):-maplist(\Z^((X1,Y1)=Z,
 %tryPut([],A,A):-!.
 %tryPut([El|Lst],LstAns,Res):-
 % эта штука определяет, может ли заданная вещь поместиться на листе (одном)
-tt(X,Y,Lst):- between(0,5,X),between(0,2,Y)
+tt(X,Y,Lst):- between(0,5,X),between(0,3,Y)
     %,write(X),write(';'),write(Y),
     ,testfig(X,Y,Lst),
     takefig(X,Y,Lst). %[(1,0),(0,0),(0,-1),(-1,0),(0,1)]).

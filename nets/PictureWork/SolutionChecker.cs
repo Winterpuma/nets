@@ -8,8 +8,9 @@ namespace PictureWork
 {
     class SolutionChecker
     {
-        public static void GetSolutions(List<Figure> data)
+        public static List<string> GetSolutions(List<Figure> data)
         {
+            List<string> res = new List<string>();
             try
             {
                 string filename = "..\\..\\..\\main.pl";
@@ -25,7 +26,7 @@ namespace PictureWork
                 using (PlQuery q = new PlQuery(queryStr))
                 {
                     foreach (PlQueryVariables v in q.SolutionVariables)
-                        ShowRes(v["Res"]);
+                        res.Add(GetResStr(v["Res"]));
                 }
             }
             catch (PlException e)
@@ -37,17 +38,20 @@ namespace PictureWork
             {
                 PlEngine.PlCleanup();
             }
+            return res;
         }
+        
 
-        public static void ShowRes(PlTerm res)
+        public static string GetResStr(PlTerm res)
         {
-            Console.Write("Res = ");
+            string resStr = "Res = ";
 
             foreach (PlTerm line in res.ToList())
             {
-                Console.Write(line.ToString() + " ");
+                resStr += line.ToString() + " ";
             }
-            Console.WriteLine();
+
+            return resStr;
         }
         
 
