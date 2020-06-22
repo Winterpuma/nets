@@ -29,37 +29,25 @@ namespace PictureWork
             this.id = id;
             
             bitmap = new Bitmap(path);
-            // или предварительно обработать в черно-белое
-            //bitmap = HandleImages.MakeBlackAndWhite(new Bitmap(path), figColor);
 
-            rotated.Add(new DeltaRepresentation(bitmap, figColor));
+            // Если нужна предварительная обработка в черно-белое:
+            // bitmap = HandleImages.MakeBlackAndWhite(new Bitmap(path), figColor);
+
+            var originalDeltas = new DeltaRepresentation(bitmap, figColor);
+            rotated.Add(originalDeltas);
+
             int angleStep = 30;
             for (int angle = angleStep; angle < 360; angle += angleStep)
             {
-                var tmpBmp = RotateImage(bitmap, angle);
-                // сохранить повороты модели:
-                //tmpBmp.Save("../../../../../src2_blackandwhite/" + name + "_" + angle.ToString() + ".png");
-                rotated.Add(new DeltaRepresentation(tmpBmp, figColor));
+                rotated.Add(originalDeltas.GetTurnedDelta(angle, 0, 0));
+
+                // более медленный вариант:
+                //var tmpBmp = RotateImage(bitmap, angle);                
+                //rotated.Add(new DeltaRepresentation(tmpBmp, figColor));
             }
         }
-
-        public static Bitmap RotateImage(Image img, float rotationAngle)
-        {
-            Bitmap bmp = new Bitmap(img.Width, img.Height);
-            Graphics gfx = Graphics.FromImage(bmp);
-            
-            gfx.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2); // rotation point - center
-            gfx.RotateTransform(rotationAngle);
-            gfx.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
-            
-            gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
-            
-            gfx.DrawImage(img, new Point(0, 0));
-            gfx.Dispose();
-            
-            return bmp;
-        }
-
+        
+        
         public static List<Figure> LoadFigures(string path, Color figColor)
         {
             string[] files = Directory.GetFiles(path);
@@ -72,6 +60,24 @@ namespace PictureWork
                 id++;
             }
             return data;
+        }
+
+
+        public static Bitmap RotateImage(Image img, float rotationAngle)
+        {
+            Bitmap bmp = new Bitmap(img.Width, img.Height);
+            Graphics gfx = Graphics.FromImage(bmp);
+
+            gfx.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2); // rotation point - center
+            gfx.RotateTransform(rotationAngle);
+            gfx.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
+
+            gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
+
+            gfx.DrawImage(img, new Point(0, 0));
+            gfx.Dispose();
+
+            return bmp;
         }
     }
 }

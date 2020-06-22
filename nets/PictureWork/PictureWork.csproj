@@ -94,7 +94,8 @@
   <ItemGroup>
     <Compile Include="DeltaRepresentation.cs" />
     <Compile Include="Figure.cs" />
-    <Compile Include="HandleImages.cs" />
+    <Compile Include="InputHandling.cs" />
+    <Compile Include="OutputHandling.cs" />
     <Compile Include="PlEngineExamples.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

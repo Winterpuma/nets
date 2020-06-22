@@ -9,9 +9,14 @@ namespace PictureWork
 {
     class DeltaRepresentation
     {
-        Bitmap bmp;
+        Bitmap bmp = null;
         int xCenter, yCenter;
+        double angle = 0;
+
         public List<Point> deltas = new List<Point>();
+
+
+        public DeltaRepresentation() { }
 
         public DeltaRepresentation(Bitmap bmp, Color figColor)
         {
@@ -34,6 +39,34 @@ namespace PictureWork
                     }
                 }
             }
+        }
+
+
+        /// <summary>
+        /// Возвращает повернутую DeltaRepresentation на заданный угол относительно заданной точки
+        /// </summary>
+        public DeltaRepresentation GetTurnedDelta(double angle, int centerX, int centerY)
+        {
+            DeltaRepresentation res = new DeltaRepresentation();
+            res.angle = this.angle + angle;
+
+            List<Point> newDeltas = new List<Point>();
+
+            foreach (Point p_old in deltas)
+            {
+                double newX = centerX + (p_old.X - centerX) * Math.Cos(angle) + (p_old.Y - centerY) * Math.Sin(angle);
+                double newY = centerY - (p_old.X - centerX) * Math.Sin(angle) + (p_old.Y - centerY) * Math.Cos(angle);
+                
+                newDeltas.Add(new Point((int)newX, (int)newY));
+                // также добавляем точки вокруг, чтобы устранить дырки
+                newDeltas.Add(new Point((int)newX+1, (int)newY));
+                newDeltas.Add(new Point((int)newX-1, (int)newY));
+            }
+
+            // Убирает дубликаты
+            res.deltas = newDeltas.Distinct().ToList();
+
+            return res;
         }
 
     }

@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace PictureWork
 {
-    class HandleImages
+    static class InputHandling
     {
         public static Bitmap MakeBlackAndWhite(Bitmap bmp, Color figColor)
         {
