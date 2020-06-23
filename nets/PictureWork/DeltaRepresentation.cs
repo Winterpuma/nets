@@ -11,7 +11,7 @@ namespace PictureWork
     {
         Bitmap bmp = null;
         int xCenter, yCenter;
-        double angle = 0;
+        public double angle = 0;
 
         public List<Point> deltas = new List<Point>();
 

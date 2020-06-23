@@ -10,7 +10,22 @@ namespace PictureWork
     static class QueryCreator
     {
         /// <summary>
-        /// Формирует строку вида [(name1,[[(X,Y),(X,Y)],[(X,Y),(X,Y)]]),(name2,[[(X,Y),(X,Y)],[(X,Y),(X,Y)]])]
+        /// Формирует строку вида  [[(name1_angle1,[(X,Y),(X,Y)]),(name1_angle2,[(X,Y),(X,Y)])],
+        ///                         [(name2_angle1,[(X,Y),(X,Y)]),(name2_angle2,[(X,Y),(X,Y)])]]
+        /// Т.е у каждой фигуры есть массив повернутых представлений.
+        /// </summary>
+        public static string GetPrologAllRotatedFigureArrayRepresentationWithAngle(List<Figure> figs)
+        {
+            string[] figsPrologRepr = new string[figs.Count];
+            for (int i = 0; i < figs.Count; i++)
+                figsPrologRepr[i] = GetPrologAllRotatedFigureRepresentationWithAngle(figs[i]);
+
+            return "[" + String.Join(",", figsPrologRepr) + "]";
+        }
+
+        /// <summary>
+        /// Формирует строку вида  [(name1,[[(X,Y),(X,Y)],[(X,Y),(X,Y)]]),
+        ///                         (name2,[[(X,Y),(X,Y)],[(X,Y),(X,Y)]])]
         /// Т.е у каждой фигуры есть массив повернутых представлений.
         /// </summary>
         public static string GetPrologAllRotatedFigureArrayRepresentation(List<Figure> figs)
@@ -33,6 +48,21 @@ namespace PictureWork
 
             return "[" + String.Join(",", figsPrologRepr) + "]";
         }
+        
+
+        /// <summary>
+        /// Формирует строку вида [(name_angle,[(X,Y),(X,Y)]),(name_angle,[(X,Y),(X,Y)])]
+        /// Т.е у фигуры есть массив повернутых представлений.
+        /// </summary>
+        public static string GetPrologAllRotatedFigureRepresentationWithAngle(Figure fig)
+        {
+            string[] figPrologRepr = new string[fig.rotated.Count];
+            for (int i = 0; i < fig.rotated.Count; i++)
+                figPrologRepr[i] = GetPrologDeltaRepresentationWithAngle(fig[i], fig.name, fig.rotated[i].angle);
+
+            return "[" + String.Join(",", figPrologRepr) + "]";
+        }
+
 
         /// <summary>
         /// Формирует строку вида (name,[[(X,Y),(X,Y)],[(X,Y),(X,Y)]])
@@ -47,6 +77,7 @@ namespace PictureWork
             return "(" + fig.name + ",[" + String.Join(",", figPrologRepr) + "])";
         }
 
+
         /// <summary>
         /// Формирует строку вида (name,[(X,Y),(X,Y)])
         /// </summary>
@@ -54,6 +85,21 @@ namespace PictureWork
         {
             return "(" + fig.name + "," + GetPrologDeltaRepresentation(fig[0]) + ")";
         }
+
+
+        /// <summary>
+        /// Формирует строку вида (name_angle,[(X,Y),(X,Y)])
+        /// </summary>
+        public static string GetPrologDeltaRepresentationWithAngle(List<Point> delta, string figName, double angle)
+        {
+            string[] deltaPrologRepr = new string[delta.Count];
+            for (int i = 0; i < delta.Count; i++)
+                deltaPrologRepr[i] = GetPrologPointRepresentation(delta[i]);
+
+            return "(" + figName + "_" + angle.ToString() + "," +
+                "[" + String.Join(",", deltaPrologRepr) + "])";
+        }
+
 
         /// <summary>
         /// Формирует строку вида [(X,Y),(X,Y)]

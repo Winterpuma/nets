@@ -8,7 +8,40 @@ namespace PictureWork
 {
     class SolutionChecker
     {
-        public static List<string> GetSolutions(List<Figure> data)
+        public static List<string> Tryer360(List<Figure> data)
+        {
+            List<string> res = new List<string>();
+            try
+            {
+                string filename = "..\\..\\..\\main.pl";
+                String[] param = { "-q", "-f", filename };
+                PlEngine.Initialize(param);
+
+                string queryStr = "tryer360(" +
+                    QueryCreator.GetPrologAllRotatedFigureArrayRepresentationWithAngle(data) +
+                    ",Res).";
+
+                Console.WriteLine("\n\nGenerated query:\n" + queryStr);
+
+                using (PlQuery q = new PlQuery(queryStr))
+                {
+                    foreach (PlQueryVariables v in q.SolutionVariables)
+                        res.Add(GetResStr(v["Res"]));
+                }
+            }
+            catch (PlException e)
+            {
+                Console.WriteLine(e.MessagePl);
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                PlEngine.PlCleanup();
+            }
+            return res;
+        }
+
+        public static List<string> F1(List<Figure> data)
         {
             List<string> res = new List<string>();
             try
