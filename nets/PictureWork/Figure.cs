@@ -23,6 +23,7 @@ namespace PictureWork
 
         public Figure(string path, int id, Color figColor)
         {
+            Console.WriteLine("\nLoad Figure " + id);
             this.path = path;
             name = Path.GetFileName(path);
             name = name.Remove(name.IndexOf('.'));
@@ -35,10 +36,11 @@ namespace PictureWork
 
             var originalDeltas = new DeltaRepresentation(bitmap, figColor);
             rotated.Add(originalDeltas);
-
-            int angleStep = 30;
+            Console.WriteLine("Loaded original delta. Delta len " + originalDeltas.deltas.Count);
+            int angleStep = 360;
             for (int angle = angleStep; angle < 360; angle += angleStep)
             {
+                Console.Write(" " + angle);
                 rotated.Add(originalDeltas.GetTurnedDelta(angle, 0, 0));
 
                 // более медленный вариант:

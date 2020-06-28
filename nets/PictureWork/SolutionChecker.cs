@@ -21,12 +21,16 @@ namespace PictureWork
                     QueryCreator.GetPrologAllRotatedFigureArrayRepresentationWithAngle(data) +
                     ",Res).";
 
-                Console.WriteLine("\n\nGenerated query:\n" + queryStr);
+                Console.WriteLine("Starting tryer360");
+                //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
 
                 using (PlQuery q = new PlQuery(queryStr))
                 {
                     foreach (PlQueryVariables v in q.SolutionVariables)
+                    {
+                        Console.WriteLine("-");
                         res.Add(GetResStr(v["Res"]));
+                    }
                 }
             }
             catch (PlException e)
@@ -54,7 +58,8 @@ namespace PictureWork
                     QueryCreator.GetPrologOriginalFigureArrayRepresentation(data) +
                     ",[],Res).";
 
-                Console.WriteLine("\n\nGenerated query:\n" + queryStr);
+                //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
+                Console.WriteLine("Starting prolog f1");
 
                 using (PlQuery q = new PlQuery(queryStr))
                 {
