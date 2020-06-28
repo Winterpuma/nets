@@ -23,8 +23,8 @@ namespace PictureWork
             stopwatch.Start();
 
 
-            //List<Figure> data = Figure.LoadFigures("../../../../../src0_simple_test", Color.FromArgb(0, 0, 0));
-            List<Figure> data = Figure.LoadFigures("../../../../../src2_normal", Color.FromArgb(127, 127, 127));
+            List<Figure> data = Figure.LoadFigures("../../../../../src0_simple_test", Color.FromArgb(0, 0, 0));
+            //List<Figure> data = Figure.LoadFigures("../../../../../src2_normal", Color.FromArgb(127, 127, 127));
             //List<Figure> data = Figure.LoadFigures("../../../../../src2_blackandwhite", Color.FromArgb(0, 0, 0));
 
             stopwatch.Stop();
@@ -34,9 +34,11 @@ namespace PictureWork
 
             Console.WriteLine("Starting result finder.");
            
-            //var result = SolutionChecker.F1(data);
-            var result = SolutionChecker.Tryer360(data);
+            var result = SolutionChecker.F1(data);
+            //var result = SolutionChecker.Tryer360(data);
             PrintResult(result);
+            List<ResultData> resultData = ResultData.PackAllPossibleResults(result, false);
+            OutputHandling.SaveResult(data, resultData, "../../../../../result/", 6, 3);
 
             //Bitmap test = new Bitmap(2000, 2000);
             //OutputHandling.PlaceDeltasOnABitmap(test, data[0][3], 1000, 1000, Color.Pink);

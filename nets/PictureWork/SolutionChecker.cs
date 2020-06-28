@@ -82,12 +82,12 @@ namespace PictureWork
 
         public static string GetResStr(PlTerm res)
         {
-            string resStr = "Res = ";
-
+            string resStr = String.Join(" ", res.ToList());
+                /*
             foreach (PlTerm line in res.ToList())
             {
                 resStr += line.ToString() + " ";
-            }
+            }*/
 
             return resStr;
         }
