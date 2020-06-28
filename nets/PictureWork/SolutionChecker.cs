@@ -8,9 +8,9 @@ namespace PictureWork
 {
     class SolutionChecker
     {
-        public static List<string> Tryer360(List<Figure> data)
+        public static List<ResultData> Tryer360(List<Figure> data)
         {
-            List<string> res = new List<string>();
+            List<ResultData> res = new List<ResultData>();
             try
             {
                 string filename = "..\\..\\..\\main.pl";
@@ -28,8 +28,9 @@ namespace PictureWork
                 {
                     foreach (PlQueryVariables v in q.SolutionVariables)
                     {
-                        Console.WriteLine("-");
-                        res.Add(GetResStr(v["Res"]));
+                        string resultString = GetResultString(v["Res"]);
+                        Console.WriteLine(resultString);
+                        res.Add(GetResult(resultString, true));
                     }
                 }
             }
@@ -45,9 +46,9 @@ namespace PictureWork
             return res;
         }
 
-        public static List<string> F1(List<Figure> data)
+        public static List<ResultData> F1(List<Figure> data)
         {
-            List<string> res = new List<string>();
+            List<ResultData> res = new List<ResultData>();
             try
             {
                 string filename = "..\\..\\..\\main.pl";
@@ -64,7 +65,11 @@ namespace PictureWork
                 using (PlQuery q = new PlQuery(queryStr))
                 {
                     foreach (PlQueryVariables v in q.SolutionVariables)
-                        res.Add(GetResStr(v["Res"]));
+                    {
+                        string resultString = GetResultString(v["Res"]);
+                        Console.WriteLine(resultString);
+                        res.Add(GetResult(resultString, false));
+                    }
                 }
             }
             catch (PlException e)
@@ -78,18 +83,17 @@ namespace PictureWork
             }
             return res;
         }
-        
 
-        public static string GetResStr(PlTerm res)
+
+        public static ResultData GetResult(string resultString, bool nameWithAngle)
         {
-            string resStr = String.Join(" ", res.ToList());
-                /*
-            foreach (PlTerm line in res.ToList())
-            {
-                resStr += line.ToString() + " ";
-            }*/
+            return new ResultData(resultString, nameWithAngle);
+        }
 
-            return resStr;
+
+        public static string GetResultString(PlTerm res)
+        {
+            return String.Join(" ", res.ToList());
         }
         
 
