@@ -54,11 +54,11 @@ namespace PictureWork
             }
         }
 
-        public static List<ResultData> PackAllPossibleResults(IEnumerable<string> stringRes, bool flagNameWithAngle)
+        public static List<ResultData> PackAllPossibleResults(IEnumerable<string> allResults, bool flagNameWithAngle)
         {
             List<ResultData> res = new List<ResultData>();
-            foreach (string s in stringRes)
-                res.Add(new ResultData(s, flagNameWithAngle));
+            foreach (string currentResult in allResults)
+                res.Add(new ResultData(currentResult, flagNameWithAngle));
             return res;
         }
 

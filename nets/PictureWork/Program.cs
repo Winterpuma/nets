@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using SbsSW.SwiPlCs.Exceptions;
-using SbsSW.SwiPlCs;
 using System.Drawing;
 using System.Linq;
-using System.Diagnostics;
 
 
 namespace PictureWork
@@ -19,31 +15,31 @@ namespace PictureWork
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
 
             Console.WriteLine("Starting process.");
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
 
-
-            List<Figure> data = Figure.LoadFigures("../../../../../src0_simple_test", Color.FromArgb(0, 0, 0));
-            //List<Figure> data = Figure.LoadFigures("../../../../../src2_normal", Color.FromArgb(127, 127, 127));
+            //List<Figure> data = Figure.LoadFigures("../../../../../src0_bigger", Color.FromArgb(0, 0, 0));
+            List<Figure> data = Figure.LoadFigures("../../../../../src2_normal", Color.FromArgb(127, 127, 127));
             //List<Figure> data = Figure.LoadFigures("../../../../../src2_blackandwhite", Color.FromArgb(0, 0, 0));
 
-            stopwatch.Stop();
-            Console.WriteLine("Figure loading finished: " + stopwatch.Elapsed.Seconds);
+
+
+            //SaveString(QueryCreator.CreateSimpleTest(401, 85, data[0], data[1]), "GenerateTest.txt");
+
+            
+            Console.WriteLine("Figure loading finished");
             //var s = QueryCreator.GetPrologDeltaRepresentation(data[0][0]);
             //var s = QueryCreator.GetPrologOriginalFigureArrayRepresentation(data);
+            
 
             Console.WriteLine("Starting result finder.");
-           
-            var result = SolutionChecker.F1(data);
+
+            //var result = SolutionChecker.F1(data);
             //var result = SolutionChecker.Tryer360(data);
-            PrintResult(result);
-            List<ResultData> resultData = ResultData.PackAllPossibleResults(result, false);
-            OutputHandling.SaveResult(data, resultData, "../../../../../result/", 6, 3);
+            //PrintResult(result);
 
-            //Bitmap test = new Bitmap(2000, 2000);
-            //OutputHandling.PlaceDeltasOnABitmap(test, data[0][3], 1000, 1000, Color.Pink);
-            //test.Save("../../../../../resultcheck/mmm.png");
-
+            
+            List<ResultData> result = new List<ResultData>();
+            result.Add(new ResultData("x1,199,39 x2,164,32"));
+            OutputHandling.SaveResult(data, result, "../../../../../result/", 420, 100);
 
             Console.ReadLine();
         }
@@ -64,6 +60,13 @@ namespace PictureWork
 
             file1.Close();
             file2.Close();
+        }
+
+        static void SaveString(string s, string path)
+        {
+            var file = File.CreateText(path);
+            file.Write(s);
+            Console.WriteLine(s);
         }
 
         static void PrintResult(List<string> res)

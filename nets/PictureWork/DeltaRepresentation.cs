@@ -69,9 +69,9 @@ namespace PictureWork
             return res;
         }
 
-        public Dictionary<int, List<int>> TransformDeltaToDict()
+        public SortedDictionary<int, List<int>> TransformDeltaToDict()
         {
-            Dictionary<int, List<int>> res = new Dictionary<int, List<int>>();
+            SortedDictionary<int, List<int>> res = new SortedDictionary<int, List<int>>();
 
             foreach (Point curDelta in deltas)
             {
@@ -89,6 +89,5 @@ namespace PictureWork
 
             return res;
         }
-
     }
 }

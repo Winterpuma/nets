@@ -155,6 +155,18 @@ namespace PictureWork
             return "[" + String.Join(",", distinctY) + "]";
         }
 
+        public static string CreateFigFromDict(SortedDictionary<int, List<int>> figure)
+        {
+            List<string> distinctY = new List<string>();
+
+            foreach (KeyValuePair<int, List<int>> kvp in figure)
+            {
+                distinctY.Add("(" + kvp.Key + ",[" + String.Join(",", kvp.Value) + "])");
+            }
+
+            return "[" + String.Join(",", distinctY) + "]";
+        }
+
         public static string CreateSimpleTest(int sizeX, int sizeY, Figure fig1, Figure fig2)
         {
             string res = "test1((X,Y),(X2,Y2)):-";
