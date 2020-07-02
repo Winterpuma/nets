@@ -9,6 +9,7 @@ namespace PictureWork
 {
     static class QueryCreator
     {
+        #region solution 1
         /// <summary>
         /// Формирует строку вида  [[(name1_angle1,[(X,Y),(X,Y)]),(name1_angle2,[(X,Y),(X,Y)])],
         ///                         [(name2_angle1,[(X,Y),(X,Y)]),(name2_angle2,[(X,Y),(X,Y)])]]
@@ -119,6 +120,51 @@ namespace PictureWork
         public static string GetPrologPointRepresentation(Point point)
         {
             return "(" + point.X.ToString() + "," + point.Y.ToString() + ")";
+        }
+        #endregion
+
+        /// <summary>
+        /// Формирует строку вида [(0,[0,1,2,3]),(1,[0,1,2,3])]
+        /// При x = 4, y = 2
+        /// </summary>
+        public static string CreateLst(int x, int y)
+        {
+            string res = "[";
+            string xValues = "[" + String.Join(",", Enumerable.Range(0, x).ToArray()) + "]";
+
+            for (int yCur = 0; yCur < y - 1; yCur++)
+            {
+                res += "(" + yCur + "," + xValues + "),";
+            }
+            res += "(" + (y - 1) + "," + xValues + ")]";
+
+            return res;
+        }
+        
+
+        /// <returns>[(0,[1,0,-1]),(1,[0]),(-1,[0])]</returns>
+        public static string CreateFigFromDict(Dictionary<int, List<int>> figure)
+        {
+            List<string> distinctY = new List<string>();
+
+            foreach (KeyValuePair<int, List<int>> kvp in figure)
+            {
+                distinctY.Add("(" + kvp.Key + ",[" + String.Join(",", kvp.Value) + "])");
+            }
+
+            return "[" + String.Join(",", distinctY) + "]";
+        }
+
+        public static string CreateSimpleTest(int sizeX, int sizeY, Figure fig1, Figure fig2)
+        {
+            string res = "test1((X,Y),(X2,Y2)):-";
+            res += "Lst = " + CreateLst(sizeX, sizeY) + ",";
+            var transformed1 = fig1.rotated[0].TransformDeltaToDict();
+            var transformed2 = fig2.rotated[0].TransformDeltaToDict();
+            res += "Fig1 = (X,Y," + CreateFigFromDict(transformed1) + "),";
+            res += "Fig2 = (X2,Y2," + CreateFigFromDict(transformed2) + "),";
+            res += "place_it([Fig1,Fig2],Lst).";
+            return res;
         }
 
     }

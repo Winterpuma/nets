@@ -69,5 +69,26 @@ namespace PictureWork
             return res;
         }
 
+        public Dictionary<int, List<int>> TransformDeltaToDict()
+        {
+            Dictionary<int, List<int>> res = new Dictionary<int, List<int>>();
+
+            foreach (Point curDelta in deltas)
+            {
+                if (res.ContainsKey(curDelta.Y))
+                {
+                    res[curDelta.Y].Add(curDelta.X);
+                }
+                else
+                {
+                    var tmp = new List<int>();
+                    tmp.Add(curDelta.X);
+                    res.Add(curDelta.Y, tmp);
+                }
+            }
+
+            return res;
+        }
+
     }
 }
