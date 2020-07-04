@@ -54,6 +54,37 @@ namespace PictureWork
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"> список строк вида Fig2pos,120,23</param>
+        /// <param name="nameWithAngle"></param>
+        public ResultData(List<string> result, bool nameWithAngle = false)
+        {
+            string name;
+            int xCenter, yCenter;
+            double angle = 0;
+            foreach (string figure in result)
+            {
+                var tmp = figure.Split(',');
+                if (nameWithAngle)
+                {
+                    var seperatorIndex = tmp[0].LastIndexOf('_');
+                    name = tmp[0].Substring(0, seperatorIndex);
+                    angle = Convert.ToDouble(tmp[0].Substring(seperatorIndex + 1));
+                }
+                else
+                {
+                    name = tmp[0];
+                }
+
+                xCenter = Convert.ToInt32(tmp[1]);
+                yCenter = Convert.ToInt32(tmp[2]);
+
+                allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
+            }
+        }
+
         public static List<ResultData> PackAllPossibleResults(IEnumerable<string> allResults, bool flagNameWithAngle)
         {
             List<ResultData> res = new List<ResultData>();

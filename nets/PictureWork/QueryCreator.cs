@@ -167,9 +167,9 @@ namespace PictureWork
             return "[" + String.Join(",", distinctY) + "]";
         }
 
-        public static string CreateSimpleTest(int sizeX, int sizeY, Figure fig1, Figure fig2)
+        public static string CreateFigPredNoTurn(int sizeX, int sizeY, Figure fig1, Figure fig2, string predName = "testFigsNoTurn")
         {
-            string res = "test1((X,Y),(X2,Y2)):-";
+            string res = predName + "((X,Y),(X2,Y2)):-";
             res += "Lst = " + CreateLst(sizeX, sizeY) + ",";
             var transformed1 = fig1.rotated[0].TransformDeltaToDict();
             var transformed2 = fig2.rotated[0].TransformDeltaToDict();
@@ -179,5 +179,44 @@ namespace PictureWork
             return res;
         }
 
+        public static List<string> CreateListOfResulVars(int n)
+        {
+            List<string> args = new List<string>();
+            for (int i = 1; i <= n; i++)
+                args.Add("Fig" + i + "pos");
+            return args;
+        }
+
+        public static List<string> CreateListOfArgs(int n)
+        {
+            List<string> args = new List<string>();
+            for (int i = 1; i <= n; i++)
+                args.Add("(X" + i + ",Y" + i + ")");
+            return args;
+        }
+
+        public static string CreateArgs(int n)
+        {
+            return "(" + String.Join(",", CreateListOfArgs(n)) + ")";
+        }
+
+        public static string CreateFigPredNoTurn(int sizeX, int sizeY, List<Figure> data, string predName = "testFigsNoTurn")
+        {
+            List<string> figNames = new List<string>();
+            string res = predName + CreateArgs(data.Count) + " :- ";
+            res += "Lst = " + CreateLst(sizeX, sizeY) + ",";
+
+            int ind = 1;
+            foreach (Figure fig in data)
+            {
+                var transformed = fig.rotated[0].TransformDeltaToDict();
+                string figName = "Fig" + ind;
+                figNames.Add(figName);
+                res += figName + " = (X" + ind + ",Y" + ind + "," + CreateFigFromDict(transformed) + "),";
+                ind++;
+            }
+            res += "place_it([" + String.Join(",", figNames) + "],Lst).";
+            return res;
+        }
     }
 }

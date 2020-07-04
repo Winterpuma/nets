@@ -8,13 +8,134 @@
 :- use_module(library(apply)).
 :- dynamic taken/2.
 
+% [(Yi, [Xi])]
+kek((X,Y),(X2,Y2)):-
+        % поле на котором ищем 4 по У, 5 по Х
+        Lst =[(0,[0,1,2,3,4]),
+              (1,[0,1,2,3,4]),
+              (2,[0,1,2,3,4]),
+              (3,[0,1,2,3,4])],
+        Fig1=(X,Y,[(0,[0]),
+                    (1,[-1,0,1]),
+                    (2,[0]) ] ),
+        Fig2=(X2,Y2,[(0,[0,1,2]),
+                    (1,[2]),
+                    (2,[0,1,2])]),
+        % надо осуществить подстановку и подобрать варанты размещения 
+        % Fig1 и Fig2 в Lst
+        place_it([Fig1,Fig2],Lst).
+test1((X,Y),(X2,Y2)):-
+	Lst = [	(0,[0,1,2,3,4]),
+		(1,[0,1,2,3,4]),
+		(2,[0,1,2,3,4])],
+	Fig1 = (X,Y,[	(1,[2,1,0]),
+			(2,[1]),
+			(0,[1])]),
+	Fig2 = (X2,Y2,[	(2,[2,1,0]),
+			(0,[2,1,0]),
+			(1,[1])]),
+	place_it([Fig1,Fig2],Lst).
+
+test2((X,Y),(X2,Y2)):-
+	Lst = [	(0,[0,1,2,3,4]),
+		(1,[0,1,2,3,4]),
+		(2,[0,1,2,3,4])],
+	Fig1 = (X,Y,[(0,[1]),
+			(1,[0,1,2]),
+			(2,[1])]),
+	Fig2 = (X2,Y2,[	(0,[0,1,2]),
+			(1,[1]),
+			(2,[0,1,2])]),
+	place_it([Fig1,Fig2],Lst).
+
+test3(Ans):-
+	Lst = [	(0,[0,1,2,3,4]),
+		(1,[0,1,2,3,4]),
+		(2,[0,1,2,3,4])],
+	Fig1 = [(zero,[(0,[1]),
+			(1,[0,1,2]),
+			(2,[1])]),
+			(pi,[(0,[1]),
+			(1,[0,1,2]),
+			(2,[1])] )],
+	Fig2 = [(zero,[(0,[0,1,2]),
+			(1,[1]),
+			(2,[0,1,2])]),
+			(pi,[(0,[0,1,2]),
+			(1,[1]),
+			(2,[0,1,2])])],
+	place_it3([Fig1,Fig2],Lst,Ans).
+
+
+test4(Ans):-
+	Lst = [	(0,[0,1,2,3,4]),
+		(1,[0,1,2,3,4]),
+		(2,[0,1,2,3,4])],
+	Fig1 = [(0,[1]),
+			(1,[0,1,2]),
+			(2,[1])],
+	Fig2 = [(0,[0,1,2]),
+			(1,[1]),
+			(2,[0,1,2])],
+	place_it2([Fig1,Fig2],Lst,Ans).
+
+%place_it_rotate([[(Name,X,Y,Angle,Lst)|L_angles]|LFigs],Field
+place_it2([],_,[]):-true.
+place_it2([H|L],F,[(X,Y)|Ans]):- mymember(X,Y,F), delete_it((X,Y,H),F,F2),place_it2(L,F2,Ans).
+
+place_it3(_,[],_):-fail.
+place_it3([],_,[]):-true.
+place_it3([[(Angle,H)|_]|L],F,[(X,Y,Angle)|Ans]):- mymember(X,Y,F), delete_it((X,Y,H),F,F2),place_it3(L,F2,Ans).
+place_it3([[_|Hs]|L],F,Ans):- place_it3([Hs|L],F,Ans).
+
+place_it([],_):-true.
+place_it([(X,Y,Lst)|L],Field):-mymember(X,Y,Field),
+                            delete_it((X,Y,Lst),Field,F2),
+                            place_it(L,F2).
+place_it([],X,X):-true.
+place_it([(X,Y,Lst)|L],Field,Ans):-mymember(X,Y,Field),
+                            delete_it((X,Y,Lst),Field,F2),
+                            place_it(L,F2,Ans).
+%mymember(_,_,[]):-fail.
+mymember(X,Y,[(Y,Xs)|_]):- member(X, Xs).
+mymember(X,Y,[_|L]):- mymember(X,Y, L).
+
+delete_it1((_,_,_),[],_):-false.
+delete_it1((X,Y,(Y1,X1s)),[(Y2,X2s)|F2],[(Y2,X3s)|F2]):-
+   Y2 #= Y+Y1,
+   mymap2(X2s,X1s,X,X1s2),
+   subtract(X2s, X1s2, X3s).
+delete_it1((X,Y,(Y1,X1s)),[Z|F],[Z|F2]):-
+   delete_it1((X,Y,(Y1,X1s)),F,F2).
+
+delete_it0((_,_,[]),F,F).
+delete_it0((X,Y,[(Y1,X1s)|Lst]),Field,F2):-
+    delete_it1((X,Y,(Y1,X1s)),Field,F1),
+    delete_it0((X,Y,Lst),F1,F2).
+
+delete_it((_,_,[]),F,F):-!.
+delete_it((X,Y,[(Y1,X1s)|Lst]),[(Y2,X2s)|F],[(Y2,X3s)|F2]):-
+    Y2 #= Y+Y1,
+    %mymap(X1s,X,X1s2),
+    %subset(X1s2,X2s),
+    mymap2(X2s,X1s,X,X1s2),
+    subtract(X2s, X1s2, X3s),
+    delete_it((X,Y,Lst),F,F2).
+delete_it((X,Y,Lst),[XYZ|F],[XYZ|F2]):-
+    delete_it((X,Y,Lst),F,F2).
+mymap([],_,[]):-!.
+mymap([H|L],F,[H2|L2]):- H2 #= H+F, mymap(L,F,L2).
+mymap2(_,[],_,[]):-!.
+mymap2(Lst,[H|L],F,[H2|L2]):- H2 #= H+F, member(H2,Lst),!, mymap2(Lst,L,F,L2).
+
+
 assert2(X):-assert(X).
 assert2(X):-retract(X),fail.
 retract2(X):-retract(X).
 retract2(X):-asserta(X),fail.
 
 isfree(X,Y):-between(0,5,X)
-            ,between(0,3,Y)
+            ,between(0,2,Y)
             , not(taken(X,Y)).
 taken(-1,-1).
 %taken(X,Y).
@@ -35,7 +156,7 @@ takefig(X,Y,Lst):-maplist(\Z^((X1,Y1)=Z,
 %tryPut([],A,A):-!.
 %tryPut([El|Lst],LstAns,Res):-
 % эта штука определяет, может ли заданная вещь поместиться на листе (одном)
-tt(X,Y,Lst):- between(0,5,X),between(0,3,Y)
+tt(X,Y,Lst):- between(0,5,X),between(0,2,Y)
     %,write(X),write(';'),write(Y),
     ,testfig(X,Y,Lst),
     takefig(X,Y,Lst). %[(1,0),(0,0),(0,-1),(-1,0),(0,1)]).
