@@ -14,32 +14,37 @@ namespace PictureWork
             //Environment.SetEnvironmentVariable("SWI_HOME_DIR", @"D:\\Program Files (x86)\\swipl");
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
 
-            Console.WriteLine("Starting process.");
+            // Параметры
+            string pathSrc = "../../../../../src2_big/"; // Путь к директории с фигурами
+            Color srcFigColor = Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
+            Size lstSize = new Size(4032, 864); // Размер листа
+            int scale = 1; // Коэф-т масштабирования
 
-            //List<Figure> data = Figure.LoadFigures("../../../../../src0_bigger", Color.FromArgb(0, 0, 0));
-            List<Figure> data = Figure.LoadFigures("../../../../../src2_normal", Color.FromArgb(127, 127, 127));
-            //List<Figure> data = Figure.LoadFigures("../../../../../src2_blackandwhite", Color.FromArgb(0, 0, 0));
+            string pathTmp = "../../../../../tmp/";
+            string pathRes = "../../../../../result/";
 
+            // Масштабирование
+            // create or clean tmp dir!
+            InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
+            Size scaledLstSize = new Size(lstSize.Width / scale, lstSize.Height / scale);
 
-
-            //SaveString(QueryCreator.CreateSimpleTest(401, 85, data[0], data[1]), "GenerateTest.txt");
-
+            // Загрузка фигур
+            Console.WriteLine("Starting process. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+            List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor); 
+            Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             
-            Console.WriteLine("Figure loading finished");
-            //var s = QueryCreator.GetPrologDeltaRepresentation(data[0][0]);
-            //var s = QueryCreator.GetPrologOriginalFigureArrayRepresentation(data);
-            
-
-            Console.WriteLine("Starting result finder.");
-
+            // Поиск решения
+            Console.WriteLine("Starting result finder. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+            //SolutionChecker.RunCreatedTest();
             //var result = SolutionChecker.F1(data);
             //var result = SolutionChecker.Tryer360(data);
             //PrintResult(result);
 
-            
+            // Отображение решения
+            /*
             List<ResultData> result = new List<ResultData>();
             result.Add(new ResultData("x1,199,39 x2,164,32"));
-            OutputHandling.SaveResult(data, result, "../../../../../result/", 420, 100);
+            OutputHandling.SaveResult(data, result, pathRes, 420, 100);*/
 
             Console.ReadLine();
         }
@@ -64,9 +69,12 @@ namespace PictureWork
 
         static void SaveString(string s, string path)
         {
+            File.AppendAllText(path, "\n");
+            File.AppendAllText(path, s);
+            /*
             var file = File.CreateText(path);
             file.Write(s);
-            Console.WriteLine(s);
+            Console.WriteLine(s);*/
         }
 
         static void PrintResult(List<string> res)

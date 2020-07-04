@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.IO;
 
 namespace PictureWork
 {
@@ -29,5 +30,27 @@ namespace PictureWork
             return bmp;
         }
 
+        public static Image ResizeImage(Image imgToResize, Size size)
+        {
+            return (Image)(new Bitmap(imgToResize, size));
+        }
+
+        public static Image ResizeImage(Image img, int scale)
+        {
+            return (Image)(new Bitmap(img, new Size(img.Width / scale, img.Height / scale)));
+        }
+
+        public static void ScaleWholeDirectory(string dirSrcPath, string dirDstPath, int scale)
+        {
+            string[] files = Directory.GetFiles(dirSrcPath);
+            List<Figure> data = new List<Figure>();
+            
+            foreach (string f in files)
+            {
+                Image img = new Bitmap(f);
+                Image yourImage = ResizeImage(img, scale);
+                yourImage.Save(dirDstPath + Path.GetFileName(f));
+            }
+        }
     }
 }
