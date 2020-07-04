@@ -17,14 +17,16 @@ namespace PictureWork
             // Параметры
             string pathSrc = "../../../../../src2_big/"; // Путь к директории с фигурами
             Color srcFigColor = Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
-            Size lstSize = new Size(4032, 864); // Размер листа
-            int scale = 1; // Коэф-т масштабирования
+            Size lstSize = new Size(3980, 820); // Размер листа
+            int scale = 20; // Коэф-т масштабирования
 
             string pathTmp = "../../../../../tmp/";
             string pathRes = "../../../../../result/";
 
+            CleanDir(pathTmp);
+            CleanDir(pathRes);
+
             // Масштабирование
-            // create or clean tmp dir!
             InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
             Size scaledLstSize = new Size(lstSize.Width / scale, lstSize.Height / scale);
 
@@ -35,46 +37,28 @@ namespace PictureWork
             
             // Поиск решения
             Console.WriteLine("Starting result finder. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            //SolutionChecker.RunCreatedTest();
-            //var result = SolutionChecker.F1(data);
-            //var result = SolutionChecker.Tryer360(data);
-            //PrintResult(result);
+            var result = SolutionChecker.CreateAndRunTest(data, scaledLstSize.Width, scaledLstSize.Height);
 
             // Отображение решения
-            /*
-            List<ResultData> result = new List<ResultData>();
-            result.Add(new ResultData("x1,199,39 x2,164,32"));
-            OutputHandling.SaveResult(data, result, pathRes, 420, 100);*/
+            Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+            OutputHandling.SaveResult(data, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
 
+            Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Console.ReadLine();
-        }
-
-        static void GetAndSaveQuery(List<Figure> data)
+        }       
+        
+        private static void CleanDir(string path)
         {
-            string queryStr = "tryer360(" +
-                    QueryCreator.GetPrologAllRotatedFigureArrayRepresentationWithAngle(data) +
-                    ",Res).";
-            var file1 = File.CreateText("generated_query.txt");
-            file1.Write(queryStr);
+            DirectoryInfo dir = new DirectoryInfo(path);
 
-            queryStr = "f1(" +
-                    QueryCreator.GetPrologOriginalFigureArrayRepresentation(data) +
-                    ",[],Res).";
-            var file2 = File.CreateText("generated_query_f1.txt");
-            file2.Write(queryStr);
-
-            file1.Close();
-            file2.Close();
-        }
-
-        static void SaveString(string s, string path)
-        {
-            File.AppendAllText(path, "\n");
-            File.AppendAllText(path, s);
-            /*
-            var file = File.CreateText(path);
-            file.Write(s);
-            Console.WriteLine(s);*/
+            foreach (FileInfo file in dir.GetFiles())
+            {
+                file.Delete();
+            }
+            foreach (DirectoryInfo curDir in dir.GetDirectories())
+            {
+                curDir.Delete(true);
+            }
         }
 
         static void PrintResult(List<string> res)

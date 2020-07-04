@@ -46,7 +46,7 @@ namespace PictureWork
                 PlaceDeltasOnABitmap(b, figData[0], figPos.xCenter, figPos.yCenter, color[i]);
                 // а повороты????
             }
-
+            b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
             return b;
         }
 
