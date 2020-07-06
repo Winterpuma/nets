@@ -26,6 +26,24 @@ namespace PictureWork
     {
         public List<ResultFigPos> allFigures = new List<ResultFigPos>();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="positioningData">список из строк по 3: x, y, angle, x2, y2, angle</param>
+        public ResultData(System.Collections.ObjectModel.Collection<string> positioningData)
+        {
+            int i = 1;
+            foreach (string oneFigData in positioningData)
+            {
+                var oneFigDataSplitted = oneFigData.Split(','); 
+                string name = i.ToString();
+                int xCenter = Convert.ToInt32(oneFigDataSplitted[0]);
+                int yCenter = Convert.ToInt32(oneFigDataSplitted[1]);
+                double angle = Convert.ToDouble(oneFigDataSplitted[2]);
+                allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
+                i++;
+            }
+        }
 
         // f1,1,1 f2,3,1 f3,5,1 or f1_320,1,2 f2_15,0,5
         public ResultData(string result, bool nameWithAngle = false)
@@ -92,6 +110,7 @@ namespace PictureWork
                 res.Add(new ResultData(currentResult, flagNameWithAngle));
             return res;
         }
+        
 
     }
 }

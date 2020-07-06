@@ -43,8 +43,7 @@ namespace PictureWork
             {
                 ResultFigPos figPos = res.allFigures[i];
                 Figure figData = data[i];
-                PlaceDeltasOnABitmap(b, figData[0], figPos.xCenter, figPos.yCenter, color[i]);
-                // а повороты????
+                PlaceDeltasOnABitmap(b, figData[(int)figPos.angle], figPos.xCenter, figPos.yCenter, color[i]);
             }
             b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
             return b;

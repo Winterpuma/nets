@@ -218,5 +218,32 @@ namespace PictureWork
             res += "place_it([" + String.Join(",", figNames) + "],Lst).";
             return res;
         }
+
+        public static string CreatePredTurn(int sizeX, int sizeY, List<Figure> data, string predName = "testFigsTurn")
+        {
+            List<string> figNames = new List<string>();
+            string res = predName + "(Ans)" + " :- ";
+            res += "Lst = " + CreateLst(sizeX, sizeY) + ",";
+
+            int indFig = 1;
+            foreach (Figure fig in data)
+            {
+                string figName = "Fig" + indFig;
+                figNames.Add(figName);
+                res += figName + " = ";
+                int indAngle = 0;
+                List<string> allAngles = new List<string>();
+                foreach (DeltaRepresentation curDelta in fig.rotated)
+                {
+                    var transformed = curDelta.TransformDeltaToDict();
+                    allAngles.Add("(" + indAngle + "," + CreateFigFromDict(transformed) + ")"); // maybe actual angle?
+                    indAngle++;
+                }
+                res += "[" + String.Join(",", allAngles) + "],";
+                indFig++;
+            }
+            res += "place_it3([" + String.Join(",", figNames) + "],Lst,Ans).";
+            return res;
+        }
     }
 }

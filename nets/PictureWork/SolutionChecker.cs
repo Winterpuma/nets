@@ -106,7 +106,7 @@ namespace PictureWork
                 string queryStr = predName + "(" + String.Join(",", vars) + ").";
 
                 //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
-                Console.WriteLine("Starting prolog f1");
+                Console.WriteLine("Starting solution finder.");
 
                 using (PlQuery q = new PlQuery(queryStr))
                 {
@@ -134,6 +134,61 @@ namespace PictureWork
                 PlEngine.PlCleanup();
             }
             return res;
+        }
+
+        public static List<ResultData> CreateAndRunTestTurning(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
+        {
+            string predName = "testFigsTurn";
+            string createdPredicate = QueryCreator.CreatePredTurn(width, height, data, predName);
+
+            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
+
+            if (File.Exists(tmpCodePath))
+                File.Delete(tmpCodePath);
+            File.Copy(prologCodePath, tmpCodePath);
+            File.AppendAllText(tmpCodePath, "\n");
+            File.AppendAllText(tmpCodePath, createdPredicate);
+
+            List<ResultData> res = new List<ResultData>();
+            try
+            {
+                String[] param = { "-q", "-f", tmpCodePath };
+                PlEngine.Initialize(param);
+                string queryStr = "findall(X, " + predName + "(X), Lx).";
+
+                //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
+                Console.WriteLine("Starting solution finder.");
+
+                using (PlQuery q = new PlQuery(queryStr))
+                {
+                    foreach (PlQueryVariables v in q.SolutionVariables)
+                    {
+                        res = GetFindallRes(v["Lx"]); 
+                    }
+                }
+            }
+            catch (PlException e)
+            {
+                Console.WriteLine(e.MessagePl);
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                PlEngine.PlCleanup();
+            }
+            return res;
+        }
+
+        public static List<ResultData> GetFindallRes(PlTerm res)
+        {
+            List<ResultData> convertedRes = new List<ResultData>();
+            var allResults = res.ToList();
+            foreach (PlTerm curAns in allResults)
+            {
+                convertedRes.Add(new ResultData(curAns.ToListString()));
+                
+            }
+            return convertedRes;
         }
 
         public static ResultData GetResult(string resultString, bool nameWithAngle)

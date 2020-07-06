@@ -21,7 +21,7 @@ namespace PictureWork
             get { return rotated[i].deltas; }
         }
 
-        public Figure(string path, int id, Color figColor)
+        public Figure(string path, int id, Color figColor, int angleStep = 1)
         {
             Console.WriteLine("\nLoad Figure " + id);
             this.path = path;
@@ -37,7 +37,7 @@ namespace PictureWork
             var originalDeltas = new DeltaRepresentation(bitmap, figColor);
             rotated.Add(originalDeltas);
             Console.WriteLine("Loaded original delta. Delta len " + originalDeltas.deltas.Count);
-            int angleStep = 360;
+
             for (int angle = angleStep; angle < 360; angle += angleStep)
             {
                 Console.Write(" " + angle);
@@ -50,7 +50,7 @@ namespace PictureWork
         }
         
         
-        public static List<Figure> LoadFigures(string path, Color figColor)
+        public static List<Figure> LoadFigures(string path, Color figColor, int angleStep = 1)
         {
             string[] files = Directory.GetFiles(path);
             List<Figure> data = new List<Figure>();
@@ -58,7 +58,7 @@ namespace PictureWork
             int id = 1;
             foreach (string f in files)
             {
-                data.Add(new Figure(f, id, figColor));
+                data.Add(new Figure(f, id, figColor, angleStep));
                 id++;
             }
             return data;
