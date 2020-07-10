@@ -88,6 +88,17 @@ place_it3([],_,[]):-true.
 place_it3([[(Angle,H)|_]|L],F,[(X,Y,Angle)|Ans]):- mymember(X,Y,F), delete_it((X,Y,H),F,F2),place_it3(L,F2,Ans).
 place_it3([[_|Hs]|L],F,Ans):- place_it3([Hs|L],F,Ans).
 
+place_it4(_,[],_):-fail.
+place_it4([],_,[]):-true.
+place_it4([[(Angle,H,SpecialDots)|_]|L],F,[(X,Y,Angle)|Ans]):- 
+    mymember(X,Y,F), 
+    delete_it((X,Y,SpecialDots),F,_),
+    delete_it((X,Y,H),F,F2),
+    place_it4(L,F2,Ans).
+place_it4([[_|Hs]|L],F,Ans):- 
+    place_it4([Hs|L],F,Ans).
+
+
 place_it([],_):-true.
 place_it([(X,Y,Lst)|L],Field):-mymember(X,Y,Field),
                             delete_it((X,Y,Lst),Field,F2),

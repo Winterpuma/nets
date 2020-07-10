@@ -245,5 +245,40 @@ namespace PictureWork
             res += "place_it3([" + String.Join(",", figNames) + "],Lst,Ans).";
             return res;
         }
+
+        /// <summary>
+        /// Для поиска всех размещений на одном листе с поворотами 
+        /// и оптимизацией по избранным точками.
+        /// </summary>
+        public static string CreatePredTurnOptimized(int sizeX, int sizeY, List<Figure> data, string predName = "testFigsTurnOpt")
+        {
+            List<string> figNames = new List<string>();
+            string res = predName + "(Ans)" + " :- ";
+            res += "Lst = " + CreateLst(sizeX, sizeY) + ",";
+
+            int indFig = 1;
+            foreach (Figure fig in data)
+            {
+                string figName = "Fig" + indFig;
+                figNames.Add(figName);
+                res += figName + " = ";
+                int indAngle = 0;
+                List<string> allAngles = new List<string>();
+                foreach (DeltaRepresentation curDelta in fig.rotated)
+                {
+                    var transformed = curDelta.TransformDeltaToDict();
+                    var specialDots = curDelta.GetOuterDots();
+                    allAngles.Add("(" + 
+                        indAngle + "," +  // maybe actual angle?
+                        CreateFigFromDict(transformed) + "," +
+                        CreateFigFromDict(specialDots) + ")");
+                    indAngle++;
+                }
+                res += "[" + String.Join(",", allAngles) + "],";
+                indFig++;
+            }
+            res += "place_it4([" + String.Join(",", figNames) + "],Lst,Ans).";
+            return res;
+        }
     }
 }

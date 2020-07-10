@@ -38,12 +38,13 @@ namespace PictureWork
             
             // Поиск решения
             Console.WriteLine("Starting prolog part. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            //var result1 = SolutionChecker.CreateAndRunTest(data, scaledLstSize.Width, scaledLstSize.Height);
-            var result2 = SolutionChecker.CreateAndRunTestTurning(data, scaledLstSize.Width, scaledLstSize.Height);
+            //var result = SolutionChecker.CreateAndRunTest(data, scaledLstSize.Width, scaledLstSize.Height);
+            //var result = SolutionChecker.CreateAndRunTestTurning(data, scaledLstSize.Width, scaledLstSize.Height);
+            var result = SolutionChecker.CreateAndRunTestTurningOptimized(data, scaledLstSize.Width, scaledLstSize.Height);
 
             // Отображение решения
             Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            OutputHandling.SaveResult(data, result2, pathRes, scaledLstSize.Width, scaledLstSize.Height);
+            OutputHandling.SaveResult(data, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
 
             Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Console.ReadLine();
@@ -72,5 +73,15 @@ namespace PictureWork
                 Console.WriteLine("Result is empty");
         }
         
+        private static void CompareTime(List<Figure> data, int width, int height)
+        {
+            Console.WriteLine("-----------No optimization start. " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+            var result1 = SolutionChecker.CreateAndRunTestTurning(data, width, height);
+            Console.WriteLine("-----------end. " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+
+            Console.WriteLine("-----------Optimization start. " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+            var result2 = SolutionChecker.CreateAndRunTestTurningOptimized(data, width, height);
+            Console.WriteLine("-----------end. " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+        }
     }
 }

@@ -69,7 +69,7 @@ namespace PictureWork
             return res;
         }
 
-        public SortedDictionary<int, List<int>> TransformDeltaToDict()
+        public static SortedDictionary<int, List<int>> TransformDeltaToDict(List<Point> deltas)
         {
             SortedDictionary<int, List<int>> res = new SortedDictionary<int, List<int>>();
 
@@ -88,6 +88,39 @@ namespace PictureWork
             }
 
             return res;
+        }
+
+        public SortedDictionary<int, List<int>> TransformDeltaToDict()
+        {
+            return TransformDeltaToDict(deltas);
+        }
+
+
+        /// <summary>
+        /// Получает 4 точки фигуры, лежащие на прямоугольной оболочке
+        /// </summary>
+        /// <returns></returns>
+        public SortedDictionary<int, List<int>> GetOuterDots()
+        {
+            Point minX = new Point(int.MaxValue, int.MaxValue);
+            Point minY = new Point(int.MaxValue, int.MaxValue);
+            Point maxY = new Point(int.MinValue, int.MinValue);
+            Point maxX = new Point(int.MinValue, int.MinValue);
+
+            foreach (Point p in deltas)
+            {
+                if (minX.X > p.X)
+                    minX = p;
+                if (minY.Y > p.Y)
+                    minY = p;
+                if (maxX.X < p.X)
+                    maxX = p;
+                if (maxY.Y < p.Y)
+                    maxY = p;
+            }
+
+            List<Point> outerDots = new List<Point>{ minX, minY, maxX, maxY };
+            return TransformDeltaToDict(outerDots);
         }
     }
 }
