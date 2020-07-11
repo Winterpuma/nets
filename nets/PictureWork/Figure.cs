@@ -81,5 +81,10 @@ namespace PictureWork
 
             return bmp;
         }
+
+        public static int CompareFiguresBySize(Figure x, Figure y)
+        {
+            return y[0].Count - x[0].Count;
+        }
     }
 }

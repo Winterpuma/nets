@@ -15,9 +15,9 @@ namespace PictureWork
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
 
             // Параметры
-            string pathSrc = "../../../../../src2_big/";//"../../../../../src4/"; // Путь к директории с фигурами
-            Color srcFigColor = Color.FromArgb(127, 127, 127);//Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
-            Size lstSize = new Size(3980, 820); //new Size(1000, 800); // Размер листа
+            string pathSrc = "../../../../../src4/";//src2_big // Путь к директории с фигурами
+            Color srcFigColor = Color.FromArgb(0, 0, 0);//Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
+            Size lstSize = new Size(1000, 800); //(3980, 820); // Размер листа
             int scale = 20; // Коэф-т масштабирования
             int angleStep = 120; // Шаг поворотов фигур
 
@@ -43,8 +43,8 @@ namespace PictureWork
             //var result = SolutionChecker.CreateAndRunTestTurningOptimized(data, scaledLstSize.Width, scaledLstSize.Height);
             //var result = SolutionChecker.DoesFiguresFit(data, scaledLstSize.Width, scaledLstSize.Height);
 
-
             var res = SolutionChecker.FindMinArrangement(data, scaledLstSize.Width, scaledLstSize.Height);
+
 
             // Отображение решения
             Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
@@ -77,15 +77,5 @@ namespace PictureWork
                 Console.WriteLine("Result is empty");
         }
         
-        private static void CompareTime(List<Figure> data, int width, int height)
-        {
-            Console.WriteLine("-----------No optimization start. " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            var result1 = SolutionChecker.CreateAndRunTestTurning(data, width, height);
-            Console.WriteLine("-----------end. " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-
-            Console.WriteLine("-----------Optimization start. " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            var result2 = SolutionChecker.CreateAndRunTestTurningOptimized(data, width, height);
-            Console.WriteLine("-----------end. " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-        }
     }
 }
