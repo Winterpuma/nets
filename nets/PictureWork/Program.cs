@@ -19,7 +19,7 @@ namespace PictureWork
             Color srcFigColor = Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
             Size lstSize = new Size(3980, 820); // Размер листа
             int scale = 20; // Коэф-т масштабирования
-            int angleStep = 4;
+            int angleStep = 4; // Шаг поворотов фигур
 
             string pathTmp = "../../../../../tmp/";
             string pathRes = "../../../../../result/";
@@ -40,11 +40,11 @@ namespace PictureWork
             Console.WriteLine("Starting prolog part. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             //var result = SolutionChecker.CreateAndRunTest(data, scaledLstSize.Width, scaledLstSize.Height);
             //var result = SolutionChecker.CreateAndRunTestTurning(data, scaledLstSize.Width, scaledLstSize.Height);
-            var result = SolutionChecker.CreateAndRunTestTurningOptimized(data, scaledLstSize.Width, scaledLstSize.Height);
+            //var result = SolutionChecker.CreateAndRunTestTurningOptimized(data, scaledLstSize.Width, scaledLstSize.Height);
 
             // Отображение решения
             Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            OutputHandling.SaveResult(data, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
+            //OutputHandling.SaveResult(data, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
 
             Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Console.ReadLine();
