@@ -15,11 +15,11 @@ namespace PictureWork
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
 
             // Параметры
-            string pathSrc = "../../../../../src2_big/"; // Путь к директории с фигурами
-            Color srcFigColor = Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
-            Size lstSize = new Size(3980, 820); // Размер листа
+            string pathSrc = "../../../../../src2_big/";//"../../../../../src4/"; // Путь к директории с фигурами
+            Color srcFigColor = Color.FromArgb(127, 127, 127);//Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
+            Size lstSize = new Size(3980, 820); //new Size(1000, 800); // Размер листа
             int scale = 20; // Коэф-т масштабирования
-            int angleStep = 4; // Шаг поворотов фигур
+            int angleStep = 120; // Шаг поворотов фигур
 
             string pathTmp = "../../../../../tmp/";
             string pathRes = "../../../../../result/";
@@ -41,6 +41,10 @@ namespace PictureWork
             //var result = SolutionChecker.CreateAndRunTest(data, scaledLstSize.Width, scaledLstSize.Height);
             //var result = SolutionChecker.CreateAndRunTestTurning(data, scaledLstSize.Width, scaledLstSize.Height);
             //var result = SolutionChecker.CreateAndRunTestTurningOptimized(data, scaledLstSize.Width, scaledLstSize.Height);
+            //var result = SolutionChecker.DoesFiguresFit(data, scaledLstSize.Width, scaledLstSize.Height);
+
+
+            var res = SolutionChecker.FindMinArrangement(data, scaledLstSize.Width, scaledLstSize.Height);
 
             // Отображение решения
             Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
