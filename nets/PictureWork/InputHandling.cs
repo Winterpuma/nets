@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
+using Apitron.PDF.Rasterizer;
+using Apitron.PDF.Rasterizer.Configuration;
 
 namespace PictureWork
 {
@@ -50,6 +52,30 @@ namespace PictureWork
                 Image img = new Bitmap(f);
                 Image yourImage = ResizeImage(img, scale);
                 yourImage.Save(dirDstPath + Path.GetFileName(f));
+            }
+        }
+
+        public static void ConvertPDFDirToScaledImg(string dirSrcPath, string dirDstPath, int scale)
+        {
+            string[] files = Directory.GetFiles(dirSrcPath);
+
+            foreach (string f in files)
+            {
+                string filename = Path.GetFileNameWithoutExtension(f).ToLower();
+                Document document = new Document(File.Open(f, FileMode.Open));
+                RenderingSettings settings = new RenderingSettings();
+                
+                for (int i = 0; i < document.Pages.Count; i++)
+                {
+                    Page currentPage = document.Pages[i];
+                    
+                    using (Bitmap bitmap = currentPage.Render((int)currentPage.Width, (int)currentPage.Height, settings))
+                    {
+                        string imgName = dirDstPath + filename + i + ".png";
+                        Image yourImage = ResizeImage(bitmap, scale);
+                        yourImage.Save(imgName, System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                }                
             }
         }
     }

@@ -15,20 +15,24 @@ namespace PictureWork
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
 
             // Параметры
-            string pathSrc = "../../../../../src4/";//src2_big // Путь к директории с фигурами
-            Color srcFigColor = Color.FromArgb(0, 0, 0);//Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
+            string pathSrc = "../../../../../bmpKips2/";//src2_big // Путь к директории с фигурами
+            Color srcFigColor = Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
             Size lstSize = new Size(1000, 800); //(3980, 820); // Размер листа
             int scale = 20; // Коэф-т масштабирования
             int angleStep = 120; // Шаг поворотов фигур
-
+            
             string pathTmp = "../../../../../tmp/";
             string pathRes = "../../../../../result/";
-
+            
             CleanDir(pathTmp);
             CleanDir(pathRes);
 
+
+            // Загрузка из PDF и масштабирование
+            InputHandling.ConvertPDFDirToScaledImg(pathSrc, pathTmp, scale);
+
             // Масштабирование
-            InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
+            //InputHandling.ScaleWholeDirectory(pathTmpConvert, pathTmpScale, scale);
             Size scaledLstSize = new Size(lstSize.Width / scale, lstSize.Height / scale);
 
             // Загрузка фигур
