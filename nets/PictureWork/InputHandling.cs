@@ -78,5 +78,28 @@ namespace PictureWork
                 }                
             }
         }
+
+        public static void ConvertPDFDirToImg(string dirSrcPath, string dirDstPath)
+        {
+            string[] files = Directory.GetFiles(dirSrcPath);
+
+            foreach (string f in files)
+            {
+                string filename = Path.GetFileNameWithoutExtension(f).ToLower();
+                Document document = new Document(File.Open(f, FileMode.Open));
+                RenderingSettings settings = new RenderingSettings();
+
+                for (int i = 0; i < document.Pages.Count; i++)
+                {
+                    Page currentPage = document.Pages[i];
+
+                    using (Bitmap bitmap = currentPage.Render((int)currentPage.Width, (int)currentPage.Height, settings))
+                    {
+                        string imgName = dirDstPath + filename + i + ".png";
+                        bitmap.Save(imgName, System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                }
+            }
+        }
     }
 }
