@@ -8,173 +8,12 @@ namespace PictureWork
 {
     class SolutionChecker
     {
-        public static List<ResultData> CreateAndRunTest(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
-        {
-            string predName = "testFigsNoTurn";
-            string createdPredicate = QueryCreator.CreateFigPredNoTurn(width, height, data, predName);
-
-            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
-
-            if (File.Exists(tmpCodePath))
-                File.Delete(tmpCodePath);
-            File.Copy(prologCodePath, tmpCodePath);
-            File.AppendAllText(tmpCodePath, "\n");
-            File.AppendAllText(tmpCodePath, createdPredicate);
-
-            List<ResultData> res = new List<ResultData>();
-            try
-            {
-                String[] param = { "-q", "-f", tmpCodePath };
-                PlEngine.Initialize(param);
-                var vars = QueryCreator.CreateListOfResulVars(data.Count);
-                string queryStr = predName + "(" + String.Join(",", vars) + ").";
-
-                //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
-                Console.WriteLine("Starting solution finder.");
-
-                using (PlQuery q = new PlQuery(queryStr))
-                {
-                    foreach (PlQueryVariables v in q.SolutionVariables)
-                    {
-                        List<string> resultStrings = new List<string>();
-                        foreach (string variable  in vars)
-                        {
-                            string result = GetResultStringString(v[variable]);
-                            Console.WriteLine(variable + "," + result);
-                            resultStrings.Add(variable + "," + result);
-                        }
-
-                        res.Add(new ResultData(resultStrings, false));
-                    }
-                }
-            }
-            catch (PlException e)
-            {
-                Console.WriteLine(e.MessagePl);
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                PlEngine.PlCleanup();
-            }
-            return res;
-        }
-
-        public static List<ResultData> CreateAndRunTestTurning(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
-        {
-            string predName = "testFigsTurn";
-            string createdPredicate = QueryCreator.CreatePredTurn(width, height, data, predName);
-
-            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
-
-            AppendStrToFile(tmpCodePath, prologCodePath, createdPredicate);
-
-            List<ResultData> res = new List<ResultData>();
-            try
-            {
-                String[] param = { "-q", "-f", tmpCodePath };
-                PlEngine.Initialize(param);
-                string queryStr = "findall(X, " + predName + "(X), Lx).";
-
-                //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
-                Console.WriteLine("Starting solution finder.");
-
-                using (PlQuery q = new PlQuery(queryStr))
-                {
-                    foreach (PlQueryVariables v in q.SolutionVariables)
-                    {
-                        res = GetFindallRes(v["Lx"]); 
-                    }
-                }
-            }
-            catch (PlException e)
-            {
-                Console.WriteLine(e.MessagePl);
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                PlEngine.PlCleanup();
-            }
-            return res;
-        }
-
-        public static List<ResultData> CreateAndRunTestTurningOptimized(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
-        {
-            string predName = "testFigsTurnOpt";
-            string createdPredicate = QueryCreator.CreatePredTurnOptimized(width, height, data, predName);
-
-            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
-
-            AppendStrToFile(tmpCodePath, prologCodePath, createdPredicate);
-
-            List<ResultData> res = new List<ResultData>();
-            try
-            {
-                String[] param = { "-q", "-f", tmpCodePath };
-                PlEngine.Initialize(param);
-                string queryStr = "findall(X, " + predName + "(X), Lx).";
-
-                //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
-                Console.WriteLine("Starting solution finder.");
-
-                using (PlQuery q = new PlQuery(queryStr))
-                {
-                    foreach (PlQueryVariables v in q.SolutionVariables)
-                    {
-                        res = GetFindallRes(v["Lx"]);
-                    }
-                }
-            }
-            catch (PlException e)
-            {
-                Console.WriteLine(e.MessagePl);
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                PlEngine.PlCleanup();
-            }
-            return res;
-        }
-
-        public static bool DoesFiguresFit(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
-        {
-            string predName = "testFit";
-            data.Sort(Figure.CompareFiguresBySize);
-            string createdPredicate = QueryCreator.CreatePredTurnOptimized(width, height, data, predName);
-
-            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
-
-            AppendStrToFile(tmpCodePath, prologCodePath, createdPredicate);
-
-            bool res = false;
-            try
-            {
-                String[] param = { "-q", "-f", tmpCodePath };
-                PlEngine.Initialize(param);
-                string queryStr = predName + "(Ans).";
-                
-                Console.WriteLine("Starting solution finder.");
-
-                using (PlQuery q = new PlQuery(queryStr))
-                {
-                    res = q.NextSolution();
-                }
-            }
-            catch (PlException e)
-            {
-                Console.WriteLine(e.MessagePl);
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                PlEngine.PlCleanup();
-            }
-            return res;
-        }
-
-
+        #region Проверки 
+        /// <summary>
+        /// Считает сумму дельт
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         private static int CountDeltas(List<Figure> data)
         {
             int sum = 0;
@@ -185,16 +24,46 @@ namespace PictureWork
             return sum;
         }
 
+        /// <summary>
+        /// Проверяет помещается ли текущее размещение деталей на одном листе
+        /// </summary>
+        private static bool DoesCurrentListFit(List<Figure> list, int w, int h)
+        {
+            int area = w * h;
+            if (CountDeltas(list) > area || !PrologSolutionFinder.DoesFiguresFit(list, w, h))
+                return false;
+            else
+                return true;
+        }
+
+        /// <summary>
+        /// Проверяет помещается ли текущее размещение деталей по площади дельт и 
+        /// перебор решений пролога
+        /// </summary>
         private static bool DoesCurrentArrangementFit(List<List<Figure>> sequence, int w, int h)
         {
             int area = w * h;
             foreach (List<Figure> curLstArrangement in sequence)
             {
-                if (CountDeltas(curLstArrangement) > area || !DoesFiguresFit(curLstArrangement, w, h))
+                if (CountDeltas(curLstArrangement) > area || !PrologSolutionFinder.DoesFiguresFit(curLstArrangement, w, h))
                     return false;
             }
             return true;
         }
+
+        /// <summary>
+        /// Проверяет нет ли пустых листов внутри расстановки
+        /// </summary>
+        private static bool ArrangementIsBad(List<List<Figure>> arrangement)
+        {
+            foreach (List<Figure> i in arrangement)
+            {
+                if (i.Count == 0)
+                    return true;
+            }
+            return false;
+        }
+        #endregion
 
         private static void Dbg1(List<List<Figure>> curSequence)
         {
@@ -266,8 +135,8 @@ namespace PictureWork
             if (data.Count == 0)
             {
                 //Dbg1(curSequence);
-                
-                res.Add(curSequence);
+                if (true)//!ArrangementIsBad(curSequence))
+                    res.Add(curSequence);
                 return res;
             }
 
@@ -279,6 +148,7 @@ namespace PictureWork
                 {
                     newSequence.Add(new List<Figure>(item));
                 });
+                
 
                 var newData = new List<Figure>(data);
                 newData.RemoveAt(0);
@@ -334,9 +204,9 @@ namespace PictureWork
         }
 
         /// <summary>
-        /// Поиск расположения на минимальном кол-ве листов
+        /// Поиск расположения на минимальном кол-ве листов половинным делением
         /// </summary>
-        public static List<List<Figure>> FindMinArrangement(List<Figure> data, int width, int height)
+        public static List<List<Figure>> FindMinArrangementHalfDiv(List<Figure> data, int width, int height)
         {
             int maxLstNumber = data.Count;
             int minLstNumber = 1;
@@ -344,7 +214,7 @@ namespace PictureWork
 
             do
             {
-                int curLstNumber = GetHalf(minLstNumber, maxLstNumber);
+                int curLstNumber = 10;// GetHalf(minLstNumber, maxLstNumber);
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine("------ min: " + minLstNumber + " max: " + maxLstNumber + " cur: " + curLstNumber + "  " +
                     DateTime.Now.Minute + ":" + DateTime.Now.Second);
@@ -381,46 +251,51 @@ namespace PictureWork
             return res;
         }
 
+        /// <summary>
+        /// Поиск расположения на минимальном кол-ве листов
+        /// Попытки найти решение на убывающем кол-ве листов.
+        /// </summary>
+        public static List<List<Figure>> FindMinArrangementDec(List<Figure> data, int width, int height)
+        {
+            int curLstNumber = data.Count;
+            List<List<Figure>> res = new List<List<Figure>>();
+
+            while (curLstNumber > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.WriteLine("------ cur: " + curLstNumber + "  " +
+                    DateTime.Now.Minute + ":" + DateTime.Now.Second);
+                Console.ResetColor();
+
+                var tmp = GetWorkingArrangement(data, width, height, curLstNumber);
+                if (tmp != null) // было найдено решение для текущего кол-ва листов
+                {
+                    res = tmp;
+                    curLstNumber--;
+                }
+                else
+                    return res;
+            }
+
+            return res;
+        }
+
+        public static List<List<Figure>> FindMinArrangement(List<Figure> data, int width, int height)
+        {
+            data.Sort(Figure.CompareFiguresBySize);
+            List<List<Figure>> res = new List<List<Figure>>();
+
+            for (int i = 0; i < data.Count;)
+            {
+                ;
+            }
+
+            return res;
+        }
+
         private static int GetHalf(int min, int max)
         {
             return min + (int)Math.Floor((double)((max - min) / 2));
-        }
-
-        private static void AppendStrToFile(string tmpCodePath, string prologCodePath, string strToAppend)
-        {
-            if (File.Exists(tmpCodePath))
-                File.Delete(tmpCodePath);
-            File.Copy(prologCodePath, tmpCodePath);
-            File.AppendAllText(tmpCodePath, "\n");
-            File.AppendAllText(tmpCodePath, strToAppend);
-        }
-
-        private static List<ResultData> GetFindallRes(PlTerm res)
-        {
-            List<ResultData> convertedRes = new List<ResultData>();
-            var allResults = res.ToList();
-            foreach (PlTerm curAns in allResults)
-            {
-                convertedRes.Add(new ResultData(curAns.ToListString()));
-                
-            }
-            return convertedRes;
-        }
-
-        private static ResultData GetResult(string resultString, bool nameWithAngle)
-        {
-            return new ResultData(resultString, nameWithAngle);
-        }
-
-
-        private static string GetResultStringList(PlTerm res)
-        {
-            return String.Join(" ", res.ToList());
-        }
-
-        private static string GetResultStringString(PlTerm res)
-        {
-            return String.Join(" ", res.ToString());
         }
     }
 }

@@ -101,6 +101,7 @@
     <Compile Include="OutputHandling.cs" />
     <Compile Include="PlEngineExamples.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="PrologSolutionFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryCreator.cs" />
     <Compile Include="ResultData.cs" />

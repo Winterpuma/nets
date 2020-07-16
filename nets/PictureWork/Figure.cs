@@ -8,7 +8,7 @@ using System.IO;
 
 namespace PictureWork
 {
-    class Figure
+    public class Figure
     {
         private string path;
         public string name = "noname";

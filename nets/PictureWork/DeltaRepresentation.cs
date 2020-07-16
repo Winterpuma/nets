@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace PictureWork
 {
-    class DeltaRepresentation
+    public class DeltaRepresentation
     {
         Bitmap bmp = null;
         int xCenter, yCenter;

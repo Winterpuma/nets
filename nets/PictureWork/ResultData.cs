@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PictureWork
 {
-    class ResultFigPos
+    public class ResultFigPos
     {
         public string name = "noname";
         public int xCenter, yCenter = 0;
@@ -22,7 +22,7 @@ namespace PictureWork
         }
     }
 
-    class ResultData
+    public class ResultData
     {
         public List<ResultFigPos> allFigures = new List<ResultFigPos>();
 
