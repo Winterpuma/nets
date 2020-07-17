@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureWork", "PictureWork\PictureWork.csproj", "{FA2F71AD-A336-49F7-AEF5-01DA13737AB0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp", "WindowsFormsApp\WindowsFormsApp.csproj", "{46D3603B-AF5D-44A5-A4C3-C0CC1D8C6AB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{FA2F71AD-A336-49F7-AEF5-01DA13737AB0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA2F71AD-A336-49F7-AEF5-01DA13737AB0}.Release|x86.ActiveCfg = Release|x86
 		{FA2F71AD-A336-49F7-AEF5-01DA13737AB0}.Release|x86.Build.0 = Release|x86
+		{46D3603B-AF5D-44A5-A4C3-C0CC1D8C6AB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46D3603B-AF5D-44A5-A4C3-C0CC1D8C6AB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46D3603B-AF5D-44A5-A4C3-C0CC1D8C6AB1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46D3603B-AF5D-44A5-A4C3-C0CC1D8C6AB1}.Debug|x86.Build.0 = Debug|Any CPU
+		{46D3603B-AF5D-44A5-A4C3-C0CC1D8C6AB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46D3603B-AF5D-44A5-A4C3-C0CC1D8C6AB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46D3603B-AF5D-44A5-A4C3-C0CC1D8C6AB1}.Release|x86.ActiveCfg = Release|Any CPU
+		{46D3603B-AF5D-44A5-A4C3-C0CC1D8C6AB1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

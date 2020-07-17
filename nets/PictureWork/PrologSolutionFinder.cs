@@ -196,7 +196,7 @@ namespace PictureWork
             return res;
         }
 
-        public static ResultData GetAnyResult(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
+        public static ResultData GetAnyResult(List<Figure> data, int width, int height, string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main.pl")
         {
             DbgCurLst(data);
             string predName = "testFit";

@@ -7,8 +7,15 @@ using System.Drawing;
 
 namespace PictureWork
 {
-    static class OutputHandling
+    public static class OutputHandling
     {
+        public static void SaveOneSingleListResult(List<Figure> data, ResultData res, int width, int height, string path)
+        {
+            List<Color> color = GetNRandomColors(res.allFigures.Count);
+            Bitmap b = GetResultBitmap(data, res, width, height, color);
+            b.Save(path + "0.png");
+        }
+
         /// <summary>
         /// Сохраняет результат единственного расположения фигур на
         /// нескольких листах

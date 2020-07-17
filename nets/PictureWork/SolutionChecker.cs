@@ -6,7 +6,7 @@ using System.IO;
 
 namespace PictureWork
 {
-    class SolutionChecker
+    public class SolutionChecker
     {
         #region Проверки 
         /// <summary>
