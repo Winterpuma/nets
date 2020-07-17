@@ -15,9 +15,9 @@ namespace PictureWork
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
 
             // Параметры
-            string pathSrc = "../../../../../bmpKips2/";//src2_big // Путь к директории с фигурами
-            Color srcFigColor = Color.FromArgb(127, 127, 127); // Цвет фигур(0, 0, 0) - черный 
-            Size lstSize = new Size(1000, 800); //(3980, 820); // Размер листа
+            string pathSrc = "../../../../../src4/";//src2_big // Путь к директории с фигурами
+            Color srcFigColor = Color.FromArgb(0, 0, 0); // Цвет фигур(0, 0, 0) - черный 
+            Size lstSize = new Size(1000, 800);//(14612, 5055);//(3980, 820); // Размер листа
             int scale = 20; // Коэф-т масштабирования
             int angleStep = 120; // Шаг поворотов фигур
             
@@ -29,10 +29,10 @@ namespace PictureWork
 
 
             // Загрузка из PDF и масштабирование
-            InputHandling.ConvertPDFDirToScaledImg(pathSrc, pathTmp, scale);
+            //InputHandling.ConvertPDFDirToScaledImg(pathSrc, pathTmp, scale);
 
             // Масштабирование
-            //InputHandling.ScaleWholeDirectory(pathTmpConvert, pathTmpScale, scale);
+            InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
             Size scaledLstSize = new Size(lstSize.Width / scale, lstSize.Height / scale);
 
             // Загрузка фигур
@@ -41,17 +41,12 @@ namespace PictureWork
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             
             // Поиск решения
-            Console.WriteLine("Starting prolog part. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+            Console.WriteLine("Starting result finding. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             //var result = SolutionChecker.CreateAndRunTest(data, scaledLstSize.Width, scaledLstSize.Height);
-            //var result = SolutionChecker.CreateAndRunTestTurning(data, scaledLstSize.Width, scaledLstSize.Height);
-            //var result = SolutionChecker.CreateAndRunTestTurningOptimized(data, scaledLstSize.Width, scaledLstSize.Height);
-            //var result = SolutionChecker.DoesFiguresFit(data, scaledLstSize.Width, scaledLstSize.Height);
-
-            var res = SolutionChecker.FindMinArrangement(data, scaledLstSize.Width, scaledLstSize.Height);
-
+            var res = SolutionChecker.GetWorkingArrangement(new List<Figure>(data), scaledLstSize.Width, scaledLstSize.Height, 3);
 
             // Отображение решения
-            Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+            //Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             //OutputHandling.SaveResult(data, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
 
             Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);

@@ -159,19 +159,64 @@ namespace PictureWork
             return res;
         }
 
-
         /// <summary>
-        /// Проверяет нет ли пустых листов внутри расстановки
+        /// Получает единственное подходящее решение или null
         /// </summary>
-        private static bool ArrangementIsBad(List<List<Figure>> arrangement)
+        public static List<List<Figure>> GetWorkingArrangement(List<Figure> data, int w, int h, int nEmpty,
+            List<List<Figure>> result = null)
         {
-            foreach (List<Figure> i in arrangement)
+            if (result == null)
             {
-                if (i.Count == 0)
-                    return true;
+                result = new List<List<Figure>>();
+                result.Add(new List<Figure>());
+                result[0].Add(data[0]); // первую фигуру всегда в новый лист
+                data.RemoveAt(0);
+                nEmpty--;
             }
-            return false;
+            if (data.Count == 0)
+            {
+                Dbg1(result);
+                if (nEmpty == 0)
+                    return result;
+                else
+                    return null;
+            }
+
+            Figure currentFig = data[0];
+            var nextData = new List<Figure>(data);
+            nextData.RemoveAt(0);
+
+            // Если остались свободные листы, то пытаемся в новый
+            if (nEmpty > 0)
+            {
+                var tmp = new List<Figure>();
+                tmp.Add(currentFig);
+                var newResult = new List<List<Figure>>(result);
+                newResult.Add(tmp);
+                var curRes = GetWorkingArrangement(nextData, w, h, nEmpty - 1, newResult);
+                if (curRes != null)
+                    return curRes;
+            }
+
+            // Если не получилось добавление в новый, то
+            // пытаемся последовательно добавлять в уже существующие листы
+            foreach (List<Figure> curLst in result)
+            {
+                var newCurLst = new List<Figure>(curLst);
+                newCurLst.Add(currentFig);
+                if (DoesCurrentListFit(newCurLst, w, h))
+                {
+                    curLst.Add(currentFig); // а точно ли меняется curLst(result)??
+                    var curRes = GetWorkingArrangement(nextData, w, h, nEmpty, result);
+                    if (curRes != null)
+                        return result;
+                }
+            }
+            
+            return null;
         }
+
+
 
         /// <summary>
         /// Убирает перестановки листов местами и расстановки,
