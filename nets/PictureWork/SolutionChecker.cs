@@ -200,13 +200,13 @@ namespace PictureWork
 
             // Если не получилось добавление в новый, то
             // пытаемся последовательно добавлять в уже существующие листы
-            foreach (List<Figure> curLst in result)
+            for (int i = 0; i < result.Count; i++)
             {
-                var newCurLst = new List<Figure>(curLst);
+                var newCurLst = new List<Figure>(result[i]);
                 newCurLst.Add(currentFig);
                 if (DoesCurrentListFit(newCurLst, w, h))
                 {
-                    curLst.Add(currentFig); // а точно ли меняется curLst(result)??
+                    result[i].Add(currentFig);
                     var curRes = GetWorkingArrangement(nextData, w, h, nEmpty, result);
                     if (curRes != null)
                         return result;
@@ -259,12 +259,26 @@ namespace PictureWork
 
             do
             {
-                int curLstNumber = 10;// GetHalf(minLstNumber, maxLstNumber);
+                int curLstNumber = GetHalf(minLstNumber, maxLstNumber);
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine("------ min: " + minLstNumber + " max: " + maxLstNumber + " cur: " + curLstNumber + "  " +
                     DateTime.Now.Minute + ":" + DateTime.Now.Second);
                 Console.ResetColor();
                 
+                var tmp = GetWorkingArrangement(new List<Figure>(data), width, height, curLstNumber);
+                if (tmp != null) // было найдено решение для текущего кол-ва листов
+                {
+                    maxLstNumber = curLstNumber;
+                    res = tmp;
+                    Console.WriteLine("Yes");
+                }
+                else
+                {
+                    minLstNumber = curLstNumber + 1;
+                    Console.WriteLine(curLstNumber + ": No");
+                }
+
+                /*
                 var tmp = AllPosibleArrangements(data, width, height, curLstNumber);
                 var arrForLstNum = CleanupDuplicates(tmp);
 
@@ -290,6 +304,7 @@ namespace PictureWork
                     Console.ResetColor();
                     minLstNumber = curLstNumber + 1;
                 }
+                */
             }
             while (maxLstNumber != minLstNumber);
 
@@ -312,7 +327,7 @@ namespace PictureWork
                     DateTime.Now.Minute + ":" + DateTime.Now.Second);
                 Console.ResetColor();
 
-                var tmp = GetWorkingArrangement(data, width, height, curLstNumber);
+                var tmp = GetWorkingArrangement(new List<Figure>(data), width, height, curLstNumber);
                 if (tmp != null) // было найдено решение для текущего кол-ва листов
                 {
                     res = tmp;

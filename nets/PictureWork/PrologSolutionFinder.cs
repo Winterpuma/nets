@@ -102,7 +102,7 @@ namespace PictureWork
             return res;
         }
 
-        public static List<ResultData> CreateAndRunTestTurningOptimized(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
+        public static List<ResultData> CreateAndRunTestTurningOptimizedFindall(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
         {
             string predName = "testFigsTurnOpt";
             string createdPredicate = QueryCreator.CreatePredTurnOptimized(width, height, data, predName);
@@ -141,8 +141,22 @@ namespace PictureWork
             return res;
         }
 
+        private static void DbgCurLst(List<Figure> curLst)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("-----------");
+            curLst.ForEach((fig) =>
+            {
+                Console.Write(fig.name + " ");
+            });
+            Console.WriteLine();
+
+            Console.ResetColor();
+        }
+
         public static bool DoesFiguresFit(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
         {
+            DbgCurLst(data);
             string predName = "testFit";
             data.Sort(Figure.CompareFiguresBySize);
             string createdPredicate = QueryCreator.CreatePredTurnOptimized(width, height, data, predName);
@@ -162,7 +176,12 @@ namespace PictureWork
 
                 using (PlQuery q = new PlQuery(queryStr))
                 {
-                    res = q.NextSolution();
+                    foreach (PlQueryVariables v in q.SolutionVariables)
+                    {
+                        var tmp = v["Ans"];
+                        return true;
+                    }
+                    return false;
                 }
             }
             catch (PlException e)

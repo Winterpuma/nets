@@ -15,24 +15,24 @@ namespace PictureWork
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
 
             // Параметры
-            string pathSrc = "../../../../../src4/";//src2_big // Путь к директории с фигурами
-            Color srcFigColor = Color.FromArgb(0, 0, 0); // Цвет фигур(0, 0, 0) - черный 
-            Size lstSize = new Size(1000, 800);//(14612, 5055);//(3980, 820); // Размер листа
-            int scale = 20; // Коэф-т масштабирования
-            int angleStep = 120; // Шаг поворотов фигур
+            string pathSrc = "../../../../../bmpKips2/"; // Путь к директории с фигурами
+            Color srcFigColor = Color.FromArgb(155, 155, 155); // Цвет фигур(0, 0, 0) - черный 
+            Size lstSize = new Size(14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
+            int scale = 50; // Коэф-т масштабирования
+            int angleStep = 3; // Шаг поворотов фигур
             
             string pathTmp = "../../../../../tmp/";
             string pathRes = "../../../../../result/";
             
-            CleanDir(pathTmp);
-            CleanDir(pathRes);
+            //CleanDir(pathTmp);
+            //CleanDir(pathRes);
 
 
             // Загрузка из PDF и масштабирование
             //InputHandling.ConvertPDFDirToScaledImg(pathSrc, pathTmp, scale);
 
             // Масштабирование
-            InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
+            //InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
             Size scaledLstSize = new Size(lstSize.Width / scale, lstSize.Height / scale);
 
             // Загрузка фигур
@@ -42,8 +42,10 @@ namespace PictureWork
             
             // Поиск решения
             Console.WriteLine("Starting result finding. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            //var result = SolutionChecker.CreateAndRunTest(data, scaledLstSize.Width, scaledLstSize.Height);
-            var res = SolutionChecker.GetWorkingArrangement(new List<Figure>(data), scaledLstSize.Width, scaledLstSize.Height, 3);
+            //var res = SolutionChecker.FindMinArrangementDec(data, scaledLstSize.Width, scaledLstSize.Height);
+            var res = SolutionChecker.FindMinArrangementHalfDiv(data, scaledLstSize.Width, scaledLstSize.Height);
+            //var hm = PrologSolutionFinder.DoesFiguresFit(data, scaledLstSize.Width, scaledLstSize.Height);
+
 
             // Отображение решения
             //Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);

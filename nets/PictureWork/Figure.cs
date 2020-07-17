@@ -35,6 +35,8 @@ namespace PictureWork
             // bitmap = HandleImages.MakeBlackAndWhite(new Bitmap(path), figColor);
 
             var originalDeltas = new DeltaRepresentation(bitmap, figColor);
+            if (originalDeltas.deltas.Count == 0)
+                throw new Exception("Empty figure, maybe different color?"); ;
             rotated.Add(originalDeltas);
             Console.WriteLine("Loaded original delta. Delta len " + originalDeltas.deltas.Count);
 
