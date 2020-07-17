@@ -340,22 +340,33 @@ namespace PictureWork
             return res;
         }
 
-        public static List<List<Figure>> FindMinArrangement(List<Figure> data, int width, int height)
-        {
-            data.Sort(Figure.CompareFiguresBySize);
-            List<List<Figure>> res = new List<List<Figure>>();
-
-            for (int i = 0; i < data.Count;)
-            {
-                ;
-            }
-
-            return res;
-        }
-
         private static int GetHalf(int min, int max)
         {
             return min + (int)Math.Floor((double)((max - min) / 2));
+        }
+
+        /// <summary>
+        /// Известно разделение фигур по листам, ищется расположение
+        /// </summary>
+        public static List<ResultData> PlacePreDefinedArrangement(List<List<Figure>> arrangement, int w, int h)
+        {
+            List<ResultData> results = new List<ResultData>();
+            foreach (List<Figure> curLst in arrangement)
+            {
+                var res = PrologSolutionFinder.GetAnyResult(curLst, w, h);
+                if (res == null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Error: can't fit figures with given arrangement");
+                    Console.ResetColor();
+                    return null;
+                }
+                else
+                {
+                    results.Add(res);
+                }
+            }
+            return results;
         }
     }
 }

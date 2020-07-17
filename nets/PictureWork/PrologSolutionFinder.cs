@@ -196,6 +196,48 @@ namespace PictureWork
             return res;
         }
 
+        public static ResultData GetAnyResult(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
+        {
+            DbgCurLst(data);
+            string predName = "testFit";
+            string createdPredicate = QueryCreator.CreatePredTurnOptimized(width, height, data, predName);
+
+            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
+
+            AppendStrToFile(tmpCodePath, prologCodePath, createdPredicate);
+
+            bool res = false;
+            try
+            {
+                String[] param = { "-q", "-f", tmpCodePath };
+                PlEngine.Initialize(param);
+                string queryStr = predName + "(Ans).";
+
+                Console.WriteLine("Starting solution finder.");
+
+                using (PlQuery q = new PlQuery(queryStr))
+                {
+                    foreach (PlQueryVariables v in q.SolutionVariables)
+                    {
+                        ResultData result = ResultData.GetRes(GetResultStringList(v["Ans"]));
+                        return result;
+                    }
+                    return null;
+                }
+            }
+            catch (PlException e)
+            {
+                Console.WriteLine(e.MessagePl);
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                PlEngine.PlCleanup();
+            }
+            return null;
+        }
+
+
         private static void AppendStrToFile(string tmpCodePath, string prologCodePath, string strToAppend)
         {
             if (File.Exists(tmpCodePath))

@@ -10,10 +10,29 @@ namespace PictureWork
     static class OutputHandling
     {
         /// <summary>
-        /// Сохраняет результаты в графическом виде в указанную папку
+        /// Сохраняет результат единственного расположения фигур на
+        /// нескольких листах
+        /// </summary>
+        /// <param name="arrangement"></param>
+        /// <param name="resultData"></param>
+        /// <param name="path"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public static void SaveResult(List<List<Figure>> arrangement, List<ResultData> resultData, string path, int width, int height)
+        {
+            for (int i = 0; i < resultData.Count; i++)
+            {
+                List<Color> color = GetNRandomColors(arrangement[i].Count);
+                Bitmap b = GetResultBitmap(arrangement[i], resultData[i], width, height, color);
+                b.Save(path + i + ".png");
+            }
+        }
+
+        /// <summary>
+        /// Сохраняет все возможные результаты одного листа в графическом виде в указанную папку
         /// </summary>
         /// <param name="data">Данные о фигурах</param>
-        /// <param name="res">Данные о решении (расположение фигур)</param>
+        /// <param name="res">Данные о решении (расположения фигур на листе)</param>
         /// <param name="path">Путь к папке для сохранения</param>
         /// <param name="width">Ширина выходной картинки (x)</param>
         /// <param name="height">Высота выходной картинки (y)</param>
@@ -22,9 +41,7 @@ namespace PictureWork
             int i = 1;
             Random random = new Random();
 
-            List<Color> color = new List<Color>();
-            for (int j = 0; j < res[0].allFigures.Count; j++)
-                color.Add(Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)));
+            List<Color> color = GetNRandomColors(res[0].allFigures.Count);
 
             foreach (ResultData resultData in res)
             {
@@ -56,6 +73,15 @@ namespace PictureWork
             {
                 bmp.SetPixel(centerX + p.X, centerY + p.Y, color);
             }
+        }
+
+        private static List<Color> GetNRandomColors(int n)
+        {
+            Random random = new Random();
+            List<Color> color = new List<Color>();
+            for (int j = 0; j < n; j++)
+                color.Add(Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)));
+            return color;
         }
 
     }

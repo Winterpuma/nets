@@ -26,6 +26,8 @@ namespace PictureWork
     {
         public List<ResultFigPos> allFigures = new List<ResultFigPos>();
 
+        public ResultData(){ }
+
         /// <summary>
         /// 
         /// </summary>
@@ -45,7 +47,36 @@ namespace PictureWork
             }
         }
 
-        // f1,1,1 f2,3,1 f3,5,1 or f1_320,1,2 f2_15,0,5
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static ResultData GetRes(string result)
+        {
+            var res = new ResultData();
+            string name;
+            int xCenter, yCenter;
+            double angle = 0;
+            int i = 0;
+            foreach (string figure in result.Split(' '))
+            {
+                var tmp = figure.Split(',');
+                name = i.ToString();
+                xCenter = Convert.ToInt32(tmp[0]);
+                yCenter = Convert.ToInt32(tmp[1]);
+                angle = Convert.ToDouble(tmp[2]);
+
+                res.allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result">f1,1,1 f2,3,1 f3,5,1 or f1_320,1,2 f2_15,0,5</param>
+        /// <param name="nameWithAngle"></param>
         public ResultData(string result, bool nameWithAngle = false)
         {
             string name;
@@ -102,6 +133,7 @@ namespace PictureWork
                 allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
             }
         }
+            
 
         public static List<ResultData> PackAllPossibleResults(IEnumerable<string> allResults, bool flagNameWithAngle)
         {
