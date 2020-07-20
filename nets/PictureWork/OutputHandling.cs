@@ -58,8 +58,7 @@ namespace PictureWork
                 i++;
             }
         }
-
-        // а если в ответе в другом порядке?
+        
         public static Bitmap GetResultBitmap(List<Figure> data, ResultData res, int width, int height, List<Color> color)
         {
             Bitmap b = new Bitmap(width, height);
@@ -68,7 +67,10 @@ namespace PictureWork
             {
                 ResultFigPos figPos = res.allFigures[i];
                 Figure figData = data[i];
-                PlaceDeltasOnABitmap(b, figData[(int)figPos.angle], figPos.xCenter, figPos.yCenter, color[i]);
+                DeltaRepresentation solutionFig = figData.rotated[(int)figPos.angle];
+                DeltaRepresentation solutionFigWithoutScaling = figData.noScaling.GetTurnedDelta(solutionFig.angle, solutionFig.xCenter, solutionFig.yCenter);
+
+                PlaceDeltasOnABitmap(b, solutionFigWithoutScaling.deltas, figPos.xCenter, figPos.yCenter, color[i]);
             }
             b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
             return b;

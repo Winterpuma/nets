@@ -14,6 +14,10 @@ namespace PictureWork
         public string name = "noname";
         Bitmap bitmap;
         public int id = -1;
+        int angleStep;
+        Color figColor;
+
+        public DeltaRepresentation noScaling;
         public List<DeltaRepresentation> rotated = new List<DeltaRepresentation>();
 
         public List<Point> this[int i]
@@ -21,22 +25,31 @@ namespace PictureWork
             get { return rotated[i].deltas; }
         }
 
-        public Figure(string path, int id, Color figColor, int angleStep = 1)
+        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 0)
         {
             Console.WriteLine("\nLoad Figure " + id);
             this.path = path;
             name = Path.GetFileName(path);
             name = name.Remove(name.IndexOf('.'));
             this.id = id;
+            this.angleStep = angleStep;
+            this.figColor = figColor;
             
             bitmap = new Bitmap(path);
 
             // Если нужна предварительная обработка в черно-белое:
             // bitmap = HandleImages.MakeBlackAndWhite(new Bitmap(path), figColor);
 
-            var originalDeltas = new DeltaRepresentation(bitmap, figColor);
-            if (originalDeltas.deltas.Count == 0)
+            noScaling = new DeltaRepresentation(bitmap, figColor);
+            if (noScaling.deltas.Count == 0)
                 throw new Exception("Empty figure, maybe different color?"); ;
+
+            DeltaRepresentation originalDeltas;
+            if (borderDistance == 0)
+                originalDeltas = noScaling;
+            else
+                originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
+            
             rotated.Add(originalDeltas);
             Console.WriteLine("Loaded original delta. Delta len " + originalDeltas.deltas.Count);
 
@@ -82,6 +95,22 @@ namespace PictureWork
             gfx.Dispose();
 
             return bmp;
+        }
+
+        public void ChangeBorderDistance(int borderDistance)
+        {
+            rotated.Clear();
+
+            DeltaRepresentation originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
+
+            rotated.Add(originalDeltas);
+            Console.WriteLine("Loaded original delta. Delta len " + originalDeltas.deltas.Count);
+
+            for (int angle = angleStep; angle < 360; angle += angleStep)
+            {
+                Console.Write(" " + angle);
+                rotated.Add(originalDeltas.GetTurnedDelta(angle, 0, 0));
+            }
         }
 
         public static int CompareFiguresBySize(Figure x, Figure y)

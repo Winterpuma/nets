@@ -10,7 +10,7 @@ namespace PictureWork
     public class DeltaRepresentation
     {
         Bitmap bmp = null;
-        int xCenter, yCenter;
+        public int xCenter, yCenter;
         public double angle = 0;
 
         public List<Point> deltas = new List<Point>();
@@ -39,6 +39,34 @@ namespace PictureWork
                     }
                 }
             }
+        }
+
+        public DeltaRepresentation(Bitmap bmp, Color figColor, int scaleBorders)
+        {
+            this.bmp = bmp;
+
+            xCenter = bmp.Width / 2;
+            yCenter = bmp.Height / 2;
+
+            for (int xCur = 0; xCur < bmp.Width; xCur++)
+            {
+                for (int yCur = 0; yCur < bmp.Height; yCur++)
+                {
+                    Color curColor = bmp.GetPixel(xCur, yCur);
+                    if (curColor.R == figColor.R && curColor.G == figColor.G && curColor.B == figColor.B)
+                    {
+                        int xDelta = xCenter - xCur;
+                        int yDelta = yCenter - yCur;
+
+
+                        for (int i = -scaleBorders; i <= scaleBorders; i++)
+                            for (int j = -scaleBorders; j <= scaleBorders; j++)
+                                deltas.Add(new Point(xDelta + i, yDelta + j));
+                    }
+                }
+            }
+
+            deltas = deltas.Distinct().ToList();
         }
 
 
