@@ -9,11 +9,12 @@ namespace PictureWork
 {
     public static class OutputHandling
     {
-        public static void SaveOneSingleListResult(List<Figure> data, ResultData res, int width, int height, string path)
+        public static Bitmap SaveOneSingleListResult(List<Figure> data, ResultData res, int width, int height, string path)
         {
             List<Color> color = GetNRandomColors(res.allFigures.Count);
             Bitmap b = GetResultBitmap(data, res, width, height, color);
             b.Save(path + "0.png");
+            return b;
         }
 
         /// <summary>

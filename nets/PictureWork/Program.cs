@@ -67,7 +67,7 @@ namespace PictureWork
             Console.ReadLine();
         }       
         
-        private static void CleanDir(string path)
+        public static void CleanDir(string path)
         {
             DirectoryInfo dir = new DirectoryInfo(path);
 

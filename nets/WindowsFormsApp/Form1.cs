@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using PictureWork;
 using System.Drawing;
+using System.IO;
 
 namespace WindowsFormsApp
 {
@@ -23,21 +24,40 @@ namespace WindowsFormsApp
         {
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
             InitializeComponent();
+            imageList1.ImageSize = new Size(100, 50);
         }
 
         private void buttonAddFig_Click(object sender, EventArgs e)
         {
-            var FD = new System.Windows.Forms.OpenFileDialog();
-            if (FD.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true }; // Filter = "PNG|*.png"
+
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                string fileToOpen = FD.FileName;
-                Figure loadedFig = new Figure(fileToOpen, lst.Count, figColor, angleStep);
-                lst.Add(loadedFig);
+                foreach(string filename in ofd.FileNames)
+                {
+                    Figure loadedFig = new Figure(filename, lst.Count, figColor, angleStep);
+                    lst.Add(loadedFig);
+
+                    //FileInfo fi = new FileInfo(filename);
+                    listViewPreview.Items.Add(Path.GetFileNameWithoutExtension(filename), imageList1.Images.Count);
+                    imageList1.Images.Add(Image.FromFile(filename));
+                }
+
             }
         }
 
         private void button_FindAnswer_Click(object sender, EventArgs e)
         {
+            if (lst.Count == 0)
+            {
+                MessageBox.Show("Не выбраны детали");
+                return;
+            }
+
+            DirectoryInfo dir = new DirectoryInfo(pathRes);
+            foreach (FileInfo file in dir.GetFiles())
+                file.Delete();
+
             int width = Convert.ToInt32(textBox_w.Text);
             int height = Convert.ToInt32(textBox_h.Text);
             var result = PrologSolutionFinder.GetAnyResult(lst, width, height);
@@ -48,9 +68,19 @@ namespace WindowsFormsApp
             }
             else
             {
-                OutputHandling.SaveOneSingleListResult(lst, result, width, height, pathRes);
+                Bitmap resultPicture = OutputHandling.SaveOneSingleListResult(lst, result, width, height, pathRes);
+                pictureBoxResult.Size = resultPicture.Size;
+                pictureBoxResult.Image = resultPicture;
             }
 
+        }
+
+        private void button_Clear_Click(object sender, EventArgs e)
+        {
+            lst.Clear();
+            listViewPreview.Items.Clear();
+            imageList1.Images.Clear();
+            pictureBoxResult.Image = null;
         }
     }
 }
