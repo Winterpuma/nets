@@ -65,6 +65,7 @@ namespace DataClassLibrary
                 angle = Convert.ToDouble(tmp[2]);
 
                 res.allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
+                i++;
             }
             return res;
         }

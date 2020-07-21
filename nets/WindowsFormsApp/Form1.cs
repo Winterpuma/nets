@@ -69,9 +69,10 @@ namespace WindowsFormsApp
             }
             else
             {
-                Bitmap resultPicture = OutputHandling.SaveOneSingleListResult(lst, result, width, height, pathRes);
+                Bitmap resultPicture = OutputImage.SaveOneSingleListResult(lst, result, width, height, pathRes);
                 pictureBoxResult.Size = resultPicture.Size;
                 pictureBoxResult.Image = resultPicture;
+                OutputText.SaveOneSingleListResult(lst, result, "result.txt");
             }
 
         }

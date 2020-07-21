@@ -63,7 +63,7 @@ namespace PictureWork
             // Отображение решения
             Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             //OutputHandling.SaveResult(data, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
-            OutputHandling.SaveResult(preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
+            OutputImage.SaveResult(preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
 
             Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Console.ReadLine();

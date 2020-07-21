@@ -5,7 +5,7 @@ using DataClassLibrary;
 
 namespace IO
 {
-    public static class OutputHandling
+    public static class OutputImage
     {
         public static Bitmap SaveOneSingleListResult(List<Figure> data, ResultData res, int width, int height, string path)
         {
