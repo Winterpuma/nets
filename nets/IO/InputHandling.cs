@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Apitron.PDF.Rasterizer;
 using Apitron.PDF.Rasterizer.Configuration;
+using DataClassLibrary;
 
-namespace PictureWork
+namespace IO
 {
     static class InputHandling
     {

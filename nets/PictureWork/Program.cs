@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
 using System.Linq;
+using DataClassLibrary;
+using IO;
 
 
 namespace PictureWork

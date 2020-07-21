@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SbsSW.SwiPlCs;
 using SbsSW.SwiPlCs.Exceptions;
 using System.IO;
+using DataClassLibrary;
 
 namespace PictureWork
 {

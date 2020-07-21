@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SbsSW.SwiPlCs;
-using SbsSW.SwiPlCs.Exceptions;
-using System.IO;
+using DataClassLibrary;
 
 namespace PictureWork
 {

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using PictureWork;
-using System.Drawing;
 using System.IO;
+using PictureWork;
+using DataClassLibrary;
+using IO;
 
 namespace WindowsFormsApp
 {

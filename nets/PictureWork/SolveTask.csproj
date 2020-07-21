@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{FA2F71AD-A336-49F7-AEF5-01DA13737AB0}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>PictureWork</RootNamespace>
-    <AssemblyName>PictureWork</AssemblyName>
+    <RootNamespace>SolveTask</RootNamespace>
+    <AssemblyName>SolveTask</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -95,21 +95,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeltaRepresentation.cs" />
-    <Compile Include="Figure.cs" />
-    <Compile Include="InputHandling.cs" />
-    <Compile Include="OutputHandling.cs" />
     <Compile Include="PlEngineExamples.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PrologSolutionFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryCreator.cs" />
-    <Compile Include="ResultData.cs" />
     <Compile Include="SolutionChecker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataClassLibrary\DataClassLibrary.csproj">
+      <Project>{75433770-209d-44e3-9bf4-5dc16d064aac}</Project>
+      <Name>DataClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IO\IO.csproj">
+      <Project>{2c7f7d43-e8d4-474c-a4f0-eab15cce1a18}</Project>
+      <Name>IO</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
