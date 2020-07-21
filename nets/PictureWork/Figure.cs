@@ -25,7 +25,7 @@ namespace PictureWork
             get { return rotated[i].deltas; }
         }
 
-        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 0)
+        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 1)
         {
             Console.WriteLine("\nLoad Figure " + id);
             this.path = path;

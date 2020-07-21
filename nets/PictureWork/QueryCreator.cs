@@ -252,9 +252,13 @@ namespace PictureWork
         /// </summary>
         public static string CreatePredTurnOptimized(int sizeX, int sizeY, List<Figure> data, string predName = "testFigsTurnOpt")
         {
+            return predName + "(Ans)" + " :- " + CreateBodyTurnOptimized(sizeX, sizeY, data);
+        }
+
+        public static string CreateBodyTurnOptimized(int sizeX, int sizeY, List<Figure> data)
+        {
             List<string> figNames = new List<string>();
-            string res = predName + "(Ans)" + " :- ";
-            res += "Lst = " + CreateLst(sizeX, sizeY) + ",";
+            string res = "Lst = " + CreateLst(sizeX, sizeY) + ",";
 
             int indFig = 1;
             foreach (Figure fig in data)

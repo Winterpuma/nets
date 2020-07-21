@@ -63,6 +63,8 @@ namespace WindowsFormsApp
 
             int width = Convert.ToInt32(textBox_w.Text);
             int height = Convert.ToInt32(textBox_h.Text);
+            //var result = PrologSolutionFinder.FindResultBeforeTimout(lst, width, height);
+            lst.Sort(Figure.CompareFiguresBySize);
             var result = PrologSolutionFinder.GetAnyResult(lst, width, height);
 
             if (result == null)
