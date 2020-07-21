@@ -30,7 +30,7 @@ namespace PictureWork
         private static bool DoesCurrentListFit(List<Figure> list, int w, int h)
         {
             int area = w * h;
-            if (CountDeltas(list) > area || PrologSolutionFinder.FindResultBeforeTimout(list, w, h) == null)
+            if (CountDeltas(list) > area || !PrologSolutionFinder.DoesFiguresFit(list, w, h))
                 return false;
             else
                 return true;
@@ -284,7 +284,7 @@ namespace PictureWork
             List<ResultData> results = new List<ResultData>();
             foreach (List<Figure> curLst in arrangement)
             {
-                var res = PrologSolutionFinder.FindResultBeforeTimout(curLst, w, h);
+                var res = PrologSolutionFinder.GetAnyResult(curLst, w, h);
                 if (res == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
