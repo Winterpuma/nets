@@ -63,6 +63,21 @@ namespace PictureWork
             }
             return false;
         }
+        
+        /// <summary>
+        /// Проверяет помещаются ли фигуры на M листах
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="MLists">Количество листов</param>
+        /// <returns></returns>
+        private static bool DoesFiguresFitOnMLists(List<Figure> data, int width, int height, int MLists)
+        {
+            if (GetWorkingArrangement(data, width, height, MLists) != null)
+                return true;
+            return false;
+        }
         #endregion
 
         private static void Dbg1(List<List<Figure>> curSequence)
@@ -82,82 +97,11 @@ namespace PictureWork
             Console.ResetColor();
         }
 
-        public static List<List<Figure>> GetOnePosibleArrangement(List<Figure> data, int w, int h, int MLists, List<List<Figure>> curSequence = null)
+        private static int GetHalf(int min, int max)
         {
-            if (curSequence == null)
-            {
-                curSequence = new List<List<Figure>>();
-                for (int i = 0; i < MLists; i++)
-                    curSequence.Add(new List<Figure>());
-            }
-            if (data.Count == 0)
-            {
-                Dbg1(curSequence);
-                
-                if (DoesCurrentArrangementFit(curSequence, w, h)) // Проверка подходит ли текущий результат
-                    return curSequence;
-                else
-                    return null;
-            }
-
-            for (int i = 0; i < MLists; i++)
-            {
-                List<List<Figure>> newSequence = new List<List<Figure>>();
-
-                curSequence.ForEach((item) =>
-                {
-                    newSequence.Add(new List<Figure>(item));
-                });
-
-                var newData = new List<Figure>(data);
-                newData.RemoveAt(0);
-                newSequence[i].Add(data[0]);
-
-                List<List<Figure>> res = GetOnePosibleArrangement(newData, w, h, MLists, newSequence);
-                if (res != null)
-                    return res;
-            }
-            return null;
+            return min + (int)Math.Floor((double)((max - min) / 2));
         }
 
-
-        public static List<List<List<Figure>>> AllPosibleArrangements(List<Figure> data, int w, int h, int MLists, 
-            List<List<Figure>> curSequence = null, List<List<List<Figure>>> res = null)
-        {
-            if (res == null)
-                res = new List<List<List<Figure>>>();
-            if (curSequence == null)
-            {
-                curSequence = new List<List<Figure>>();
-                for (int i = 0; i < MLists; i++)
-                    curSequence.Add(new List<Figure>());
-            }
-            if (data.Count == 0)
-            {
-                //Dbg1(curSequence);
-                if (true)//!ArrangementIsBad(curSequence))
-                    res.Add(curSequence);
-                return res;
-            }
-
-            for (int i = 0; i < MLists; i++)
-            {
-                List<List<Figure>> newSequence = new List<List<Figure>>();
-
-                curSequence.ForEach((item) =>
-                {
-                    newSequence.Add(new List<Figure>(item));
-                });
-                
-
-                var newData = new List<Figure>(data);
-                newData.RemoveAt(0);
-                newSequence[i].Add(data[0]);
-
-                AllPosibleArrangements(newData, w, h, MLists, newSequence, res);
-            }
-            return res;
-        }
 
         /// <summary>
         /// Получает единственное подходящее решение или null
@@ -216,38 +160,6 @@ namespace PictureWork
             return null;
         }
 
-
-
-        /// <summary>
-        /// Убирает перестановки листов местами и расстановки,
-        /// в которых есть пустые листы.
-        /// Изменяет arrangements!
-        /// </summary>
-        public static List<List<List<Figure>>> CleanupDuplicates(List<List<List<Figure>>> arrangements)
-        {
-            int mLst = arrangements[0].Count;
-            int fact = 1;
-            while (mLst != 1)
-            {
-                fact *= mLst;
-                mLst--;
-            }
-            
-            arrangements.RemoveAll(ArrangementIsBad);
-            
-            int newLen = arrangements.Count / fact;
-            arrangements.RemoveRange(newLen, arrangements.Count - newLen);
-
-            return arrangements;
-        }
-
-        private static bool DoesFiguresFitOnMLists(List<Figure> data, int width, int height, int MLists)
-        {
-            if (GetOnePosibleArrangement(data, width, height, MLists) != null)
-                return true;
-            return false;
-        }
-
         /// <summary>
         /// Поиск расположения на минимальном кол-ве листов половинным делением
         /// </summary>
@@ -277,34 +189,6 @@ namespace PictureWork
                     minLstNumber = curLstNumber + 1;
                     Console.WriteLine(curLstNumber + ": No");
                 }
-
-                /*
-                var tmp = AllPosibleArrangements(data, width, height, curLstNumber);
-                var arrForLstNum = CleanupDuplicates(tmp);
-
-                foreach (List<List<Figure>> arrangement in arrForLstNum)
-                {
-                    Dbg1(arrangement);
-                    if (DoesCurrentArrangementFit(arrangement, width, height))
-                    {
-                        maxLstNumber = curLstNumber;
-                        res = arrangement;
-                        Console.WriteLine("Yes");
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("No");
-                    }
-                }
-                if (maxLstNumber != curLstNumber)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(curLstNumber + ": No");
-                    Console.ResetColor();
-                    minLstNumber = curLstNumber + 1;
-                }
-                */
             }
             while (maxLstNumber != minLstNumber);
 
@@ -340,10 +224,6 @@ namespace PictureWork
             return res;
         }
 
-        private static int GetHalf(int min, int max)
-        {
-            return min + (int)Math.Floor((double)((max - min) / 2));
-        }
 
         /// <summary>
         /// Известно разделение фигур по листам, ищется расположение
