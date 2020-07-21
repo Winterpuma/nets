@@ -30,7 +30,7 @@ namespace PictureWork
         private static bool DoesCurrentListFit(List<Figure> list, int w, int h)
         {
             int area = w * h;
-            if (CountDeltas(list) > area || !PrologSolutionFinder.DoesFiguresFit(list, w, h))
+            if (CountDeltas(list) > area || PrologSolutionFinder.FindResultBeforeTimout(list, w, h) == null)
                 return false;
             else
                 return true;
@@ -102,7 +102,7 @@ namespace PictureWork
             return min + (int)Math.Floor((double)((max - min) / 2));
         }
 
-
+        #region Поиск решения на конкретном кол-ве листов
         /// <summary>
         /// Получает единственное подходящее решение или null
         /// </summary>
@@ -223,7 +223,58 @@ namespace PictureWork
 
             return res;
         }
+        #endregion
 
+        /// <summary>
+        /// Получает единственное подходящее решение или null 
+        /// без привязки к количеству листов
+        /// </summary>
+        public static List<List<Figure>> GetWorkingArrangement(List<Figure> data, int w, int h,
+            List<List<Figure>> result = null)
+        {
+            if (result == null)
+            {
+                result = new List<List<Figure>>();
+                result.Add(new List<Figure>());
+                result[0].Add(data[0]); // первую фигуру всегда в новый лист
+                data.RemoveAt(0);
+            }
+            if (data.Count == 0)
+            {
+                Dbg1(result);
+                return result;
+            }
+
+            Figure currentFig = data[0];
+            var nextData = new List<Figure>(data);
+            nextData.RemoveAt(0);
+
+            
+            // Пытаемся последовательно добавлять в уже существующие листы
+            for (int i = 0; i < result.Count; i++)
+            {
+                var newCurLst = new List<Figure>(result[i]);
+                newCurLst.Add(currentFig);
+                if (DoesCurrentListFit(newCurLst, w, h))
+                {
+                    result[i].Add(currentFig);
+                    var curResult = GetWorkingArrangement(nextData, w, h, result);
+                    if (curResult != null)
+                        return result;
+                }
+            }
+
+            // Если не получилось добавить к существующим, кладем в новый
+            var tmp = new List<Figure>();
+            tmp.Add(currentFig);
+            var newResult = new List<List<Figure>>(result);
+            newResult.Add(tmp);
+            var curRes = GetWorkingArrangement(nextData, w, h, newResult);
+            if (curRes != null)
+                return curRes;
+
+            return null;
+        }
 
         /// <summary>
         /// Известно разделение фигур по листам, ищется расположение
@@ -233,7 +284,7 @@ namespace PictureWork
             List<ResultData> results = new List<ResultData>();
             foreach (List<Figure> curLst in arrangement)
             {
-                var res = PrologSolutionFinder.GetAnyResult(curLst, w, h);
+                var res = PrologSolutionFinder.FindResultBeforeTimout(curLst, w, h);
                 if (res == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;

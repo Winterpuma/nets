@@ -38,21 +38,21 @@ namespace PictureWork
             // Загрузка фигур
             Console.WriteLine("Starting process. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep);
-            //data.Sort(Figure.CompareFiguresBySize);
+            data.Sort(Figure.CompareFiguresBySize);
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
 
             // Группировка фигур по листам
-            List<List<Figure>> preDefArr = new List<List<Figure>>();
+            /*List<List<Figure>> preDefArr = new List<List<Figure>>();
             preDefArr.Add(FormOneListArrangement(data, 0, 1, 2, 3, 7));
             preDefArr.Add(FormOneListArrangement(data, 4, 5, 6, 8, 9, 13, 14));
-            SortFigures(preDefArr);
+            SortFigures(preDefArr);*/
 
             
             // Поиск решения
             Console.WriteLine("Starting result finding. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             //var res = SolutionChecker.FindMinArrangementDec(data, scaledLstSize.Width, scaledLstSize.Height);
             //var res = SolutionChecker.FindMinArrangementHalfDiv(data, scaledLstSize.Width, scaledLstSize.Height);
-            //var res = PrologSolutionFinder.GetAnyResult(data, scaledLstSize.Width, scaledLstSize.Height);
+            var preDefArr = SolutionChecker.GetWorkingArrangement(data, scaledLstSize.Width, scaledLstSize.Height);
             //List<ResultData> result = new List<ResultData>();
             //result.Add(res);
             var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height);
