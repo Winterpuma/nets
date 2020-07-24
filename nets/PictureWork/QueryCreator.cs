@@ -170,8 +170,8 @@ namespace PictureWork
         {
             string res = predName + "((X,Y),(X2,Y2)):-";
             res += "Lst = " + CreateLst(sizeX, sizeY) + ",";
-            var transformed1 = fig1.rotated[0].TransformDeltaToDict();
-            var transformed2 = fig2.rotated[0].TransformDeltaToDict();
+            var transformed1 = fig1.rotated[0].GetDictRepresentation();
+            var transformed2 = fig2.rotated[0].GetDictRepresentation();
             res += "Fig1 = (X,Y," + CreateFigFromDict(transformed1) + "),";
             res += "Fig2 = (X2,Y2," + CreateFigFromDict(transformed2) + "),";
             res += "place_it([Fig1,Fig2],Lst).";
@@ -208,7 +208,7 @@ namespace PictureWork
             int ind = 1;
             foreach (Figure fig in data)
             {
-                var transformed = fig.rotated[0].TransformDeltaToDict();
+                var transformed = fig.rotated[0].GetDictRepresentation();
                 string figName = "Fig" + ind;
                 figNames.Add(figName);
                 res += figName + " = (X" + ind + ",Y" + ind + "," + CreateFigFromDict(transformed) + "),";
@@ -234,7 +234,7 @@ namespace PictureWork
                 List<string> allAngles = new List<string>();
                 foreach (DeltaRepresentation curDelta in fig.rotated)
                 {
-                    var transformed = curDelta.TransformDeltaToDict();
+                    var transformed = curDelta.GetDictRepresentation();
                     allAngles.Add("(" + indAngle + "," + CreateFigFromDict(transformed) + ")"); // maybe actual angle?
                     indAngle++;
                 }
@@ -269,7 +269,7 @@ namespace PictureWork
                 List<string> allAngles = new List<string>();
                 foreach (DeltaRepresentation curDelta in fig.rotated)
                 {
-                    var transformed = curDelta.TransformDeltaToDict();
+                    var transformed = curDelta.GetDictRepresentation();
                     var specialDots = curDelta.GetOuterDots();
                     allAngles.Add("(" + 
                         indAngle + "," +  // maybe actual angle?

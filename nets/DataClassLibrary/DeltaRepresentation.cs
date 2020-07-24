@@ -14,6 +14,10 @@ namespace DataClassLibrary
         public double angle = 0;
 
         public List<Point> deltas = new List<Point>();
+        SortedDictionary<int, List<int>> dictRepresentation = null;
+        SortedDictionary<int, List<int>> outline = null;
+        SortedDictionary<int, List<int>> specialDots = null;
+
 
 
         public DeltaRepresentation() { }
@@ -30,7 +34,7 @@ namespace DataClassLibrary
                 for (int yCur = 0; yCur < bmp.Height; yCur++)
                 {
                     Color curColor = bmp.GetPixel(xCur, yCur);
-                    if (curColor.R == figColor.R && curColor.G == figColor.G && curColor.B == figColor.B)
+                    if (IsColorsEqual(curColor, figColor))
                     {
                         int xDelta = xCenter - xCur;
                         int yDelta = yCenter - yCur;
@@ -53,7 +57,7 @@ namespace DataClassLibrary
                 for (int yCur = 0; yCur < bmp.Height; yCur++)
                 {
                     Color curColor = bmp.GetPixel(xCur, yCur);
-                    if (curColor.R == figColor.R && curColor.G == figColor.G && curColor.B == figColor.B)
+                    if (IsColorsEqual(curColor, figColor))
                     {
                         int xDelta = xCenter - xCur;
                         int yDelta = yCenter - yCur;
@@ -97,7 +101,16 @@ namespace DataClassLibrary
             return res;
         }
 
-        public static SortedDictionary<int, List<int>> TransformDeltaToDict(List<Point> deltas)
+
+        public SortedDictionary<int, List<int>> GetDictRepresentation()
+        {
+            if (dictRepresentation == null)
+                dictRepresentation = TransformDeltaToDict(deltas);
+            return dictRepresentation;
+        }
+
+
+        private static SortedDictionary<int, List<int>> TransformDeltaToDict(List<Point> deltas)
         {
             SortedDictionary<int, List<int>> res = new SortedDictionary<int, List<int>>();
 
@@ -118,11 +131,6 @@ namespace DataClassLibrary
             return res;
         }
 
-        public SortedDictionary<int, List<int>> TransformDeltaToDict()
-        {
-            return TransformDeltaToDict(deltas);
-        }
-
 
         /// <summary>
         /// Получает 4 точки фигуры, лежащие на прямоугольной оболочке
@@ -130,6 +138,9 @@ namespace DataClassLibrary
         /// <returns></returns>
         public SortedDictionary<int, List<int>> GetOuterDots()
         {
+            if (specialDots != null)
+                return specialDots;
+
             Point minX = new Point(int.MaxValue, int.MaxValue);
             Point minY = new Point(int.MaxValue, int.MaxValue);
             Point maxY = new Point(int.MinValue, int.MinValue);
@@ -148,7 +159,52 @@ namespace DataClassLibrary
             }
 
             List<Point> outerDots = new List<Point>{ minX, minY, maxX, maxY };
-            return TransformDeltaToDict(outerDots);
+            specialDots = TransformDeltaToDict(outerDots);
+            return specialDots;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Возвращает контур дельты</returns>
+        public SortedDictionary<int, List<int>> GetOutline()
+        {
+            if (outline != null)
+                return outline;
+
+            outline = new SortedDictionary<int, List<int>>();
+
+            foreach (KeyValuePair<int, List<int>> yGroup in GetDictRepresentation())
+            {
+                var borderDots = new List<int>();
+
+                int prevX = yGroup.Value[0];
+                borderDots.Add(prevX);
+                prevX--; // чтобы в цикле не добавлять повторно
+
+                foreach (int curX in yGroup.Value)
+                {
+                    if (prevX + 1 != curX)
+                    {
+                        borderDots.Add(prevX);
+                        borderDots.Add(curX);
+                    }
+                    prevX = curX;
+                }
+                borderDots.Add(prevX);
+
+                outline.Add(yGroup.Key, borderDots);
+            }
+            return outline;
+        }
+
+
+        /// <summary>
+        /// Проверяет одинаковые ли цвета
+        /// </summary>
+        private static bool IsColorsEqual(Color a, Color b)
+        {
+            return (a.R == b.R && a.G == b.G && a.B == b.B);
         }
     }
 }
