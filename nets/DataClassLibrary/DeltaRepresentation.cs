@@ -177,23 +177,25 @@ namespace DataClassLibrary
             foreach (KeyValuePair<int, List<int>> yGroup in GetDictRepresentation())
             {
                 var borderDots = new List<int>();
-
+                borderDots.Add(yGroup.Value.Min());
+                borderDots.Add(yGroup.Value.Max());
+                /*
                 int prevX = yGroup.Value[0];
                 borderDots.Add(prevX);
-                prevX--; // чтобы в цикле не добавлять повторно
+                prevX++; // чтобы в цикле не добавлять повторно
 
                 foreach (int curX in yGroup.Value)
                 {
-                    if (prevX + 1 != curX)
+                    if (prevX - 1 != curX)
                     {
                         borderDots.Add(prevX);
                         borderDots.Add(curX);
                     }
                     prevX = curX;
                 }
-                borderDots.Add(prevX);
+                borderDots.Add(prevX);*/
 
-                outline.Add(yGroup.Key, borderDots);
+                outline.Add(yGroup.Key, borderDots.Distinct().ToList());
             }
             return outline;
         }

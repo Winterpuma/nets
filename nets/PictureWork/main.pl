@@ -8,76 +8,7 @@
 :- use_module(library(apply)).
 :- dynamic taken/2.
 
-% [(Yi, [Xi])]
-kek((X,Y),(X2,Y2)):-
-        % поле на котором ищем 4 по У, 5 по Х
-        Lst =[(0,[0,1,2,3,4]),
-              (1,[0,1,2,3,4]),
-              (2,[0,1,2,3,4]),
-              (3,[0,1,2,3,4])],
-        Fig1=(X,Y,[(0,[0]),
-                    (1,[-1,0,1]),
-                    (2,[0]) ] ),
-        Fig2=(X2,Y2,[(0,[0,1,2]),
-                    (1,[2]),
-                    (2,[0,1,2])]),
-        % надо осуществить подстановку и подобрать варанты размещения 
-        % Fig1 и Fig2 в Lst
-        place_it([Fig1,Fig2],Lst).
-test1((X,Y),(X2,Y2)):-
-	Lst = [	(0,[0,1,2,3,4]),
-		(1,[0,1,2,3,4]),
-		(2,[0,1,2,3,4])],
-	Fig1 = (X,Y,[	(1,[2,1,0]),
-			(2,[1]),
-			(0,[1])]),
-	Fig2 = (X2,Y2,[	(2,[2,1,0]),
-			(0,[2,1,0]),
-			(1,[1])]),
-	place_it([Fig1,Fig2],Lst).
 
-test2((X,Y),(X2,Y2)):-
-	Lst = [	(0,[0,1,2,3,4]),
-		(1,[0,1,2,3,4]),
-		(2,[0,1,2,3,4])],
-	Fig1 = (X,Y,[(0,[1]),
-			(1,[0,1,2]),
-			(2,[1])]),
-	Fig2 = (X2,Y2,[	(0,[0,1,2]),
-			(1,[1]),
-			(2,[0,1,2])]),
-	place_it([Fig1,Fig2],Lst).
-
-test3(Ans):-
-	Lst = [	(0,[0,1,2,3,4]),
-		(1,[0,1,2,3,4]),
-		(2,[0,1,2,3,4])],
-	Fig1 = [(zero,[(0,[1]),
-			(1,[0,1,2]),
-			(2,[1])]),
-			(pi,[(0,[1]),
-			(1,[0,1,2]),
-			(2,[1])] )],
-	Fig2 = [(zero,[(0,[0,1,2]),
-			(1,[1]),
-			(2,[0,1,2])]),
-			(pi,[(0,[0,1,2]),
-			(1,[1]),
-			(2,[0,1,2])])],
-	place_it3([Fig1,Fig2],Lst,Ans).
-
-
-test4(Ans):-
-	Lst = [	(0,[0,1,2,3,4]),
-		(1,[0,1,2,3,4]),
-		(2,[0,1,2,3,4])],
-	Fig1 = [(0,[1]),
-			(1,[0,1,2]),
-			(2,[1])],
-	Fig2 = [(0,[0,1,2]),
-			(1,[1]),
-			(2,[0,1,2])],
-	place_it2([Fig1,Fig2],Lst,Ans).
 
 %place_it_rotate([[(Name,X,Y,Angle,Lst)|L_angles]|LFigs],Field
 place_it2([],_,[]):-true.
@@ -85,9 +16,14 @@ place_it2([H|L],F,[(X,Y)|Ans]):- mymember(X,Y,F), delete_it((X,Y,H),F,F2),place_
 
 place_it3(_,[],_):-fail.
 place_it3([],_,[]):-true.
-place_it3([[(Angle,H)|_]|L],F,[(X,Y,Angle)|Ans]):- mymember(X,Y,F), delete_it((X,Y,H),F,F2),place_it3(L,F2,Ans).
-place_it3([[_|Hs]|L],F,Ans):- place_it3([Hs|L],F,Ans).
+place_it3([[(Angle,H)|_]|L],F,[(X,Y,Angle)|Ans]):- 
+    mymember(X,Y,F), 
+    delete_it((X,Y,H),F,F2),
+    place_it3(L,F2,Ans).
+place_it3([[_|Hs]|L],F,Ans):- 
+    place_it3([Hs|L],F,Ans).
 
+% Сначала проверка на 4 спец точки
 place_it4(_,[],_):-fail.
 place_it4([],_,[]):-true.
 place_it4([[(Angle,H,SpecialDots)|_]|L],F,[(X,Y,Angle)|Ans]):- 
@@ -97,6 +33,18 @@ place_it4([[(Angle,H,SpecialDots)|_]|L],F,[(X,Y,Angle)|Ans]):-
     place_it4(L,F2,Ans).
 place_it4([[_|Hs]|L],F,Ans):- 
     place_it4([Hs|L],F,Ans).
+
+% Проверки: 4 точки, контур, фигура
+place_it5(_,[],_):-fail.
+place_it5([],_,[]):-true.
+place_it5([[(Angle,H,SpecialDots,Outline)|_]|L],F,[(X,Y,Angle)|Ans]):- 
+    mymember(X,Y,F), 
+    delete_it((X,Y,SpecialDots),F,_),
+    delete_it((X,Y,Outline),F,_),
+    delete_it((X,Y,H),F,F2),
+    place_it5(L,F2,Ans).
+place_it5([[_|Hs]|L],F,Ans):- 
+    place_it5([Hs|L],F,Ans).
 
 
 place_it([],_):-true.
@@ -195,12 +143,6 @@ tryer360([[]|_],_):-false.
 % если нет -- в 3
 % и т.д.
 %mT(Lst,Acc,Ans):-.
-
-
-
-
-
-
 
 
 f2([],A,B,A,B).

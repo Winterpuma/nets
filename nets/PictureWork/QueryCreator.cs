@@ -271,17 +271,22 @@ namespace PictureWork
                 {
                     var transformed = curDelta.GetDictRepresentation();
                     var specialDots = curDelta.GetOuterDots();
+                    var outline = curDelta.GetOutline();//
                     allAngles.Add("(" + 
                         indAngle + "," +  // maybe actual angle?
                         CreateFigFromDict(transformed) + "," +
-                        CreateFigFromDict(specialDots) + ")");
+                        CreateFigFromDict(specialDots) + "," +
+                        CreateFigFromDict(outline) + ")"); //
                     indAngle++;
                 }
                 res += "[" + String.Join(",", allAngles) + "],";
                 indFig++;
             }
-            res += "place_it4([" + String.Join(",", figNames) + "],Lst,Ans).";
+            res += "place_it5([" + String.Join(",", figNames) + "],Lst,Ans).";
             return res;
         }
+
+
+
     }
 }
