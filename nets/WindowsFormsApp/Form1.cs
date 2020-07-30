@@ -12,7 +12,7 @@ namespace WindowsFormsApp
     public partial class Form1 : Form
     {
         List<Figure> lst = new List<Figure>();
-        Color figColor = Color.FromArgb(155, 155, 155);
+        Color figColor = Color.FromArgb(155, 155, 155);//Color.FromArgb(0, 0, 0);//
         string pathRes = "../../../../result/";
         int angleStep = 10;
 
@@ -59,7 +59,6 @@ namespace WindowsFormsApp
 
             int width = Convert.ToInt32(textBox_w.Text);
             int height = Convert.ToInt32(textBox_h.Text);
-            //var result = PrologSolutionFinder.FindResultBeforeTimout(lst, width, height);
             lst.Sort(Figure.CompareFiguresBySize);
             var result = PrologSolutionFinder.GetAnyResult(lst, width, height);
 
