@@ -8,12 +8,12 @@ namespace DataClassLibrary
 {
     public class SegmentRepresentation
     {
-        List<List<Segment>> segments = new List<List<Segment>>();
+        public SortedDictionary<int, List<Segment>> segments = new SortedDictionary<int, List<Segment>>();
 
         public SegmentRepresentation(SortedDictionary<int, List<int>> yGroups)
         {
             foreach(KeyValuePair<int, List<int>> curGroup in yGroups)
-                segments.Add(GetSegmentsOutOfLine(curGroup.Value));
+                segments.Add(curGroup.Key, GetSegmentsOutOfLine(curGroup.Value));
         }
 
 
@@ -44,5 +44,10 @@ namespace DataClassLibrary
     {
         public int start;
         public int end;
+        
+        override public string ToString()
+        {
+            return "(" + start + "," + end + ")";
+        }
     }
 }

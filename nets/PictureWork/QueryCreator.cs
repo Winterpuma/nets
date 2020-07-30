@@ -8,7 +8,7 @@ namespace PictureWork
 {
     static class QueryCreator
     {
-        #region solution 1
+        #region solution Deltas
         /// <summary>
         /// Формирует строку вида  [[(name1_angle1,[(X,Y),(X,Y)]),(name1_angle2,[(X,Y),(X,Y)])],
         ///                         [(name2_angle1,[(X,Y),(X,Y)]),(name2_angle2,[(X,Y),(X,Y)])]]
@@ -122,6 +122,7 @@ namespace PictureWork
         }
         #endregion
 
+        #region solution yGroups
         /// <summary>
         /// Формирует строку вида [(0,[0,1,2,3]),(1,[0,1,2,3])]
         /// При x = 4, y = 2
@@ -137,84 +138,6 @@ namespace PictureWork
             }
             res += "(" + (y - 1) + "," + xValues + ")]";
 
-            return res;
-        }
-        
-
-        /// <returns>[(0,[1,0,-1]),(1,[0]),(-1,[0])]</returns>
-        public static string CreateFigFromDict(Dictionary<int, List<int>> figure)
-        {
-            List<string> distinctY = new List<string>();
-
-            foreach (KeyValuePair<int, List<int>> kvp in figure)
-            {
-                distinctY.Add("(" + kvp.Key + ",[" + String.Join(",", kvp.Value) + "])");
-            }
-
-            return "[" + String.Join(",", distinctY) + "]";
-        }
-
-        public static string CreateFigFromDict(SortedDictionary<int, List<int>> figure)
-        {
-            List<string> distinctY = new List<string>();
-
-            foreach (KeyValuePair<int, List<int>> kvp in figure)
-            {
-                distinctY.Add("(" + kvp.Key + ",[" + String.Join(",", kvp.Value) + "])");
-            }
-
-            return "[" + String.Join(",", distinctY) + "]";
-        }
-
-        public static string CreateFigPredNoTurn(int sizeX, int sizeY, Figure fig1, Figure fig2, string predName = "testFigsNoTurn")
-        {
-            string res = predName + "((X,Y),(X2,Y2)):-";
-            res += "Lst = " + CreateLst(sizeX, sizeY) + ",";
-            var transformed1 = fig1.rotated[0].GetDictRepresentation();
-            var transformed2 = fig2.rotated[0].GetDictRepresentation();
-            res += "Fig1 = (X,Y," + CreateFigFromDict(transformed1) + "),";
-            res += "Fig2 = (X2,Y2," + CreateFigFromDict(transformed2) + "),";
-            res += "place_it([Fig1,Fig2],Lst).";
-            return res;
-        }
-
-        public static List<string> CreateListOfResulVars(int n)
-        {
-            List<string> args = new List<string>();
-            for (int i = 1; i <= n; i++)
-                args.Add("Fig" + i + "pos");
-            return args;
-        }
-
-        public static List<string> CreateListOfArgs(int n)
-        {
-            List<string> args = new List<string>();
-            for (int i = 1; i <= n; i++)
-                args.Add("(X" + i + ",Y" + i + ")");
-            return args;
-        }
-
-        public static string CreateArgs(int n)
-        {
-            return "(" + String.Join(",", CreateListOfArgs(n)) + ")";
-        }
-
-        public static string CreateFigPredNoTurn(int sizeX, int sizeY, List<Figure> data, string predName = "testFigsNoTurn")
-        {
-            List<string> figNames = new List<string>();
-            string res = predName + CreateArgs(data.Count) + " :- ";
-            res += "Lst = " + CreateLst(sizeX, sizeY) + ",";
-
-            int ind = 1;
-            foreach (Figure fig in data)
-            {
-                var transformed = fig.rotated[0].GetDictRepresentation();
-                string figName = "Fig" + ind;
-                figNames.Add(figName);
-                res += figName + " = (X" + ind + ",Y" + ind + "," + CreateFigFromDict(transformed) + "),";
-                ind++;
-            }
-            res += "place_it([" + String.Join(",", figNames) + "],Lst).";
             return res;
         }
 
@@ -254,7 +177,7 @@ namespace PictureWork
             return predName + "(Ans)" + " :- " + CreateBodyTurnOptimized(sizeX, sizeY, data);
         }
 
-        public static string CreateBodyTurnOptimized(int sizeX, int sizeY, List<Figure> data)
+        private static string CreateBodyTurnOptimized(int sizeX, int sizeY, List<Figure> data)
         {
             List<string> figNames = new List<string>();
             string res = "Lst = " + CreateLst(sizeX, sizeY) + ",";
@@ -286,7 +209,97 @@ namespace PictureWork
             return res;
         }
 
+        /// <returns>[(0,[1,0,-1]),(1,[0]),(-1,[0])]</returns>
+        public static string CreateFigFromDict(Dictionary<int, List<int>> figure)
+        {
+            List<string> distinctY = new List<string>();
+
+            foreach (KeyValuePair<int, List<int>> kvp in figure)
+            {
+                distinctY.Add("(" + kvp.Key + ",[" + String.Join(",", kvp.Value) + "])");
+            }
+
+            return "[" + String.Join(",", distinctY) + "]";
+        }
+
+        public static string CreateFigFromDict(SortedDictionary<int, List<int>> figure)
+        {
+            List<string> distinctY = new List<string>();
+
+            foreach (KeyValuePair<int, List<int>> kvp in figure)
+            {
+                distinctY.Add("(" + kvp.Key + ",[" + String.Join(",", kvp.Value) + "])");
+            }
+
+            return "[" + String.Join(",", distinctY) + "]";
+        }
+        #endregion
+
+        public static string CreatePredSegmentsTurn(int sizeX, int sizeY, List<Figure> data, string predName = "testFigsTurn")
+        {
+            return predName + "(Ans)" + " :- " + CreateBodySegmentsTurn(sizeX, sizeY, data);
+        }
+
+        private static string CreateBodySegmentsTurn(int sizeX, int sizeY, List<Figure> data)
+        {
+            List<string> figNames = new List<string>();
+            string res = "generate(" + (sizeX - 1) + "," + (sizeY - 1) + ",F),";
+
+            int indFig = 1;
+            foreach (Figure fig in data)
+            {
+                string figName = "Fig" + indFig;
+                figNames.Add(figName);
+                res += figName + " = ";
+                int indAngle = 0;
+                List<string> allAngles = new List<string>();
+                foreach (DeltaRepresentation curDelta in fig.rotated)
+                {
+                    SegmentRepresentation sr = new SegmentRepresentation(curDelta.GetDictRepresentation());
+                    allAngles.Add("(" +
+                        indAngle + "," +  CreateFigFromDict(sr.segments) + ")");
+                    indAngle++;
+                }
+                res += "[" + String.Join(",", allAngles) + "],";
+                indFig++;
+            }
+            res += "place_it3([" + String.Join(",", figNames) + "],F,Ans).";
+            return res;
+        }
+
+        public static string CreateFigFromDict(SortedDictionary<int, List<Segment>> figure)
+        {
+            List<string> distinctY = new List<string>();
+
+            foreach (KeyValuePair<int, List<Segment>> kvp in figure)
+            {
+                distinctY.Add("(" + kvp.Key + ",[" + String.Join(",", kvp.Value) + "])");
+            }
+
+            return "[" + String.Join(",", distinctY) + "]";
+        }
 
 
+
+        public static List<string> CreateListOfResulVars(int n)
+        {
+            List<string> args = new List<string>();
+            for (int i = 1; i <= n; i++)
+                args.Add("Fig" + i + "pos");
+            return args;
+        }
+
+        public static List<string> CreateListOfArgs(int n)
+        {
+            List<string> args = new List<string>();
+            for (int i = 1; i <= n; i++)
+                args.Add("(X" + i + ",Y" + i + ")");
+            return args;
+        }
+
+        public static string CreateArgs(int n)
+        {
+            return "(" + String.Join(",", CreateListOfArgs(n)) + ")";
+        }
     }
 }

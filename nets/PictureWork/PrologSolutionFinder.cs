@@ -9,59 +9,11 @@ namespace PictureWork
 {
     public static class PrologSolutionFinder
     {
-        public static List<ResultData> CreateAndRunTest(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
-        {
-            string predName = "testFigsNoTurn";
-            string createdPredicate = QueryCreator.CreateFigPredNoTurn(width, height, data, predName);
+        static string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main.pl";
+        static string tmpCodePath = "..\\..\\..\\tmp_main.pl";
+        
 
-            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
-
-            if (File.Exists(tmpCodePath))
-                File.Delete(tmpCodePath);
-            File.Copy(prologCodePath, tmpCodePath);
-            File.AppendAllText(tmpCodePath, "\n");
-            File.AppendAllText(tmpCodePath, createdPredicate);
-
-            List<ResultData> res = new List<ResultData>();
-            try
-            {
-                String[] param = { "-q", "-f", tmpCodePath };
-                PlEngine.Initialize(param);
-                var vars = QueryCreator.CreateListOfResulVars(data.Count);
-                string queryStr = predName + "(" + String.Join(",", vars) + ").";
-
-                //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
-                Console.WriteLine("Starting solution finder.");
-
-                using (PlQuery q = new PlQuery(queryStr))
-                {
-                    foreach (PlQueryVariables v in q.SolutionVariables)
-                    {
-                        List<string> resultStrings = new List<string>();
-                        foreach (string variable in vars)
-                        {
-                            string result = GetResultStringString(v[variable]);
-                            Console.WriteLine(variable + "," + result);
-                            resultStrings.Add(variable + "," + result);
-                        }
-
-                        res.Add(new ResultData(resultStrings, false));
-                    }
-                }
-            }
-            catch (PlException e)
-            {
-                Console.WriteLine(e.MessagePl);
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                PlEngine.PlCleanup();
-            }
-            return res;
-        }
-
-        public static List<ResultData> CreateAndRunTestTurning(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
+        public static List<ResultData> CreateAndRunTestTurning(List<Figure> data, int width, int height)
         {
             string predName = "testFigsTurn";
             string createdPredicate = QueryCreator.CreatePredTurn(width, height, data, predName);
@@ -100,7 +52,7 @@ namespace PictureWork
             return res;
         }
 
-        public static List<ResultData> CreateAndRunTestTurningOptimizedFindall(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
+        public static List<ResultData> CreateAndRunTestTurningOptimizedFindall(List<Figure> data, int width, int height)
         {
             string predName = "testFigsTurnOpt";
             string createdPredicate = QueryCreator.CreatePredTurnOptimized(width, height, data, predName);
@@ -152,7 +104,7 @@ namespace PictureWork
             Console.ResetColor();
         }
 
-        public static bool DoesFiguresFit(List<Figure> data, int width, int height, string prologCodePath = "..\\..\\..\\main.pl")
+        public static bool DoesFiguresFit(List<Figure> data, int width, int height)
         {
             DbgCurLst(data);
             string predName = "testFit";
@@ -194,30 +146,27 @@ namespace PictureWork
             return res;
         }
 
-        public static ResultData GetAnyResult(List<Figure> data, int width, int height, string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main.pl")
+
+
+        private static ResultData GetAnyResultTemplate(List<Figure> data, int width, int height,
+            Func<int, int, List<Figure>, string, string> predicateCreator,
+            Func<PlTerm, string> convertResToStr,
+            Func<string, ResultData> convertRes)
         {
             DbgCurLst(data);
             string predName = "testFit";
-            string createdPredicate = QueryCreator.CreatePredTurnOptimized(width, height, data, predName);
-
-            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
-
-            AppendStrToFile(tmpCodePath, prologCodePath, createdPredicate);
-
-            bool res = false;
+            CreateNewMain(predicateCreator, width, height, data, predName);            
+            
             try
             {
-                String[] param = { "-q", "-f", tmpCodePath };
-                PlEngine.Initialize(param);
+                InitEngine();
                 string queryStr = predName + "(Ans).";
-
-                Console.WriteLine("Starting solution finder.");
 
                 using (PlQuery q = new PlQuery(queryStr))
                 {
                     foreach (PlQueryVariables v in q.SolutionVariables)
                     {
-                        ResultData result = ResultData.GetRes(GetResultStringList(v["Ans"]));
+                        ResultData result = convertRes(convertResToStr(v["Ans"]));
                         return result;
                     }
                     return null;
@@ -235,6 +184,24 @@ namespace PictureWork
             return null;
         }
 
+        public static ResultData GetAnyResult(List<Figure> data, int width, int height)
+        {
+            return GetAnyResultTemplate(data, width, height, QueryCreator.CreatePredSegmentsTurn, GetResultStringList, ResultData.GetRes);
+        }
+
+
+        #region Вспомогательные функции
+        private static void InitEngine()
+        {
+            String[] param = { "-q", "-f", tmpCodePath };
+            PlEngine.Initialize(param);
+        }
+
+        private static void CreateNewMain(Func<int, int, List<Figure>, string, string> predicate, int width, int height, List<Figure> data, string predName)
+        {
+            string createdPredicate = predicate(width, height, data, predName);
+            AppendStrToFile(tmpCodePath, prologCodePath, createdPredicate);
+        }
 
         private static void AppendStrToFile(string tmpCodePath, string prologCodePath, string strToAppend)
         {
@@ -244,7 +211,10 @@ namespace PictureWork
             File.AppendAllText(tmpCodePath, "\n");
             File.AppendAllText(tmpCodePath, strToAppend);
         }
+        #endregion
 
+
+        #region Обработка результата
         private static List<ResultData> GetFindallRes(PlTerm res)
         {
             List<ResultData> convertedRes = new List<ResultData>();
@@ -272,5 +242,6 @@ namespace PictureWork
         {
             return String.Join(" ", res.ToString());
         }
+        #endregion
     }
 }
