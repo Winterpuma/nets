@@ -196,7 +196,7 @@
             this.textBox_distance.Name = "textBox_distance";
             this.textBox_distance.Size = new System.Drawing.Size(48, 26);
             this.textBox_distance.TabIndex = 5;
-            this.textBox_distance.Text = "5";
+            this.textBox_distance.Text = "1";
             this.textBox_distance.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox_distance_KeyUp);
             // 
             // button1

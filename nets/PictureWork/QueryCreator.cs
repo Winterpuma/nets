@@ -257,16 +257,21 @@ namespace PictureWork
                 {
                     SegmentRepresentation sr = new SegmentRepresentation(curDelta.GetDictRepresentation());
                     allAngles.Add("(" +
-                        indAngle + "," +  CreateFigFromDict(sr.segments) + ")");
+                        indAngle + ", [" + String.Join(",", sr.segments[0]) + "]," +  CreateFigFromDict(sr.segments) + ")");
                     indAngle++;
                 }
                 res += "[" + String.Join(",", allAngles) + "],";
                 indFig++;
             }
-            res += "place_it3([" + String.Join(",", figNames) + "],F,Ans).";
+            res += "place_it3_2([" + String.Join(",", figNames) + "],F,Ans,_).";
             return res;
         }
 
+        /// <summary>
+        /// [(-1,[(0,1)]),
+        /// (0,[(-1, 2)]),
+        /// (1,[(-1, -1),(2, 2)])]
+        /// </summary>
         public static string CreateFigFromDict(SortedDictionary<int, List<Segment>> figure)
         {
             List<string> distinctY = new List<string>();

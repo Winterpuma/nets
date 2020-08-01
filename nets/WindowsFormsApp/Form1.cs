@@ -14,7 +14,7 @@ namespace WindowsFormsApp
         List<Figure> lst = new List<Figure>();
         Color figColor = Color.FromArgb(155, 155, 155);//Color.FromArgb(0, 0, 0);//
         string pathRes = "../../../../result/";
-        int angleStep = 10;
+        int angleStep = 1;
 
         public Form1()
         {

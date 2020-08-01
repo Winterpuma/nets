@@ -43,6 +43,7 @@ namespace DataClassLibrary
                     }
                 }
             }
+            CenterDeltaRepresentation();
         }
 
         public DeltaRepresentation(Bitmap bmp, Color figColor, int scaleBorders)
@@ -71,6 +72,7 @@ namespace DataClassLibrary
             }
 
             deltas = deltas.Distinct().ToList();
+            CenterDeltaRepresentation();
         }
 
 
@@ -207,6 +209,23 @@ namespace DataClassLibrary
         private static bool IsColorsEqual(Color a, Color b)
         {
             return (a.R == b.R && a.G == b.G && a.B == b.B);
+        }
+
+        private void CenterDeltaRepresentation()
+        {
+            int maxX = deltas.Max((Point p) => p.X);
+            int minX = deltas.Min((Point p) => p.X);
+            int maxY = deltas.Max((Point p) => p.Y);
+            int minY = deltas.Min((Point p) => p.Y);
+
+            int dX = Convert.ToInt32(Math.Floor((double)(maxX + minX) / 2));
+            int dY = Convert.ToInt32(Math.Floor((double)(maxY + minY) / 2));
+            
+            for (int i = 0; i < deltas.Count; i++)
+            {
+                Point cur = deltas[i];
+                deltas[i] = new Point(cur.X - dX, cur.Y - dY);
+            }
         }
     }
 }
