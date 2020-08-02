@@ -10,86 +10,9 @@ namespace PictureWork
     public static class PrologSolutionFinder
     {
         static string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main.pl";
-        static string tmpCodePath = "..\\..\\..\\tmp_main.pl";
-        
+        static string tmpCodePath = "tmp_main.pl";
+        static string figInfoPath = "figInfo.pl";
 
-        public static List<ResultData> CreateAndRunTestTurning(List<Figure> data, int width, int height)
-        {
-            string predName = "testFigsTurn";
-            string createdPredicate = QueryCreator.CreatePredTurn(width, height, data, predName);
-
-            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
-
-            AppendStrToFile(tmpCodePath, prologCodePath, createdPredicate);
-
-            List<ResultData> res = new List<ResultData>();
-            try
-            {
-                String[] param = { "-q", "-f", tmpCodePath };
-                PlEngine.Initialize(param);
-                string queryStr = "findall(X, " + predName + "(X), Lx).";
-
-                //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
-                Console.WriteLine("Starting solution finder.");
-
-                using (PlQuery q = new PlQuery(queryStr))
-                {
-                    foreach (PlQueryVariables v in q.SolutionVariables)
-                    {
-                        res = GetFindallRes(v["Lx"]);
-                    }
-                }
-            }
-            catch (PlException e)
-            {
-                Console.WriteLine(e.MessagePl);
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                PlEngine.PlCleanup();
-            }
-            return res;
-        }
-
-        public static List<ResultData> CreateAndRunTestTurningOptimizedFindall(List<Figure> data, int width, int height)
-        {
-            string predName = "testFigsTurnOpt";
-            string createdPredicate = QueryCreator.CreatePredTurnOptimized(width, height, data, predName);
-
-            string tmpCodePath = "..\\..\\..\\tmp_main.pl";
-
-            AppendStrToFile(tmpCodePath, prologCodePath, createdPredicate);
-
-            List<ResultData> res = new List<ResultData>();
-            try
-            {
-                String[] param = { "-q", "-f", tmpCodePath };
-                PlEngine.Initialize(param);
-                string queryStr = "findall(X, " + predName + "(X), Lx).";
-
-                //Console.WriteLine("\n\nGenerated query:\n" + queryStr);
-                Console.WriteLine("Starting solution finder.");
-
-                using (PlQuery q = new PlQuery(queryStr))
-                {
-                    foreach (PlQueryVariables v in q.SolutionVariables)
-                    {
-                        res = GetFindallRes(v["Lx"]);
-                    }
-                }
-            }
-            catch (PlException e)
-            {
-                Console.WriteLine(e.MessagePl);
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                PlEngine.PlCleanup();
-            }
-            return res;
-        }
 
         private static void DbgCurLst(List<Figure> curLst)
         {
@@ -148,13 +71,13 @@ namespace PictureWork
 
 
 
-        private static ResultData GetAnyResultTemplate(List<Figure> data, int width, int height,
+        private static ResultData GetAnyResultTemplateAppendToExisting(List<Figure> data, int width, int height,
             Func<int, int, List<Figure>, string, string> predicateCreator,
             Func<PlTerm, string> convertResToStr,
             Func<string, ResultData> convertRes)
         {
             DbgCurLst(data);
-            string predName = "testFit";
+            string predName = "testFittt";
             CreateNewMain(predicateCreator, width, height, data, predName);            
             
             try
@@ -184,16 +107,70 @@ namespace PictureWork
             return null;
         }
 
+
+
         public static ResultData GetAnyResult(List<Figure> data, int width, int height)
         {
-            return GetAnyResultTemplate(data, width, height, QueryCreator.CreatePredSegmentsTurn, GetResultStringList, ResultData.GetRes);
+            return GetAnyResultTemplateAppendToExisting(data, width, height, QueryCreator.CreatePredSegmentsTurn, GetResultStringList, ResultData.GetRes);
+        }
+
+
+
+        private static ResultData GetAnyResultFigNewFile(int width, int height,
+            Func<PlTerm, string> convertResToStr,
+            Func<string, ResultData> convertRes)
+        {
+
+
+            try
+            {
+                InitEngine();
+                // TODO loading fig module and query forming
+                /*string queryStr = predName + "(Ans).";
+
+                using (PlQuery q = new PlQuery(queryStr))
+                {
+                    foreach (PlQueryVariables v in q.SolutionVariables)
+                    {
+                        ResultData result = convertRes(convertResToStr(v["Ans"]));
+                        return result;
+                    }
+                    return null;
+                }*/
+            }
+            catch (PlException e)
+            {
+                Console.WriteLine(e.MessagePl);
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                PlEngine.PlCleanup();
+            }
+            return null;
+        }
+        
+        
+        /// <summary>
+        /// Получает результат для всех фигур с масштабированием
+        /// </summary>
+        public static ResultData GetAnyResult(List<List<Figure>> data, int width, int height)
+        {
+            /*
+             * Предполагается, что файл с фигурами уже загружен
+            FigureFileOperations.CreateNewFigFile(figInfoPath);
+
+            foreach (List<Figure> curTurn in data)
+                FigureFileOperations.AddNewFig(QueryCreator.CreateFigDifferentSizes, curTurn);*/
+
+            return GetAnyResultFigNewFile(width, height, GetResultStringList, ResultData.GetRes);
         }
 
 
         #region Вспомогательные функции
         private static void InitEngine()
         {
-            String[] param = { "-q", "-f", tmpCodePath };
+            String[] param = { "-q", "-f", prologCodePath };
             PlEngine.Initialize(param);
         }
 

@@ -285,6 +285,28 @@ namespace PictureWork
         }
 
 
+        public static string CreateFigDifferentSizes(List<Figure> differentSizes, int indFig)
+        {
+            string res = "Fig" + indFig + " = ";
+            
+            List<string> allSizes = new List<string>();
+            foreach (Figure curSize in differentSizes)
+            {
+                int indAngle = 0;
+                List<string> allAngles = new List<string>();
+                foreach (DeltaRepresentation curDelta in curSize.rotated)
+                {
+                    SegmentRepresentation sr = new SegmentRepresentation(curDelta.GetDictRepresentation());
+                    allAngles.Add("(" +
+                        indAngle + ", [" + String.Join(",", sr.segments[0]) + "]," + CreateFigFromDict(sr.segments) + ")");
+                    indAngle++;
+                }
+                allSizes.Add("[" + String.Join(",", allAngles) + "]");
+            }
+            return "Fig" + indFig + "(Sizes) :- Sizes = [" + String.Join(",", allSizes) + "].";
+        }
+
+
 
         public static List<string> CreateListOfResulVars(int n)
         {
