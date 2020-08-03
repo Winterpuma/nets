@@ -317,13 +317,26 @@ namespace PictureWork
                     indAngle + ", [" + String.Join(",", sr.segments[0]) + "]," + CreateFigFromDict(sr.segments) + ")");
                 indAngle++;
             }
-            return "Fig" + indFig + "(Fig, " + oneSizeFig.scaleCoef + ") :- " +
-                "Fig = [" + String.Join(",", allAngles) + "]";
+            return "fig" + indFig + "(Fig, " + oneSizeFig.scaleCoef + ") :- " +
+                "Fig = [" + String.Join(",", allAngles) + "].";
+        }
+
+        public static string GetAnsQuery(int width, int height, double scale, params int[] figInd)
+        {
+            string queryStr = "generate(" + (width - 1) + "," + (height - 1) + ", Field),";
+            List<string> figNames = new List<string>();
+            foreach (int i in figInd)
+            {
+                queryStr += "fig" + i + "(Fig" + i + "," + scale + "),";
+                figNames.Add("Fig" + i);
+            }
+            queryStr += "place_it3_2([" + String.Join(",", figNames) + "],Field, Ans, _).";
+            return queryStr;
         }
 
 
 
-        public static List<string> CreateListOfResulVars(int n)
+            public static List<string> CreateListOfResulVars(int n)
         {
             List<string> args = new List<string>();
             for (int i = 1; i <= n; i++)

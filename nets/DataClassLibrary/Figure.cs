@@ -107,6 +107,8 @@ namespace DataClassLibrary
 
         public Figure GetScaledImage(double scaleCoef)
         {
+            if (scaleCoef == 1)
+                return this;
             Size scaledSize = new Size((int)(bitmap.Width / scaleCoef), (int)(bitmap.Height / scaleCoef));
             Bitmap scaledBitmap = new Bitmap(bitmap, scaledSize);
             return new Figure(this, scaledBitmap, scaleCoef);

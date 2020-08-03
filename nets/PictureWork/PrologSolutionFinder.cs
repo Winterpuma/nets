@@ -9,7 +9,7 @@ namespace PictureWork
 {
     public static class PrologSolutionFinder
     {
-        static string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main.pl";
+        static string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main2.pl";
         static string tmpCodePath = "tmp_main.pl";
         static string figInfoPath = "figInfo.pl";
 
@@ -116,17 +116,14 @@ namespace PictureWork
 
 
 
-        private static ResultData GetAnyResultFigNewFile(int width, int height,
+        private static ResultData GetAnyResultFigFile(string queryStr,
             Func<PlTerm, string> convertResToStr,
             Func<string, ResultData> convertRes)
         {
 
-
             try
             {
                 InitEngine();
-                // TODO loading fig module and query forming
-                /*string queryStr = predName + "(Ans).";
 
                 using (PlQuery q = new PlQuery(queryStr))
                 {
@@ -136,7 +133,7 @@ namespace PictureWork
                         return result;
                     }
                     return null;
-                }*/
+                }
             }
             catch (PlException e)
             {
@@ -150,20 +147,16 @@ namespace PictureWork
             return null;
         }
         
+
         
         /// <summary>
         /// Получает результат для всех фигур с масштабированием
         /// </summary>
-        public static ResultData GetAnyResult(List<List<Figure>> data, int width, int height)
+        public static ResultData GetAnyResult(int width, int height, double scale, params int[] figInd)
         {
-            /*
-             * Предполагается, что файл с фигурами уже загружен
-            FigureFileOperations.CreateNewFigFile(figInfoPath);
-
-            foreach (List<Figure> curTurn in data)
-                FigureFileOperations.AddNewFig(QueryCreator.CreateFigDifferentSizes, curTurn);*/
-
-            return GetAnyResultFigNewFile(width, height, GetResultStringList, ResultData.GetRes);
+            // Предполагается, что файл с фигурами уже загружен
+            string queryStr = QueryCreator.GetAnsQuery(width, height, scale, figInd);
+            return GetAnyResultFigFile(queryStr, GetResultStringList, ResultData.GetRes);
         }
 
 

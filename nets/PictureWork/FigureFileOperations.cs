@@ -27,6 +27,7 @@ namespace PictureWork
         private static void AddNewFig(Figure figure)
         {
             string strToAppend = QueryCreator.CreateFigOneSize(figure, _figInd);
+            File.AppendAllText(figInfoPath, "%" + figure.name + "\n");
             File.AppendAllText(figInfoPath, strToAppend);
             File.AppendAllText(figInfoPath, "\n\n");
             _figInd++;
