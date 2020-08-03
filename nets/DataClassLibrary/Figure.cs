@@ -75,15 +75,17 @@ namespace DataClassLibrary
         }
         
         
-        public static List<Figure> LoadFigures(string path, Color figColor, int angleStep = 1)
+        public static List<Figure> LoadFigures(string path, Color figColor, int angleStep = 1, double scale = 1)
         {
             string[] files = Directory.GetFiles(path);
             List<Figure> data = new List<Figure>();
 
-            int id = 1;
+            int id = 0;
             foreach (string f in files)
             {
-                data.Add(new Figure(f, id, figColor, angleStep));
+                Figure fig = new Figure(f, id, figColor, angleStep);
+                fig.scaleCoef = scale;
+                data.Add(fig);
                 id++;
             }
             return data;

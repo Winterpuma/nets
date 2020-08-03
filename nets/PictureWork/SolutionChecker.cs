@@ -34,6 +34,23 @@ namespace PictureWork
                 return true;
         }
 
+        private static bool DoesCurrentListFitPreDefFigs(List<Figure> data, int w, int h, double scale = 1)
+        {
+            int area = w * h;
+            if (CountDeltas(data) > area)
+                return false;
+
+
+            int[] figInd = new int[data.Count];
+            for (int i = 0; i < figInd.Length; i++)
+                figInd[i] = data[i].id;
+
+            if (!PrologSolutionFinder.DoesFiguresFit(w, h, scale, figInd))
+                return false;
+
+            return true;
+        }
+
         /// <summary>
         /// Проверяет помещается ли текущее размещение деталей по площади дельт и 
         /// перебор решений пролога
@@ -78,9 +95,9 @@ namespace PictureWork
         }
         #endregion
 
-        private static void Dbg1(List<List<Figure>> curSequence)
+        private static void Dbg1(List<List<Figure>> curSequence, ConsoleColor col = ConsoleColor.Yellow)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = col;
             Console.WriteLine("-----------");
             curSequence.ForEach((item) =>
             {
@@ -89,6 +106,19 @@ namespace PictureWork
                     Console.Write(fig.name + " ");
                 });
                 Console.WriteLine();
+            });
+            Console.WriteLine();
+
+            Console.ResetColor();
+        }
+
+        private static void Dbg1(List<Figure> curSequence, ConsoleColor col = ConsoleColor.Yellow)
+        {
+            Console.ForegroundColor = col;
+            Console.WriteLine("----------- \nПроверяем лист: ");
+            curSequence.ForEach((fig) =>
+            {
+                    Console.Write(fig.name + " ");
             });
             Console.WriteLine();
 
@@ -274,15 +304,67 @@ namespace PictureWork
             return null;
         }
 
+        public static List<List<Figure>> GetWorkingArrangementPreDefFigs(List<Figure> data, int w, int h, double scale,
+            List<List<Figure>> result = null)
+        {
+            if (result == null)
+            {
+                result = new List<List<Figure>>();
+                result.Add(new List<Figure>());
+                result[0].Add(data[0]); // первую фигуру всегда в новый лист
+                data.RemoveAt(0);
+            }
+            if (data.Count == 0)
+            {
+                Dbg1(result);
+                return result;
+            }
+
+            Figure currentFig = data[0];
+            var nextData = new List<Figure>(data);
+            nextData.RemoveAt(0);
+
+
+            // Пытаемся последовательно добавлять в уже существующие листы
+            for (int i = 0; i < result.Count; i++)
+            {
+                var newCurLst = new List<Figure>(result[i]);
+                newCurLst.Add(currentFig);
+                Dbg1(newCurLst, ConsoleColor.Magenta);
+                if (DoesCurrentListFitPreDefFigs(newCurLst, w, h, scale))
+                {
+                    result[i].Add(currentFig);
+                    var curResult = GetWorkingArrangementPreDefFigs(nextData, w, h, scale, result);
+                    if (curResult != null)
+                        return result;
+                }
+            }
+
+            // Если не получилось добавить к существующим, кладем в новый
+            var tmp = new List<Figure>();
+            tmp.Add(currentFig);
+            var newResult = new List<List<Figure>>(result);
+            newResult.Add(tmp);
+            var curRes = GetWorkingArrangementPreDefFigs(nextData, w, h, scale, newResult);
+            if (curRes != null)
+                return curRes;
+
+            return null;
+        }
+
         /// <summary>
         /// Известно разделение фигур по листам, ищется расположение
         /// </summary>
-        public static List<ResultData> PlacePreDefinedArrangement(List<List<Figure>> arrangement, int w, int h)
+        public static List<ResultData> PlacePreDefinedArrangement(List<List<Figure>> arrangement, int w, int h, double scale)
         {
             List<ResultData> results = new List<ResultData>();
             foreach (List<Figure> curLst in arrangement)
             {
-                var res = PrologSolutionFinder.GetAnyResult(curLst, w, h);
+                int[] figInd = new int[curLst.Count];
+                for (int i = 0; i < figInd.Length; i++)
+                    figInd[i] = curLst[i].id;
+
+                var res = PrologSolutionFinder.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
                 if (res == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;

@@ -306,7 +306,7 @@ namespace PictureWork
             return "Fig" + indFig + "(Sizes) :- Sizes = [" + String.Join(",", allSizes) + "].";
         }
 
-        public static string CreateFigOneSize(Figure oneSizeFig, int indFig)
+        public static string CreateFigOneSize(Figure oneSizeFig)
         {
             int indAngle = 0;
             List<string> allAngles = new List<string>();
@@ -317,7 +317,10 @@ namespace PictureWork
                     indAngle + ", [" + String.Join(",", sr.segments[0]) + "]," + CreateFigFromDict(sr.segments) + ")");
                 indAngle++;
             }
-            return "fig" + indFig + "(Fig, " + oneSizeFig.scaleCoef + ") :- " +
+
+            string scaleStr = oneSizeFig.scaleCoef.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+            return "fig" + oneSizeFig.id + "(Fig, " + scaleStr + ") :- " +
                 "Fig = [" + String.Join(",", allAngles) + "].";
         }
 
@@ -325,9 +328,10 @@ namespace PictureWork
         {
             string queryStr = "generate(" + (width - 1) + "," + (height - 1) + ", Field),";
             List<string> figNames = new List<string>();
+            string scaleStr = scale.ToString(System.Globalization.CultureInfo.InvariantCulture);
             foreach (int i in figInd)
             {
-                queryStr += "fig" + i + "(Fig" + i + "," + scale + "),";
+                queryStr += "fig" + i + "(Fig" + i + "," + scaleStr + "),";
                 figNames.Add("Fig" + i);
             }
             queryStr += "place_it3_2([" + String.Join(",", figNames) + "],Field, Ans, _).";

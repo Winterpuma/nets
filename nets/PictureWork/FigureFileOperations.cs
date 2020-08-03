@@ -16,7 +16,10 @@ namespace PictureWork
 
         public static void CreateNewFigFile(string fileName = "figInfo.pl")
         {
-            File.Create(fileName);
+            using (StreamWriter file = new StreamWriter(fileName))
+            {
+                file.WriteLine();
+            }
             figInfoPath = fileName;
             _figInd = 0;
         }
@@ -26,10 +29,14 @@ namespace PictureWork
         /// </summary>
         private static void AddNewFig(Figure figure)
         {
-            string strToAppend = QueryCreator.CreateFigOneSize(figure, _figInd);
-            File.AppendAllText(figInfoPath, "%" + figure.name + "\n");
-            File.AppendAllText(figInfoPath, strToAppend);
-            File.AppendAllText(figInfoPath, "\n\n");
+            string strToAppend = QueryCreator.CreateFigOneSize(figure);
+            using (StreamWriter file =
+                new StreamWriter(figInfoPath, true))
+            {
+                file.WriteLine("%" + figure.name);
+                file.WriteLine(strToAppend);
+                file.WriteLine();
+            }
             _figInd++;
         }
 

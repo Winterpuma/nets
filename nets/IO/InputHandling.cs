@@ -7,7 +7,7 @@ using DataClassLibrary;
 
 namespace IO
 {
-    static class InputHandling
+    public static class InputHandling
     {
         public static Bitmap MakeBlackAndWhite(Bitmap bmp, Color figColor)
         {
@@ -48,6 +48,19 @@ namespace IO
             {
                 Image img = new Bitmap(f);
                 Image yourImage = ResizeImage(img, scale);
+                yourImage.Save(dirDstPath + Path.GetFileName(f));
+            }
+        }
+
+        public static void ScaleWholeDirectory(string dirSrcPath, string dirDstPath, Size newSize)
+        {
+            string[] files = Directory.GetFiles(dirSrcPath);
+            List<Figure> data = new List<Figure>();
+
+            foreach (string f in files)
+            {
+                Image img = new Bitmap(f);
+                Image yourImage = ResizeImage(img, newSize);
                 yourImage.Save(dirDstPath + Path.GetFileName(f));
             }
         }

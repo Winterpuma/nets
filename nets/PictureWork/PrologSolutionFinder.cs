@@ -9,7 +9,7 @@ namespace PictureWork
 {
     public static class PrologSolutionFinder
     {
-        static string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main2.pl";
+        static string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main4.pl";
         static string tmpCodePath = "tmp_main.pl";
         static string figInfoPath = "figInfo.pl";
 
@@ -69,7 +69,13 @@ namespace PictureWork
             return res;
         }
 
-
+        public static bool DoesFiguresFit(int width, int height, double scale, params int[] figsIndexes)
+        {
+            if (GetAnyResult(width, height, scale, figsIndexes) != null)
+                return true;
+            else
+                return false;
+        }
 
         private static ResultData GetAnyResultTemplateAppendToExisting(List<Figure> data, int width, int height,
             Func<int, int, List<Figure>, string, string> predicateCreator,
@@ -123,7 +129,8 @@ namespace PictureWork
 
             try
             {
-                InitEngine();
+                if (!PlEngine.IsInitialized)
+                    InitEngine();
 
                 using (PlQuery q = new PlQuery(queryStr))
                 {
@@ -142,7 +149,7 @@ namespace PictureWork
             }
             finally
             {
-                PlEngine.PlCleanup();
+                //PlEngine.PlCleanup();
             }
             return null;
         }

@@ -17,16 +17,18 @@ namespace PictureWork
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
 
             // Параметры
-            string pathSrc = "../../../../../bmpKips2/"; // Путь к директории с фигурами
+            string pathSrc = @"D:\GitHub\pics\realData\"; // Путь к директории с фигурами
+            string pathProlog = @"D:\GitHub\nets\nets\PictureWork\"; // Путь к директории с кодом пролога
+
             Color srcFigColor = Color.FromArgb(155, 155, 155); // Цвет фигур(0, 0, 0) - черный 
-            Size lstSize = new Size(14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
-            int scale = 50; // Коэф-т масштабирования
-            int angleStep = 120; // Шаг поворотов фигур
+            Size lstSize = new Size(300, 100);//14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
+            double scale = 0.1; // Коэф-т масштабирования
+            int angleStep = 360; // Шаг поворотов фигур
             
             string pathTmp = "../../../../../tmp/";
             string pathRes = "../../../../../result/";
             
-            //CleanDir(pathTmp);
+            CleanDir(pathTmp);
             CleanDir(pathRes);
 
 
@@ -34,12 +36,12 @@ namespace PictureWork
             //InputHandling.ConvertPDFDirToScaledImg(pathSrc, pathTmp, scale);
 
             // Масштабирование
-            //InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
-            Size scaledLstSize = new Size(lstSize.Width / scale, lstSize.Height / scale);
+            Size scaledLstSize = new Size((int)(lstSize.Width * scale), (int)(lstSize.Height * scale));
+            InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scaledLstSize);
 
             // Загрузка фигур
             Console.WriteLine("Starting process. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep);
+            List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale);
             data.Sort(Figure.CompareFiguresBySize);
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
 
@@ -49,20 +51,28 @@ namespace PictureWork
             preDefArr.Add(FormOneListArrangement(data, 4, 5, 6, 8, 9, 13, 14));
             SortFigures(preDefArr);*/
 
-            
+            // Загрузка фигур в файл пролога
+            FigureFileOperations.CreateNewFigFile(pathProlog + "figInfo.pl");
+            FigureFileOperations.AddManyFigs(data, 1);
+
+            int[] figInd = new int[data.Count];
+            for (int i = 0; i < figInd.Length; i++)
+                figInd[i] = i;
+
+
+
             // Поиск решения
             Console.WriteLine("Starting result finding. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            //var res = SolutionChecker.FindMinArrangementDec(data, scaledLstSize.Width, scaledLstSize.Height);
-            //var res = SolutionChecker.FindMinArrangementHalfDiv(data, scaledLstSize.Width, scaledLstSize.Height);
-            var preDefArr = SolutionChecker.GetWorkingArrangement(data, scaledLstSize.Width, scaledLstSize.Height);
+            //var result = PrologSolutionFinder.GetAnyResult(scaledLstSize.Width, scaledLstSize.Height, scale, figInd);
+            var preDefArr = SolutionChecker.GetWorkingArrangementPreDefFigs(data, scaledLstSize.Width, scaledLstSize.Height, scale);
             //List<ResultData> result = new List<ResultData>();
             //result.Add(res);
-            var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height);
-            
+            var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scale);
+
 
             // Отображение решения
             Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            //OutputHandling.SaveResult(data, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
+            //OutputImage.SaveOneSingleListResult(data, result, scaledLstSize.Width, scaledLstSize.Height, pathRes);
             OutputImage.SaveResult(preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
 
             Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
