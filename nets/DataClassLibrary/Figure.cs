@@ -10,9 +10,11 @@ namespace DataClassLibrary
     {
         private string path;
         public string name = "noname";
-        Bitmap bitmap;
         public int id = -1;
+        public double scaleCoef = 1;
+        Bitmap bitmap;
         int angleStep;
+        int borderDistance;
         Color figColor;
 
         public DeltaRepresentation noScaling;
@@ -25,18 +27,34 @@ namespace DataClassLibrary
 
         public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 1)
         {
-            Console.WriteLine("\nLoad Figure " + id);
             this.path = path;
             name = Path.GetFileName(path);
             name = name.Remove(name.IndexOf('.'));
             this.id = id;
             this.angleStep = angleStep;
             this.figColor = figColor;
+            this.borderDistance = borderDistance;
             
             bitmap = new Bitmap(path);
+            LoadFigureFromItsBitmap(borderDistance);
+        }
 
-            // Если нужна предварительная обработка в черно-белое:
-            // bitmap = HandleImages.MakeBlackAndWhite(new Bitmap(path), figColor);
+        private Figure(Figure parentFig, Bitmap editedFig, double scaleCoef = 1)
+        {
+            path = parentFig.path;
+            name = parentFig.name;
+            id = parentFig.id;
+            this.scaleCoef = parentFig.scaleCoef * scaleCoef;
+            angleStep = parentFig.angleStep;
+            figColor = parentFig.figColor;
+            borderDistance = parentFig.borderDistance;
+
+            bitmap = editedFig;
+            LoadFigureFromItsBitmap(borderDistance);
+        }
+
+        private void LoadFigureFromItsBitmap(int borderDistance)
+        {
 
             noScaling = new DeltaRepresentation(bitmap, figColor);
             if (noScaling.deltas.Count == 0)
@@ -47,18 +65,12 @@ namespace DataClassLibrary
                 originalDeltas = noScaling;
             else
                 originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
-            
+
             rotated.Add(originalDeltas);
-            Console.WriteLine("Loaded original delta. Delta len " + originalDeltas.deltas.Count);
 
             for (int angle = angleStep; angle < 360; angle += angleStep)
             {
-                Console.Write(" " + angle);
                 rotated.Add(originalDeltas.GetTurnedDelta(angle, 0, 0));
-
-                // более медленный вариант:
-                //var tmpBmp = RotateImage(bitmap, angle);                
-                //rotated.Add(new DeltaRepresentation(tmpBmp, figColor));
             }
         }
         
@@ -77,24 +89,6 @@ namespace DataClassLibrary
             return data;
         }
 
-
-        public static Bitmap RotateImage(Image img, float rotationAngle)
-        {
-            Bitmap bmp = new Bitmap(img.Width, img.Height);
-            Graphics gfx = Graphics.FromImage(bmp);
-
-            gfx.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2); // rotation point - center
-            gfx.RotateTransform(rotationAngle);
-            gfx.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
-
-            gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
-
-            gfx.DrawImage(img, new Point(0, 0));
-            gfx.Dispose();
-
-            return bmp;
-        }
-
         public void ChangeBorderDistance(int borderDistance)
         {
             rotated.Clear();
@@ -109,6 +103,13 @@ namespace DataClassLibrary
                 Console.Write(" " + angle);
                 rotated.Add(originalDeltas.GetTurnedDelta(angle, 0, 0));
             }
+        }
+
+        public Figure GetScaledImage(double scaleCoef)
+        {
+            Size scaledSize = new Size((int)(bitmap.Width / scaleCoef), (int)(bitmap.Height / scaleCoef));
+            Bitmap scaledBitmap = new Bitmap(bitmap, scaledSize);
+            return new Figure(this, scaledBitmap, scaleCoef);
         }
 
         public static int CompareFiguresBySize(Figure x, Figure y)

@@ -22,14 +22,36 @@ namespace PictureWork
         }
 
         /// <summary>
-        /// List<Figure> - список разных размеров фигуры
+        /// Добавляет фигуру одного размера в файл
         /// </summary>
-        public static void AddNewFig(Func<List<Figure>, int, string> predicate, List<Figure> figSizes)
+        private static void AddNewFig(Figure figure)
         {
-            string strToAppend = QueryCreator.CreateFigDifferentSizes(figSizes, _figInd);
-            File.AppendAllText(figInfoPath, "\n");
+            string strToAppend = QueryCreator.CreateFigOneSize(figure, _figInd);
             File.AppendAllText(figInfoPath, strToAppend);
+            File.AppendAllText(figInfoPath, "\n\n");
             _figInd++;
+        }
+
+        /// <summary>
+        /// Добавляет фигуру нескольких размеров в файл
+        /// </summary>
+        public static void AddFigAllSizes(Figure figure, params double[] scaleCoefs)
+        {
+            foreach (double coef in scaleCoefs)
+            {
+                AddNewFig(figure.GetScaledImage(coef));
+            }
+        }
+        
+        /// <summary>
+        /// Добавляет несколько фигур нескольких размеров в файл
+        /// </summary>
+        public static void AddManyFigs(List<Figure> data, params double[] scaleCoefs)
+        {
+            foreach (Figure fig in data)
+            {
+                AddFigAllSizes(fig, scaleCoefs);
+            }
         }
     }
 }

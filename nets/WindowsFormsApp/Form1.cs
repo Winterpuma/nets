@@ -60,7 +60,10 @@ namespace WindowsFormsApp
             int width = Convert.ToInt32(textBox_w.Text);
             int height = Convert.ToInt32(textBox_h.Text);
             lst.Sort(Figure.CompareFiguresBySize);
-            var result = PrologSolutionFinder.GetAnyResult(lst, width, height);
+            FigureFileOperations.CreateNewFigFile();
+            FigureFileOperations.AddManyFigs(lst, 1);
+
+            /*var result = PrologSolutionFinder.GetAnyResult(lst, width, height);
 
             if (result == null)
             {
@@ -72,7 +75,7 @@ namespace WindowsFormsApp
                 pictureBoxResult.Size = resultPicture.Size;
                 pictureBoxResult.Image = resultPicture;
                 OutputText.SaveOneSingleListResult(lst, result, "result.txt");
-            }
+            }*/
 
         }
 

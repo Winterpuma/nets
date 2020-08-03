@@ -306,6 +306,21 @@ namespace PictureWork
             return "Fig" + indFig + "(Sizes) :- Sizes = [" + String.Join(",", allSizes) + "].";
         }
 
+        public static string CreateFigOneSize(Figure oneSizeFig, int indFig)
+        {
+            int indAngle = 0;
+            List<string> allAngles = new List<string>();
+            foreach (DeltaRepresentation curDelta in oneSizeFig.rotated)
+            {
+                SegmentRepresentation sr = new SegmentRepresentation(curDelta.GetDictRepresentation());
+                allAngles.Add("(" +
+                    indAngle + ", [" + String.Join(",", sr.segments[0]) + "]," + CreateFigFromDict(sr.segments) + ")");
+                indAngle++;
+            }
+            return "Fig" + indFig + "(Fig, " + oneSizeFig.scaleCoef + ") :- " +
+                "Fig = [" + String.Join(",", allAngles) + "]";
+        }
+
 
 
         public static List<string> CreateListOfResulVars(int n)
