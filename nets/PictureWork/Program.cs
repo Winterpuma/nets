@@ -37,7 +37,7 @@ namespace PictureWork
 
             // Масштабирование
             Size scaledLstSize = new Size((int)(lstSize.Width * scale), (int)(lstSize.Height * scale));
-            InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scaledLstSize);
+            InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
 
             // Загрузка фигур
             Console.WriteLine("Starting process. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);

@@ -39,11 +39,41 @@ namespace IO
             return (Image)(new Bitmap(img, new Size(img.Width / scale, img.Height / scale)));
         }
 
+        public static Image ResizeImage(Image img, double scale)
+        {
+            return (Image)(new Bitmap(img, new Size((int)(img.Width * scale), (int)(img.Height * scale))));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dirSrcPath"></param>
+        /// <param name="dirDstPath"></param>
+        /// <param name="scale">Во сколько раз уменьшить</param>
         public static void ScaleWholeDirectory(string dirSrcPath, string dirDstPath, int scale)
         {
             string[] files = Directory.GetFiles(dirSrcPath);
             List<Figure> data = new List<Figure>();
             
+            foreach (string f in files)
+            {
+                Image img = new Bitmap(f);
+                Image yourImage = ResizeImage(img, scale);
+                yourImage.Save(dirDstPath + Path.GetFileName(f));
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dirSrcPath"></param>
+        /// <param name="dirDstPath"></param>
+        /// <param name="scale">Коэффициент по отношению к старому размеру</param>
+        public static void ScaleWholeDirectory(string dirSrcPath, string dirDstPath, double scale)
+        {
+            string[] files = Directory.GetFiles(dirSrcPath);
+            List<Figure> data = new List<Figure>();
+
             foreach (string f in files)
             {
                 Image img = new Bitmap(f);
