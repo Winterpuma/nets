@@ -66,7 +66,11 @@ namespace IO
                 ResultFigPos figPos = res.allFigures[i];
                 Figure figData = data[i];
                 DeltaRepresentation solutionFig = figData.rotated[(int)figPos.angle];
-                DeltaRepresentation solutionFigWithoutScaling = figData.noScaling.GetTurnedDelta(solutionFig.angle, solutionFig.xCenter, solutionFig.yCenter);
+                DeltaRepresentation solutionFigWithoutScaling;
+                if (figPos.angle == 0)
+                    solutionFigWithoutScaling =  figData.noScaling;
+                else
+                    solutionFigWithoutScaling = figData.noScaling.GetTurnedDelta(solutionFig.angle, solutionFig.xCenter, solutionFig.yCenter);
 
                 PlaceDeltasOnABitmap(b, solutionFigWithoutScaling.deltas, figPos.xCenter, figPos.yCenter, color[i]);
             }

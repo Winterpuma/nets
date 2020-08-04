@@ -25,7 +25,7 @@ namespace DataClassLibrary
             get { return rotated[i].deltas; }
         }
 
-        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 1)
+        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 0)
         {
             this.path = path;
             name = Path.GetFileName(path);
