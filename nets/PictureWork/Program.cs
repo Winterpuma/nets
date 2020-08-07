@@ -21,6 +21,7 @@ namespace PictureWork
         static double scale = 0.7; // Коэф-т масштабирования
 
         static int angleStep = 30; // Шаг поворотов фигур
+        static double[] scaleCoefs = { 1 };
 
         static string pathTmp = "../../../../../tmp/";
         static string pathRes = "../../../../../result/";
@@ -51,30 +52,20 @@ namespace PictureWork
             Log("Loaded Figs.");
 
             // Группировка фигур по листам
-            List<List<Figure>> preDefArr = new List<List<Figure>>();
-            preDefArr.Add(FormOneListArrangement(data, 0, 1, 2));
+            //List<List<Figure>> preDefArr = new List<List<Figure>>();
+            //preDefArr.Add(FormOneListArrangement(data, 0, 1, 2));
             //preDefArr.Add(FormOneListArrangement(data, 4, 5, 6, 8, 9, 13, 14));
-            SortFigures(preDefArr);
-
-            // Загрузка фигур в файл пролога
-            FigureFileOperations.CreateNewFigFile(pathProlog + "figInfo.pl");
-            FigureFileOperations.AddManyFigs(data, 1);
-            //FigureFileOperations.AddManyFigs(data, new List<int> { 0, 4, 11 });
-
-            int[] figInd = new int[data.Count];
-            for (int i = 0; i < figInd.Length; i++)
-                figInd[i] = i;
-
+            //SortFigures(preDefArr);
 
 
             // Поиск решения
             Console.WriteLine("Starting result finding. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             //var result = PrologSolutionFinder.GetAnyResult(scaledLstSize.Width, scaledLstSize.Height, scale, figInd);
-            //var preDefArr = SolutionChecker.GetWorkingArrangementPreDefFigs(data, scaledLstSize.Width, scaledLstSize.Height, scale);
+            var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, pathProlog, scaleCoefs);
             //List<ResultData> result = new List<ResultData>();
             //result.Add(res);
-            var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scale);
-            if (result == null)
+            //var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scale);
+            if (preDefArr == null)
                 Log("Prolog finished. No answer.");
             else
             {
@@ -82,14 +73,14 @@ namespace PictureWork
                 // Отображение решения
                 Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
                 //OutputImage.SaveOneSingleListResult(data, result, scaledLstSize.Width, scaledLstSize.Height, pathRes);
-                OutputImage.SaveResult(preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
-                OutputText.SaveResult(preDefArr, result, pathRes + "m.txt");
+                //OutputImage.SaveResult(preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
+                //OutputText.SaveResult(preDefArr, result, pathRes + "m.txt");
             }
 
 
             Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Log("Finished.");
-            //Console.ReadLine();
+            Console.ReadLine();
         }       
         
         public static void CleanDir(string path)

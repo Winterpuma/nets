@@ -68,7 +68,8 @@ namespace PictureWork
             return res;
         }*/
 
-        public static bool DoesFiguresFit(int width, int height, double scale, params int[] figsIndexes)
+
+        public static bool DoesFiguresFit(int width, int height, double scale, List<int> figsIndexes)
         {
             if (GetAnyResult(width, height, scale, figsIndexes) != null)
                 return true;
@@ -159,14 +160,18 @@ namespace PictureWork
         /// <summary>
         /// Получает результат для всех фигур с масштабированием
         /// </summary>
-        public static ResultData GetAnyResult(int width, int height, double scale, params int[] figInd)
+        public static ResultData GetAnyResult(int width, int height, double scale, List<int> figInd)
         {
             // Предполагается, что файл с фигурами уже загружен
             string queryStr = QueryCreator.GetAnsQuery(width, height, scale, figInd);
             return GetAnyResultFigFile(queryStr, GetResultStringList, ResultData.GetRes);
         }
 
-        public static ResultData GetAnyResult(int width, int height, double scale, ResultData prevScaleRes, params int[] figInd)
+        /// <summary>
+        /// Получает результат для всех фигур основываясь
+        /// на другом результате (поиск в диапазоне)
+        /// </summary>
+        public static ResultData GetAnyResult(int width, int height, double scale, ResultData prevScaleRes, List<int> figInd)
         {
             // Предполагается, что файл с фигурами уже загружен
             string queryStr = QueryCreator.GetAnsQuery(width, height, scale, prevScaleRes, figInd);
@@ -175,7 +180,7 @@ namespace PictureWork
 
 
         #region Вспомогательные функции
-        private static void InitEngine(string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main4.pl")
+        private static void InitEngine(string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main5.pl")
         {
             String[] param = { "-q", "-f", prologCodePath };
             PlEngine.Initialize(param);

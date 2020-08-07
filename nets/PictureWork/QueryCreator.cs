@@ -324,7 +324,7 @@ namespace PictureWork
                 "Fig = [" + String.Join(",", allAngles) + "].";
         }
 
-        public static string GetAnsQuery(int width, int height, double scale, params int[] figInd)
+        public static string GetAnsQuery(int width, int height, double scale, List<int> figInd)
         {
             string queryStr = "generate(" + (width - 1) + "," + (height - 1) + ", Field),";
             List<string> figNames = new List<string>();
@@ -338,12 +338,12 @@ namespace PictureWork
             return queryStr;
         }
 
-        public static string GetAnsQuery(int width, int height, double scale, ResultData prevScaleRes, params int[] figInd)
+        public static string GetAnsQuery(int width, int height, double scale, ResultData prevScaleRes, List<int> figInd)
         {
             string queryStr = "generate(" + (width - 1) + "," + (height - 1) + ", Field),";
             List<string> figLocationInfo = new List<string>();
             string scaleStr = scale.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            for (int j = 0; j < figInd.Length; j++)
+            for (int j = 0; j < figInd.Count; j++)
             {
                 queryStr += "fig" + figInd[j] + "(Fig" + figInd[j] + "," + scaleStr + "),";
                 figLocationInfo.Add("(" + prevScaleRes.GetApproxLocationForNextFig(j, scale, width, height) + 
