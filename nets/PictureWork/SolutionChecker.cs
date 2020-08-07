@@ -70,15 +70,15 @@ namespace PictureWork
         private static bool DoesCurrentListFitPreDefFigs(List<int> figInd, List<double> scaleCoefs, int w, int h)
         {
             int newW = (int)(w * scaleCoefs[0]);
-            int newH = (int)(w * scaleCoefs[0]);
+            int newH = (int)(h * scaleCoefs[0]);
             ResultData res = PrologSolutionFinder.GetAnyResult(newW, newH, scaleCoefs[0], figInd);
             if (res == null)
                 return false;
             res.SetLstInfo(newW, newH, scaleCoefs[0]);
             for (int i = 1; i < scaleCoefs.Count; i++)
             {
-                newW = (int) (w * scaleCoefs[i]);
-                newH = (int)(w * scaleCoefs[i]);
+                newW = (int)(w * scaleCoefs[i]);
+                newH = (int)(h * scaleCoefs[i]);
                 res = PrologSolutionFinder.GetAnyResult(newW, newH, scaleCoefs[i], res, figInd);
                 if (res == null)
                     return false;
@@ -406,6 +406,27 @@ namespace PictureWork
                 for (int i = 0; i < curLst.Count; i++)
                     figInd.Add(curLst[i].id);
 
+                var res = PrologSolutionFinder.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
+                if (res == null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Error: can't fit figures with given arrangement");
+                    Console.ResetColor();
+                    return null;
+                }
+                else
+                {
+                    results.Add(res);
+                }
+            }
+            return results;
+        }
+
+        public static List<ResultData> PlacePreDefinedArrangement(List<List<int>> arrangement, int w, int h, double scale)
+        {
+            List<ResultData> results = new List<ResultData>();
+            foreach (List<int> figInd in arrangement)
+            {
                 var res = PrologSolutionFinder.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
                 if (res == null)
                 {

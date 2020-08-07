@@ -183,7 +183,7 @@ namespace PictureWork
         private static void InitEngine(string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main5.pl")
         {
             String[] param = { "-q", "-f", prologCodePath };
-            PlEngine.Initialize(param);
+            PlEngine.Initialize(param); // м.б. исключение CallbackOnCollectedDelegate при попытке писать в swi
         }
 
         /*

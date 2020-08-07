@@ -34,6 +34,19 @@ namespace IO
             }
         }
 
+        public static void SaveResult(List<Figure> data, List<List<int>> arrangement, List<ResultData> resultData, string path, int width, int height)
+        {
+            for (int i = 0; i < resultData.Count; i++)
+            {
+                List<Figure> curLst = new List<Figure>();
+                foreach (int ind in arrangement[i])
+                    curLst.Add(data[i]);
+                List<Color> color = GetNRandomColors(arrangement[i].Count);
+                Bitmap b = GetResultBitmap(curLst, resultData[i], width, height, color);
+                b.Save(path + i + ".png");
+            }
+        }
+
         /// <summary>
         /// Сохраняет все возможные результаты одного листа в графическом виде в указанную папку
         /// </summary>

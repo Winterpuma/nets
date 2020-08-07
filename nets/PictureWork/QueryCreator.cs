@@ -332,7 +332,7 @@ namespace PictureWork
             foreach (int i in figInd)
             {
                 queryStr += "fig" + i + "(Fig" + i + "," + scaleStr + "),";
-                figNames.Add("Fig" + i);
+                figNames.Add("((0," + (width - 1) + "),(0," + (height - 1) + "), (0,359),Fig" + i + ")");
             }
             queryStr += "place_it3_2_helper([" + String.Join(",", figNames) + "],Field, Ans, _).";
             return queryStr;

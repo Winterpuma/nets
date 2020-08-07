@@ -18,7 +18,7 @@ namespace PictureWork
 
         static Color srcFigColor = Color.FromArgb(155, 155, 155); // Цвет фигур(0, 0, 0) - черный 
         static Size lstSize = new Size(300, 100);//14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
-        static double scale = 0.7; // Коэф-т масштабирования
+        static double scale = 1; // Коэф-т масштабирования
 
         static int angleStep = 30; // Шаг поворотов фигур
         static double[] scaleCoefs = { 1 };
@@ -64,7 +64,7 @@ namespace PictureWork
             var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, pathProlog, scaleCoefs);
             //List<ResultData> result = new List<ResultData>();
             //result.Add(res);
-            //var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scale);
+            var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scale);
             if (preDefArr == null)
                 Log("Prolog finished. No answer.");
             else
@@ -73,8 +73,8 @@ namespace PictureWork
                 // Отображение решения
                 Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
                 //OutputImage.SaveOneSingleListResult(data, result, scaledLstSize.Width, scaledLstSize.Height, pathRes);
-                //OutputImage.SaveResult(preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
-                //OutputText.SaveResult(preDefArr, result, pathRes + "m.txt");
+                OutputImage.SaveResult(data, preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
+                //OutputText.SaveResult(preDefArr, result, pathRes + "result.txt");
             }
 
 
