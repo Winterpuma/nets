@@ -334,13 +334,27 @@ namespace PictureWork
                 queryStr += "fig" + i + "(Fig" + i + "," + scaleStr + "),";
                 figNames.Add("Fig" + i);
             }
-            queryStr += "place_it3_2([" + String.Join(",", figNames) + "],Field, Ans, _).";
+            queryStr += "place_it3_2_helper([" + String.Join(",", figNames) + "],Field, Ans, _).";
+            return queryStr;
+        }
+
+        public static string GetAnsQuery(int width, int height, double scale, ResultData prevScaleRes, params int[] figInd)
+        {
+            string queryStr = "generate(" + (width - 1) + "," + (height - 1) + ", Field),";
+            List<string> figLocationInfo = new List<string>();
+            string scaleStr = scale.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            for (int j = 0; j < figInd.Length; j++)
+            {
+                queryStr += "fig" + figInd[j] + "(Fig" + figInd[j] + "," + scaleStr + "),";
+                figLocationInfo.Add("(" + prevScaleRes.GetApproxLocationForNextFig(j, scale, width, height) + 
+                    ", Fig" + figInd[j] + ")");
+            }
+            queryStr += "place_it3_2_helper([" + String.Join(",", figLocationInfo) + "],Field, Ans, _).";
             return queryStr;
         }
 
 
-
-            public static List<string> CreateListOfResulVars(int n)
+        public static List<string> CreateListOfResulVars(int n)
         {
             List<string> args = new List<string>();
             for (int i = 1; i <= n; i++)

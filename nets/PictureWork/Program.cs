@@ -11,22 +11,25 @@ namespace PictureWork
 {
     class Program
     {
+        // Параметры
+        static string pathSrc = @"D:\GitHub\pics\realData0\"; // Путь к директории с фигурами
+        static string pathProlog = @"D:\GitHub\nets\nets\PictureWork\"; // Путь к директории с кодом пролога
+
+
+        static Color srcFigColor = Color.FromArgb(155, 155, 155); // Цвет фигур(0, 0, 0) - черный 
+        static Size lstSize = new Size(300, 100);//14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
+        static double scale = 0.7; // Коэф-т масштабирования
+
+        static int angleStep = 30; // Шаг поворотов фигур
+
+        static string pathTmp = "../../../../../tmp/";
+        static string pathRes = "../../../../../result/";
+
+
         static void Main(string[] args)
-        {
+        {   
             //Environment.SetEnvironmentVariable("SWI_HOME_DIR", @"D:\\Program Files (x86)\\swipl");
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
-
-            // Параметры
-            string pathSrc = @"D:\GitHub\pics\realData\"; // Путь к директории с фигурами
-            string pathProlog = @"D:\GitHub\nets\nets\PictureWork\"; // Путь к директории с кодом пролога
-
-            Color srcFigColor = Color.FromArgb(155, 155, 155); // Цвет фигур(0, 0, 0) - черный 
-            Size lstSize = new Size(300, 100);//14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
-            double scale = 0.1; // Коэф-т масштабирования
-            int angleStep = 360; // Шаг поворотов фигур
-            
-            string pathTmp = "../../../../../tmp/";
-            string pathRes = "../../../../../result/";
             
             CleanDir(pathTmp);
             CleanDir(pathRes);
@@ -35,6 +38,7 @@ namespace PictureWork
             // Загрузка из PDF и масштабирование
             //InputHandling.ConvertPDFDirToScaledImg(pathSrc, pathTmp, scale);
 
+            Log("Started. Scale: " + scale + " angleStep:" + angleStep + " lstSize: " + lstSize.Width + "x" + lstSize.Height);
             // Масштабирование
             Size scaledLstSize = new Size((int)(lstSize.Width * scale), (int)(lstSize.Height * scale));
             InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
@@ -44,16 +48,18 @@ namespace PictureWork
             List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale);
             data.Sort(Figure.CompareFiguresBySize);
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+            Log("Loaded Figs.");
 
             // Группировка фигур по листам
-            /*List<List<Figure>> preDefArr = new List<List<Figure>>();
-            preDefArr.Add(FormOneListArrangement(data, 0, 1, 2, 3, 7));
-            preDefArr.Add(FormOneListArrangement(data, 4, 5, 6, 8, 9, 13, 14));
-            SortFigures(preDefArr);*/
+            List<List<Figure>> preDefArr = new List<List<Figure>>();
+            preDefArr.Add(FormOneListArrangement(data, 0, 1, 2));
+            //preDefArr.Add(FormOneListArrangement(data, 4, 5, 6, 8, 9, 13, 14));
+            SortFigures(preDefArr);
 
             // Загрузка фигур в файл пролога
             FigureFileOperations.CreateNewFigFile(pathProlog + "figInfo.pl");
             FigureFileOperations.AddManyFigs(data, 1);
+            //FigureFileOperations.AddManyFigs(data, new List<int> { 0, 4, 11 });
 
             int[] figInd = new int[data.Count];
             for (int i = 0; i < figInd.Length; i++)
@@ -64,19 +70,26 @@ namespace PictureWork
             // Поиск решения
             Console.WriteLine("Starting result finding. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             //var result = PrologSolutionFinder.GetAnyResult(scaledLstSize.Width, scaledLstSize.Height, scale, figInd);
-            var preDefArr = SolutionChecker.GetWorkingArrangementPreDefFigs(data, scaledLstSize.Width, scaledLstSize.Height, scale);
+            //var preDefArr = SolutionChecker.GetWorkingArrangementPreDefFigs(data, scaledLstSize.Width, scaledLstSize.Height, scale);
             //List<ResultData> result = new List<ResultData>();
             //result.Add(res);
             var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scale);
+            if (result == null)
+                Log("Prolog finished. No answer.");
+            else
+            {
+                Log("Prolog finished. Answer was found.");
+                // Отображение решения
+                Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+                //OutputImage.SaveOneSingleListResult(data, result, scaledLstSize.Width, scaledLstSize.Height, pathRes);
+                OutputImage.SaveResult(preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
+                OutputText.SaveResult(preDefArr, result, pathRes + "m.txt");
+            }
 
-
-            // Отображение решения
-            Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            //OutputImage.SaveOneSingleListResult(data, result, scaledLstSize.Width, scaledLstSize.Height, pathRes);
-            OutputImage.SaveResult(preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
 
             Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            Console.ReadLine();
+            Log("Finished.");
+            //Console.ReadLine();
         }       
         
         public static void CleanDir(string path)
@@ -120,5 +133,11 @@ namespace PictureWork
             return res;
         }
         
+        static void Log(string msg)
+        {
+            string time = "[" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + "] ";
+            File.AppendAllText(pathRes + "log.txt", time + msg + "\n");
+        }
+
     }
 }

@@ -22,6 +22,9 @@ namespace DataClassLibrary
     public class ResultData
     {
         public List<ResultFigPos> allFigures = new List<ResultFigPos>();
+        public double scale;
+        public int lstWidth;
+        public int lstHeight;
 
         public ResultData(){ }
 
@@ -131,7 +134,45 @@ namespace DataClassLibrary
                 allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
             }
         }
+
+        public void SetLstInfo(int lstW, int lstH, double scale)
+        {
+            lstHeight = lstH;
+            lstWidth = lstW;
+            this.scale = scale;
+        }
+
+
+        /// <summary>
+        /// Возвращает диапазоны
+        /// </summary>
+        /// <returns>(45,50),(55,65),(0,15)</returns>
+        public string GetApproxLocationForNextFig(int indFig, double newScale, int newLstWidth, int newLstHeight)
+        {
+            ResultFigPos figRes = allFigures[indFig];
+
+            double kScale = newScale / scale;
+
+            int newXCenter = (int) ((figRes.xCenter - (lstWidth / 2)) * kScale) + (newLstWidth / 2);
+            int newYCenter = (int) ((figRes.yCenter - (lstHeight / 2)) * kScale) + (newLstHeight / 2);
             
+            int dMove = (kScale > 1) ? (int) Math.Ceiling(kScale) + 2 : 1;
+
+            return GetFigRange(newXCenter, dMove, newLstWidth) + "," +
+                GetFigRange(newYCenter, dMove, newLstHeight) + "," +
+                GetFigRange((int)figRes.angle, 3, 360); // 359? а если угол отрицательный, то по хорошему тоже нужно проверить
+        }
+
+        private string GetFigRange(int center, int dCenter, int maxSize)
+        {
+            int minCoord = center - dCenter;
+            if (minCoord < 0)
+                minCoord = 0;
+            int maxCoord = center + dCenter;
+            if (maxCoord > maxSize)
+                maxCoord = maxSize;
+            return "(" + minCoord + "," + maxCoord + ")";
+        }
 
         public static List<ResultData> PackAllPossibleResults(IEnumerable<string> allResults, bool flagNameWithAngle)
         {

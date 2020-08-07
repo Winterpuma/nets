@@ -213,6 +213,9 @@ namespace DataClassLibrary
 
         private void CenterDeltaRepresentation()
         {
+            if (deltas.Count == 0)
+                throw new Exception("Empty figure, maybe different color?"); ;
+
             int maxX = deltas.Max((Point p) => p.X);
             int minX = deltas.Min((Point p) => p.X);
             int maxY = deltas.Max((Point p) => p.Y);

@@ -9,9 +9,7 @@ namespace PictureWork
 {
     public static class PrologSolutionFinder
     {
-        static string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main4.pl";
-        static string tmpCodePath = "tmp_main.pl";
-        static string figInfoPath = "figInfo.pl";
+        //static string tmpCodePath = "tmp_main.pl";
 
 
         private static void DbgCurLst(List<Figure> curLst)
@@ -27,6 +25,7 @@ namespace PictureWork
             Console.ResetColor();
         }
 
+        /*
         public static bool DoesFiguresFit(List<Figure> data, int width, int height)
         {
             DbgCurLst(data);
@@ -67,7 +66,7 @@ namespace PictureWork
                 PlEngine.PlCleanup();
             }
             return res;
-        }
+        }*/
 
         public static bool DoesFiguresFit(int width, int height, double scale, params int[] figsIndexes)
         {
@@ -77,6 +76,7 @@ namespace PictureWork
                 return false;
         }
 
+        /*
         private static ResultData GetAnyResultTemplateAppendToExisting(List<Figure> data, int width, int height,
             Func<int, int, List<Figure>, string, string> predicateCreator,
             Func<PlTerm, string> convertResToStr,
@@ -118,7 +118,7 @@ namespace PictureWork
         public static ResultData GetAnyResult(List<Figure> data, int width, int height)
         {
             return GetAnyResultTemplateAppendToExisting(data, width, height, QueryCreator.CreatePredSegmentsTurn, GetResultStringList, ResultData.GetRes);
-        }
+        }*/
 
 
 
@@ -166,19 +166,27 @@ namespace PictureWork
             return GetAnyResultFigFile(queryStr, GetResultStringList, ResultData.GetRes);
         }
 
+        public static ResultData GetAnyResult(int width, int height, double scale, ResultData prevScaleRes, params int[] figInd)
+        {
+            // Предполагается, что файл с фигурами уже загружен
+            string queryStr = QueryCreator.GetAnsQuery(width, height, scale, prevScaleRes, figInd);
+            return GetAnyResultFigFile(queryStr, GetResultStringList, ResultData.GetRes);
+        }
+
 
         #region Вспомогательные функции
-        private static void InitEngine()
+        private static void InitEngine(string prologCodePath = "D:\\GitHub\\nets\\nets\\PictureWork\\main4.pl")
         {
             String[] param = { "-q", "-f", prologCodePath };
             PlEngine.Initialize(param);
         }
 
+        /*
         private static void CreateNewMain(Func<int, int, List<Figure>, string, string> predicate, int width, int height, List<Figure> data, string predName)
         {
             string createdPredicate = predicate(width, height, data, predName);
             AppendStrToFile(tmpCodePath, prologCodePath, createdPredicate);
-        }
+        }*/
 
         private static void AppendStrToFile(string tmpCodePath, string prologCodePath, string strToAppend)
         {
