@@ -61,5 +61,19 @@ namespace PictureWork
                 AddFigAllSizes(fig, scaleCoefs);
             }
         }
+
+        /// <summary>
+        /// Добавляет несколько фигур нужных углов в файл
+        /// </summary>
+        public static void AddManyFigs(List<Figure> data, List<int> angles)
+        {
+            for (int i = 0; i < data.Count; i++)
+            {
+                List<DeltaRepresentation> newAnglLst = new List<DeltaRepresentation>();
+                newAnglLst.Add(data[i].rotated[angles[i]]);
+                data[i].rotated = newAnglLst;
+                AddNewFig(data[i]);
+            }
+        }
     }
 }

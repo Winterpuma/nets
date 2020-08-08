@@ -150,7 +150,7 @@ namespace PictureWork
             }
             finally
             {
-                //PlEngine.PlCleanup();
+                PlEngine.PlCleanup();
             }
             return null;
         }

@@ -40,7 +40,7 @@ namespace IO
             {
                 List<Figure> curLst = new List<Figure>();
                 foreach (int ind in arrangement[i])
-                    curLst.Add(data[i]);
+                    curLst.Add(data[ind]);
                 List<Color> color = GetNRandomColors(arrangement[i].Count);
                 Bitmap b = GetResultBitmap(curLst, resultData[i], width, height, color);
                 b.Save(path + i + ".png");
@@ -80,14 +80,20 @@ namespace IO
                 Figure figData = data[i];
                 DeltaRepresentation solutionFig = figData.rotated[(int)figPos.angle];
                 DeltaRepresentation solutionFigWithoutScaling;
-                if (figPos.angle == 0)
-                    solutionFigWithoutScaling =  figData.noScaling;
+                if (figData.borderDistance == 0)
+                    solutionFigWithoutScaling = solutionFig;
                 else
-                    solutionFigWithoutScaling = figData.noScaling.GetTurnedDelta(solutionFig.angle, solutionFig.xCenter, solutionFig.yCenter);
+                {
+                    if (figPos.angle == 0)
+                        solutionFigWithoutScaling =  figData.noScaling;
+                    else
+                        solutionFigWithoutScaling = figData.noScaling.GetTurnedDelta(solutionFig.angle, solutionFig.xCenter, solutionFig.yCenter);
+                }
 
                 PlaceDeltasOnABitmap(b, solutionFigWithoutScaling.deltas, figPos.xCenter, figPos.yCenter, color[i]);
+                b.Save(i + ".png");
             }
-            b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
+            //b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
             return b;
         }
 
@@ -96,7 +102,8 @@ namespace IO
         {
             foreach (Point p in deltas)
             {
-                bmp.SetPixel(centerX + p.X, centerY + p.Y, color);
+                if (centerY + p.Y > 0 && centerX - p.X < 300)
+                    bmp.SetPixel(centerX - p.X, centerY + p.Y, color);
             }
         }
 

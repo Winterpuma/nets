@@ -56,8 +56,7 @@ namespace PictureWork
         {
             // Загрузка фигур в файл пролога
             FigureFileOperations.CreateNewFigFile(pathProlog + "figInfo.pl");
-            foreach (double scale in scaleCoefs)
-                FigureFileOperations.AddManyFigs(data, scale);
+            FigureFileOperations.AddManyFigs(data, scaleCoefs);
 
             // Получение результата
             List<int> indexes = new List<int>();
@@ -134,7 +133,7 @@ namespace PictureWork
         }*/
         #endregion
 
-        private static void Dbg1(List<List<Figure>> curSequence, ConsoleColor col = ConsoleColor.Yellow)
+        private static void Dbg1(List<List<int>> curSequence, ConsoleColor col = ConsoleColor.Yellow)
         {
             Console.ForegroundColor = col;
             Console.WriteLine("-----------");
@@ -142,7 +141,7 @@ namespace PictureWork
             {
                 item.ForEach((fig) =>
                 {
-                    Console.Write(fig.name + " ");
+                    Console.Write(fig + " ");
                 });
                 Console.WriteLine();
             });
@@ -151,13 +150,13 @@ namespace PictureWork
             Console.ResetColor();
         }
 
-        private static void Dbg1(List<Figure> curSequence, ConsoleColor col = ConsoleColor.Yellow)
+        private static void Dbg1(List<int> curSequence, ConsoleColor col = ConsoleColor.Yellow)
         {
             Console.ForegroundColor = col;
             Console.WriteLine("----------- \nПроверяем лист: ");
             curSequence.ForEach((fig) =>
             {
-                    Console.Write(fig.name + " ");
+                    Console.Write(fig + " ");
             });
             Console.WriteLine();
 
@@ -358,7 +357,7 @@ namespace PictureWork
             }
             if (data.Count == 0)
             {
-                //Dbg1(result);
+                Dbg1(result);
                 return result;
             }
 
@@ -372,7 +371,7 @@ namespace PictureWork
             {
                 var newCurLst = new List<int>(result[i]);
                 newCurLst.Add(currentFig);
-                //Dbg1(newCurLst, ConsoleColor.Magenta);
+                Dbg1(newCurLst, ConsoleColor.Magenta);
                 if (DoesCurrentListFitPreDefFigs(newCurLst, scaleCoefs, w, h))
                 {
                     result[i].Add(currentFig);

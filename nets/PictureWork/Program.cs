@@ -48,6 +48,7 @@ namespace PictureWork
             Console.WriteLine("Starting process. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale);
             data.Sort(Figure.CompareFiguresBySize);
+            Figure.UpdIndexes(data);
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Log("Loaded Figs.");
 

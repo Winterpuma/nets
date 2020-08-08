@@ -14,7 +14,7 @@ namespace DataClassLibrary
         public double scaleCoef = 1;
         Bitmap bitmap;
         int angleStep;
-        int borderDistance;
+        public int borderDistance;
         Color figColor;
 
         public DeltaRepresentation noScaling;
@@ -25,7 +25,7 @@ namespace DataClassLibrary
             get { return rotated[i].deltas; }
         }
 
-        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 0)
+        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 2)
         {
             this.path = path;
             name = Path.GetFileName(path);
@@ -111,7 +111,7 @@ namespace DataClassLibrary
         {
             if (scaleCoef == 1)
                 return this;
-            Size scaledSize = new Size((int)(bitmap.Width / scaleCoef), (int)(bitmap.Height / scaleCoef));
+            Size scaledSize = new Size((int)(bitmap.Width * scaleCoef), (int)(bitmap.Height * scaleCoef));
             Bitmap scaledBitmap = new Bitmap(bitmap, scaledSize);
             return new Figure(this, scaledBitmap, scaleCoef);
         }
@@ -119,6 +119,14 @@ namespace DataClassLibrary
         public static int CompareFiguresBySize(Figure x, Figure y)
         {
             return y[0].Count - x[0].Count;
+        }
+
+        public static void UpdIndexes(List<Figure> data)
+        {
+            for (int i = 0; i < data.Count; i++)
+            {
+                data[i].id = i;
+            }
         }
     }
 }
