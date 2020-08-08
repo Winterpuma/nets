@@ -73,6 +73,7 @@ namespace PictureWork
             ResultData res = PrologSolutionFinder.GetAnyResult(newW, newH, scaleCoefs[0], figInd);
             if (res == null)
                 return false;
+            Console.WriteLine(res);
             res.SetLstInfo(newW, newH, scaleCoefs[0]);
             for (int i = 1; i < scaleCoefs.Count; i++)
             {
@@ -81,6 +82,7 @@ namespace PictureWork
                 res = PrologSolutionFinder.GetAnyResult(newW, newH, scaleCoefs[i], res, figInd);
                 if (res == null)
                     return false;
+                Console.WriteLine(res);
                 res.SetLstInfo(newW, newH, scaleCoefs[i]);
             }
 

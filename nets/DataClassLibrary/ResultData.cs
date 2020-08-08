@@ -17,6 +17,11 @@ namespace DataClassLibrary
             this.yCenter = yCenter;
             this.angle = angle;
         }
+
+        public override string ToString()
+        {
+            return xCenter + " " + yCenter + " " + angle;
+        }
     }
 
     public class ResultData
@@ -181,7 +186,10 @@ namespace DataClassLibrary
                 res.Add(new ResultData(currentResult, flagNameWithAngle));
             return res;
         }
-        
 
+        public override string ToString()
+        {
+            return String.Join("\n", allFigures);
+        }
     }
 }

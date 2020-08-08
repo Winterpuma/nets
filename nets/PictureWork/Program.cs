@@ -17,11 +17,12 @@ namespace PictureWork
 
 
         static Color srcFigColor = Color.FromArgb(155, 155, 155); // Цвет фигур(0, 0, 0) - черный 
-        static Size lstSize = new Size(300, 100);//14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
+        static Size lstSize = new Size(100, 300);//14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
         static double scale = 1; // Коэф-т масштабирования
 
         static int angleStep = 30; // Шаг поворотов фигур
-        static double[] scaleCoefs = { 1 };
+        static int borderDistance = 0;
+        static double[] scaleCoefs = { 0.4, 1 };
 
         static string pathTmp = "../../../../../tmp/";
         static string pathRes = "../../../../../result/";
@@ -46,7 +47,7 @@ namespace PictureWork
 
             // Загрузка фигур
             Console.WriteLine("Starting process. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale);
+            List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale, borderDistance);
             data.Sort(Figure.CompareFiguresBySize);
             Figure.UpdIndexes(data);
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);

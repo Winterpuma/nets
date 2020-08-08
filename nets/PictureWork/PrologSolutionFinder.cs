@@ -131,7 +131,10 @@ namespace PictureWork
             try
             {
                 if (!PlEngine.IsInitialized)
+                {
+                    //Console.WriteLine("~~~~~~~~~~~~INIIIITTTT~~~~~~~~~~~~");
                     InitEngine();
+                }
 
                 using (PlQuery q = new PlQuery(queryStr))
                 {
@@ -148,10 +151,11 @@ namespace PictureWork
                 Console.WriteLine(e.MessagePl);
                 Console.WriteLine(e.Message);
             }
-            finally
+
+            /*finally
             {
                 PlEngine.PlCleanup();
-            }
+            }*/
             return null;
         }
         
@@ -162,6 +166,7 @@ namespace PictureWork
         /// </summary>
         public static ResultData GetAnyResult(int width, int height, double scale, List<int> figInd)
         {
+            Console.WriteLine("~~~~~~ SCALE: " + scale);
             // Предполагается, что файл с фигурами уже загружен
             string queryStr = QueryCreator.GetAnsQuery(width, height, scale, figInd);
             return GetAnyResultFigFile(queryStr, GetResultStringList, ResultData.GetRes);
@@ -173,8 +178,10 @@ namespace PictureWork
         /// </summary>
         public static ResultData GetAnyResult(int width, int height, double scale, ResultData prevScaleRes, List<int> figInd)
         {
+            Console.WriteLine("~~~~~~ SCALE: " + scale);
             // Предполагается, что файл с фигурами уже загружен
             string queryStr = QueryCreator.GetAnsQuery(width, height, scale, prevScaleRes, figInd);
+            Console.WriteLine(queryStr);
             return GetAnyResultFigFile(queryStr, GetResultStringList, ResultData.GetRes);
         }
 

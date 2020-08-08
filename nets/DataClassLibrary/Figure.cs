@@ -25,7 +25,7 @@ namespace DataClassLibrary
             get { return rotated[i].deltas; }
         }
 
-        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 2)
+        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 0)
         {
             this.path = path;
             name = Path.GetFileName(path);
@@ -47,7 +47,7 @@ namespace DataClassLibrary
             this.scaleCoef = parentFig.scaleCoef * scaleCoef;
             angleStep = parentFig.angleStep;
             figColor = parentFig.figColor;
-            borderDistance = parentFig.borderDistance;
+            borderDistance = (int)Math.Floor(parentFig.borderDistance * scaleCoef); //? ok?
 
             bitmap = editedFig;
             LoadFigureFromItsBitmap(borderDistance);
@@ -75,7 +75,7 @@ namespace DataClassLibrary
         }
         
         
-        public static List<Figure> LoadFigures(string path, Color figColor, int angleStep = 1, double scale = 1)
+        public static List<Figure> LoadFigures(string path, Color figColor, int angleStep = 1, double scale = 1, int borderDistance = 0)
         {
             string[] files = Directory.GetFiles(path);
             List<Figure> data = new List<Figure>();
@@ -83,7 +83,7 @@ namespace DataClassLibrary
             int id = 0;
             foreach (string f in files)
             {
-                Figure fig = new Figure(f, id, figColor, angleStep);
+                Figure fig = new Figure(f, id, figColor, angleStep, borderDistance);
                 fig.scaleCoef = scale;
                 data.Add(fig);
                 id++;
