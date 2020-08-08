@@ -8,6 +8,7 @@ namespace PictureWork
 {
     static class QueryCreator
     {
+        /*
         #region solution Deltas
         /// <summary>
         /// Формирует строку вида  [[(name1_angle1,[(X,Y),(X,Y)]),(name1_angle2,[(X,Y),(X,Y)])],
@@ -234,7 +235,9 @@ namespace PictureWork
             return "[" + String.Join(",", distinctY) + "]";
         }
         #endregion
+        */
 
+            /*
         public static string CreatePredSegmentsTurn(int sizeX, int sizeY, List<Figure> data, string predName = "testFigsTurn")
         {
             return predName + "(Ans)" + " :- " + CreateBodySegmentsTurn(sizeX, sizeY, data);
@@ -265,7 +268,7 @@ namespace PictureWork
             }
             res += "place_it3_2([" + String.Join(",", figNames) + "],F,Ans,_).";
             return res;
-        }
+        }*/
 
         /// <summary>
         /// [(-1,[(0,1)]),
@@ -284,7 +287,7 @@ namespace PictureWork
             return "[" + String.Join(",", distinctY) + "]";
         }
 
-
+        /*
         public static string CreateFigDifferentSizes(List<Figure> differentSizes, int indFig)
         {
             string res = "Fig" + indFig + " = ";
@@ -304,18 +307,17 @@ namespace PictureWork
                 allSizes.Add("[" + String.Join(",", allAngles) + "]");
             }
             return "Fig" + indFig + "(Sizes) :- Sizes = [" + String.Join(",", allSizes) + "].";
-        }
+        }*/
 
         public static string CreateFigOneSize(Figure oneSizeFig)
         {
-            int indAngle = 0;
             List<string> allAngles = new List<string>();
-            foreach (DeltaRepresentation curDelta in oneSizeFig.rotated)
+            foreach (KeyValuePair<int, DeltaRepresentation> curDelta in oneSizeFig.rotated)
             {
-                SegmentRepresentation sr = new SegmentRepresentation(curDelta.GetDictRepresentation());
+                SegmentRepresentation sr = new SegmentRepresentation(curDelta.Value.GetDictRepresentation());
                 allAngles.Add("(" +
-                    indAngle + ", [" + String.Join(",", sr.segments[0]) + "]," + CreateFigFromDict(sr.segments) + ")");
-                indAngle++;
+                    curDelta.Key + ", [" + String.Join(",", sr.segments[0]) + "]," + CreateFigFromDict(sr.segments) + ")");
+                
             }
 
             string scaleStr = oneSizeFig.scaleCoef.ToString(System.Globalization.CultureInfo.InvariantCulture);

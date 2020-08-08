@@ -18,7 +18,7 @@ namespace DataClassLibrary
         Color figColor;
 
         public DeltaRepresentation noScaling;
-        public List<DeltaRepresentation> rotated = new List<DeltaRepresentation>();
+        public Dictionary<int, DeltaRepresentation> rotated = new Dictionary<int, DeltaRepresentation>();
 
         public List<Point> this[int i]
         {
@@ -66,11 +66,11 @@ namespace DataClassLibrary
             else
                 originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
 
-            rotated.Add(originalDeltas);
-
+            rotated.Add(0, originalDeltas);
+            
             for (int angle = angleStep; angle < 360; angle += angleStep)
             {
-                rotated.Add(originalDeltas.GetTurnedDelta(angle, 0, 0));
+                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle, 0, 0));
             }
         }
         
@@ -97,13 +97,13 @@ namespace DataClassLibrary
 
             DeltaRepresentation originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
 
-            rotated.Add(originalDeltas);
+            rotated.Add(0, originalDeltas);
             Console.WriteLine("Loaded original delta. Delta len " + originalDeltas.deltas.Count);
 
             for (int angle = angleStep; angle < 360; angle += angleStep)
             {
                 Console.Write(" " + angle);
-                rotated.Add(originalDeltas.GetTurnedDelta(angle, 0, 0));
+                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle, 0, 0));
             }
         }
 
