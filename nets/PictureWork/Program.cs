@@ -17,12 +17,12 @@ namespace PictureWork
 
 
         static Color srcFigColor = Color.FromArgb(155, 155, 155); // Цвет фигур(0, 0, 0) - черный 
-        static Size lstSize = new Size(100, 300);//14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
+        static Size lstSize = new Size(300, 100);//14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
         static double scale = 1; // Коэф-т масштабирования
 
         static int angleStep = 30; // Шаг поворотов фигур
         static int borderDistance = 0;
-        static double[] scaleCoefs = { 0.4, 1 };
+        static double[] scaleCoefs = { 1 };
 
         static string pathTmp = "../../../../../tmp/";
         static string pathRes = "../../../../../result/";
@@ -50,6 +50,7 @@ namespace PictureWork
             List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale, borderDistance);
             data.Sort(Figure.CompareFiguresBySize);
             Figure.UpdIndexes(data);
+            //Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Log("Loaded Figs.");
 
@@ -67,7 +68,7 @@ namespace PictureWork
             //List<ResultData> result = new List<ResultData>();
             //result.Add(res);
             var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scale);
-            if (preDefArr == null)
+            if (result == null)
                 Log("Prolog finished. No answer.");
             else
             {

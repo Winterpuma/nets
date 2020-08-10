@@ -230,5 +230,15 @@ namespace DataClassLibrary
                 deltas[i] = new Point(cur.X - dX, cur.Y - dY);
             }
         }
+
+        public int GetWidth()
+        {
+            return deltas.Max(p => p.X) - deltas.Min(p => p.X);
+        }
+
+        public int GetHeight()
+        {
+            return deltas.Max(p => p.Y) - deltas.Min(p => p.Y);
+        }
     }
 }

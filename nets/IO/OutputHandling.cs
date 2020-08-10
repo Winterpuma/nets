@@ -103,7 +103,7 @@ namespace IO
             foreach (Point p in deltas)
             {
                 if (centerY + p.Y > 0 && centerX - p.X < 300)
-                    bmp.SetPixel(centerX - p.X, centerY + p.Y, color);
+                    bmp.SetPixel(centerX + p.X, centerY + p.Y, color);
             }
         }
 

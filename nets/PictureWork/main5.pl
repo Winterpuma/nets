@@ -134,7 +134,7 @@ place_it3_2_helper(_,[],_,_):-fail.
 place_it3_2_helper([(_,_,_,[] )|_],
                      _,
                      _,
-                     _):-!,fail.
+                     _):-fail.
 place_it3_2_helper([(Dx,Dy,(AngleMin,AngleMax),[(Angle,Delta,H)|_] )|L],
                      F,
                      [(X,Y,Angle)|Ans],

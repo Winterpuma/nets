@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Linq;
 
 namespace DataClassLibrary
 {
@@ -91,6 +92,7 @@ namespace DataClassLibrary
             return data;
         }
 
+        /*
         public void ChangeBorderDistance(int borderDistance)
         {
             rotated.Clear();
@@ -105,7 +107,7 @@ namespace DataClassLibrary
                 Console.Write(" " + angle);
                 rotated.Add(angle, originalDeltas.GetTurnedDelta(angle, 0, 0));
             }
-        }
+        }*/
 
         public Figure GetScaledImage(double scaleCoef)
         {
@@ -127,6 +129,25 @@ namespace DataClassLibrary
             {
                 data[i].id = i;
             }
+        }
+
+        public void DeleteWrongAngles(int w, int h)
+        {
+            List<int> anglesToDelete = new List<int>();
+            foreach (KeyValuePair<int, DeltaRepresentation> curAngle in rotated)
+            {
+                if (w < curAngle.Value.GetWidth() || h < curAngle.Value.GetHeight())
+                    anglesToDelete.Add(curAngle.Key);
+            }
+
+            foreach (int i in anglesToDelete)
+                rotated.Remove(i);
+        }
+
+        public static void DeleteWrongAngles(int w, int h, List<Figure> data)
+        {
+            foreach (Figure f in data)
+                f.DeleteWrongAngles(w, h);
         }
     }
 }
