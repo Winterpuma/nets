@@ -29,7 +29,7 @@ namespace PictureWork
 
         static void Main(string[] args)
         {
-            
+            ;// hmm;
         }
         
         static void oldMain(string[] args)
