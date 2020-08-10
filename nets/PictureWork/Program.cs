@@ -24,11 +24,15 @@ namespace PictureWork
         static int borderDistance = 0;
         static double[] scaleCoefs = { 1 };
 
-        static string pathTmp = "../../../../../tmp/";
-        static string pathRes = "../../../../../result/";
-
+        static string pathTmp = "tmp/";
+        static string pathRes = "result/";
 
         static void Main(string[] args)
+        {
+            
+        }
+        
+        static void oldMain(string[] args)
         {   
             //Environment.SetEnvironmentVariable("SWI_HOME_DIR", @"D:\\Program Files (x86)\\swipl");
             Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
