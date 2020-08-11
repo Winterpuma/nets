@@ -40,6 +40,8 @@ namespace PictureWork
             try
             {
                 string ans = getAns().Result;
+                if (ans == "NoAnswer")
+                    return null;
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,

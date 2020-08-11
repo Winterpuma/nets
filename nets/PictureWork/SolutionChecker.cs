@@ -384,7 +384,7 @@ namespace PictureWork
                     result[i].Add(currentFig);
                     var curResult = GetWorkingArrangementPreDefFigs(nextData, scaleCoefs, w, h, result);
                     if (curResult != null)
-                        return result;
+                        return curResult;
                 }
             }
 
