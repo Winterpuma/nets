@@ -93,7 +93,7 @@ namespace IO
                 PlaceDeltasOnABitmap(b, solutionFigWithoutScaling.deltas, figPos.xCenter, figPos.yCenter, color[i]);
                 b.Save(i + ".png");
             }
-            //b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
+            b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
             return b;
         }
 

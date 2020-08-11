@@ -16,6 +16,7 @@ namespace PictureWork
         // C:\Program Files\swipl\bin
         static string serverAdress = "http://localhost:8080/";
         static string prologPath = @"C:\Program Files\swipl\bin";
+        static string codePath = "";
         private static readonly string _mainName = "mainServer.pl";
         private static readonly string _qFName = "queryFile.pl";
         private static readonly string _queryName = "myQuery";
@@ -23,7 +24,7 @@ namespace PictureWork
 
         static public bool IsInitialized = false;
 
-        static public void Initialize(string codePath)
+        static public void Initialize()
         {
             Environment.SetEnvironmentVariable("Path", prologPath);
             string strCmdText = "/C swipl " + codePath + _mainName;
@@ -31,19 +32,48 @@ namespace PictureWork
             IsInitialized = true;
         }
 
-        static public ResultData GetAnyResult(string query)
+        private static ResultData GetAnyResult(string query)
         {
+            if (!IsInitialized)
+                Initialize();
             CreaterQueryFile(_qFName, query);
-            string ans = getAns().Result;
-            var options = new JsonSerializerOptions
+            try
             {
-                WriteIndented = true,
-            };
-            options.Converters.Add(new ResultFigPosConverter(options));
-            ResultData result = JsonSerializer.Deserialize<ResultData>(ans, options);
+                string ans = getAns().Result;
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                };
+                options.Converters.Add(new ResultFigPosConverter(options));
+                ResultData result = JsonSerializer.Deserialize<ResultData>(ans, options);
 
-            return result;
+                return result;
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("Exit by timer");
+                return null;
+            }
+
         }
+
+        public static ResultData GetAnyResult(int width, int height, double scale, List<int> figInd)
+        {
+            Console.WriteLine("~~~~~~ SCALE: " + scale);
+            // Предполагается, что файл с фигурами уже загружен
+            string queryStr = QueryCreator.GetAnsQuery(width, height, scale, figInd);
+            return GetAnyResult(queryStr);
+        }
+
+        public static ResultData GetAnyResult(int width, int height, double scale, ResultData prevScaleRes, List<int> figInd)
+        {
+            Console.WriteLine("~~~~~~ SCALE: " + scale);
+            // Предполагается, что файл с фигурами уже загружен
+            string queryStr = QueryCreator.GetAnsQuery(width, height, scale, prevScaleRes, figInd);
+            Console.WriteLine(queryStr);
+            return GetAnyResult(queryStr);
+        }
+
 
         private static void CreaterQueryFile(string fileName, string strToAppend)
         {

@@ -75,7 +75,7 @@ namespace PictureWork
         {
             int newW = (int)(w * scaleCoefs[0]);
             int newH = (int)(h * scaleCoefs[0]);
-            ResultData res = PrologSolutionFinder.GetAnyResult(newW, newH, scaleCoefs[0], figInd);
+            ResultData res = PrologServer.GetAnyResult(newW, newH, scaleCoefs[0], figInd);
             if (res == null)
                 return false;
             Console.WriteLine(res);
@@ -84,7 +84,7 @@ namespace PictureWork
             {
                 newW = (int)(w * scaleCoefs[i]);
                 newH = (int)(h * scaleCoefs[i]);
-                res = PrologSolutionFinder.GetAnyResult(newW, newH, scaleCoefs[i], res, figInd);
+                res = PrologServer.GetAnyResult(newW, newH, scaleCoefs[i], res, figInd);
                 if (res == null)
                     return false;
                 Console.WriteLine(res);
@@ -300,57 +300,57 @@ namespace PictureWork
         }*/
         #endregion
 
-            /*
-        /// <summary>
-        /// Получает единственное подходящее решение или null 
-        /// без привязки к количеству листов
-        /// </summary>
-        public static List<List<Figure>> GetWorkingArrangement(List<Figure> data, int w, int h,
-            List<List<Figure>> result = null)
+        /*
+    /// <summary>
+    /// Получает единственное подходящее решение или null 
+    /// без привязки к количеству листов
+    /// </summary>
+    public static List<List<Figure>> GetWorkingArrangement(List<Figure> data, int w, int h,
+        List<List<Figure>> result = null)
+    {
+        if (result == null)
         {
-            if (result == null)
+            result = new List<List<Figure>>();
+            result.Add(new List<Figure>());
+            result[0].Add(data[0]); // первую фигуру всегда в новый лист
+            data.RemoveAt(0);
+        }
+        if (data.Count == 0)
+        {
+            Dbg1(result);
+            return result;
+        }
+
+        Figure currentFig = data[0];
+        var nextData = new List<Figure>(data);
+        nextData.RemoveAt(0);
+
+
+        // Пытаемся последовательно добавлять в уже существующие листы
+        for (int i = 0; i < result.Count; i++)
+        {
+            var newCurLst = new List<Figure>(result[i]);
+            newCurLst.Add(currentFig);
+            if (DoesCurrentListFit(newCurLst, w, h))
             {
-                result = new List<List<Figure>>();
-                result.Add(new List<Figure>());
-                result[0].Add(data[0]); // первую фигуру всегда в новый лист
-                data.RemoveAt(0);
+                result[i].Add(currentFig);
+                var curResult = GetWorkingArrangement(nextData, w, h, result);
+                if (curResult != null)
+                    return result;
             }
-            if (data.Count == 0)
-            {
-                Dbg1(result);
-                return result;
-            }
+        }
 
-            Figure currentFig = data[0];
-            var nextData = new List<Figure>(data);
-            nextData.RemoveAt(0);
+        // Если не получилось добавить к существующим, кладем в новый
+        var tmp = new List<Figure>();
+        tmp.Add(currentFig);
+        var newResult = new List<List<Figure>>(result);
+        newResult.Add(tmp);
+        var curRes = GetWorkingArrangement(nextData, w, h, newResult);
+        if (curRes != null)
+            return curRes;
 
-            
-            // Пытаемся последовательно добавлять в уже существующие листы
-            for (int i = 0; i < result.Count; i++)
-            {
-                var newCurLst = new List<Figure>(result[i]);
-                newCurLst.Add(currentFig);
-                if (DoesCurrentListFit(newCurLst, w, h))
-                {
-                    result[i].Add(currentFig);
-                    var curResult = GetWorkingArrangement(nextData, w, h, result);
-                    if (curResult != null)
-                        return result;
-                }
-            }
-
-            // Если не получилось добавить к существующим, кладем в новый
-            var tmp = new List<Figure>();
-            tmp.Add(currentFig);
-            var newResult = new List<List<Figure>>(result);
-            newResult.Add(tmp);
-            var curRes = GetWorkingArrangement(nextData, w, h, newResult);
-            if (curRes != null)
-                return curRes;
-
-            return null;
-        }*/
+        return null;
+    }*/
 
         public static List<List<int>> GetWorkingArrangementPreDefFigs(List<int> data, List<double> scaleCoefs, int w, int h,
             List<List<int>> result = null)
@@ -433,7 +433,7 @@ namespace PictureWork
             List<ResultData> results = new List<ResultData>();
             foreach (List<int> figInd in arrangement)
             {
-                var res = PrologSolutionFinder.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
+                var res = PrologServer.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
                 if (res == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;

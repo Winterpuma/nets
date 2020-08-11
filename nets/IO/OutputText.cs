@@ -20,37 +20,33 @@ namespace IO
             return '[' + curFig.name + ' ' + res.xCenter + ' ' + res.yCenter + ' ' + res.angle + ']';
         }
 
-        private static string GetOneSIngleListResult(List<Figure> data, ResultData res, int listN = 0)
+        private static string GetOneFigureResult(Figure curFig, ResultFigPos res)
+        {
+            return '[' + curFig.name + ' ' + res.xCenter + ' ' + res.yCenter + ' ' + res.angle + ']';
+        }
+
+
+        private static string GetOneSIngleListResult(List<int> arrangement,  List<Figure> data, ResultData res, int listN = 0)
         {
             List<string> allFigs = new List<string>();
-            foreach (ResultFigPos rfp in res.answer)
-                allFigs.Add(GetOneFigureResult(data, rfp));
+            for (int i = 0; i < arrangement.Count; i++)
+            {
+                allFigs.Add(GetOneFigureResult(data[arrangement[i]], res.answer[i]));
+            }
 
             return "[Лист" + listN + "\n\t" + String.Join("\n\t", allFigs) + "\n]";
         }
 
-        private static string GetMultipleListsRes(List<List<Figure>> data, List<ResultData> res)
+        private static string GetMultipleListsRes(List<List<int>> arrangement, List<Figure> data, List<ResultData> res)
         {
             List<string> allLists = new List<string>();
             for (int i = 0; i < res.Count; i++)
-                allLists.Add(GetOneSIngleListResult(data[i], res[i], i));
+                allLists.Add(GetOneSIngleListResult(arrangement[i], data, res[i], i));
 
             return String.Join("\n", allLists);
         }
 
 
-        /// <summary>
-        /// Сохраняет один результат одного листа
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="res"></param>
-        /// <param name="path"></param>
-        public static void SaveOneSingleListResult(List<Figure> data, ResultData res, string path)
-        {
-            string formedText = GetOneSIngleListResult(data, res);
-            File.WriteAllText(path, formedText);
-        }
-        
         /// <summary>
         /// Сохраняет результат единственного расположения фигур на
         /// нескольких листах
@@ -60,9 +56,9 @@ namespace IO
         /// <param name="path"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public static void SaveResult(List<List<Figure>> arrangement, List<ResultData> resultData, string path)
+        public static void SaveResult(List<List<int>> arrangement, List<Figure> data, List<ResultData> resultData, string path)
         {
-            string formedText = GetMultipleListsRes(arrangement, resultData);
+            string formedText = GetMultipleListsRes(arrangement, data, resultData);
             File.WriteAllText(path, formedText);
         }
 

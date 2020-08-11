@@ -23,11 +23,11 @@ namespace PictureWork
 
         static int angleStep = 30; // Шаг поворотов фигур
         static int borderDistance = 0;
-        static double[] scaleCoefs = { 1 };
+        static double[] scaleCoefs = { 0.3, 1 };
 
         static string pathTmp = "tmp/";
         static string pathRes = "result/";
-
+        /*
         static void Main(string[] args)
         {
             List<Figure> data = Figure.LoadFigures(pathSrc, srcFigColor, angleStep, scale, borderDistance);
@@ -40,12 +40,12 @@ namespace PictureWork
             string queryStr = QueryCreator.GetAnsQuery(lstSize.Width, lstSize.Height, 1, new List<int>() { 0, 1, 2 });
             PrologServer.Initialize("");
             var res = PrologServer.GetAnyResult(queryStr);
-        }
+        }*/
         
-        static void oldMain(string[] args)
+        static void Main(string[] args)
         {   
             //Environment.SetEnvironmentVariable("SWI_HOME_DIR", @"D:\\Program Files (x86)\\swipl");
-            Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
+            //Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
             
             CleanDir(pathTmp);
             CleanDir(pathRes);
@@ -65,6 +65,8 @@ namespace PictureWork
             data.Sort(Figure.CompareFiguresBySize);
             Figure.UpdIndexes(data);
             //Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
+            SolutionChecker.LoadFigures(data, "", scaleCoefs);
+
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Log("Loaded Figs.");
 
@@ -91,13 +93,13 @@ namespace PictureWork
                 Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
                 //OutputImage.SaveOneSingleListResult(data, result, scaledLstSize.Width, scaledLstSize.Height, pathRes);
                 OutputImage.SaveResult(data, preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
-                //OutputText.SaveResult(preDefArr, result, pathRes + "result.txt");
+                OutputText.SaveResult(preDefArr, data, result, pathRes + "result.txt");
             }
 
 
             Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Log("Finished.");
-            Console.ReadLine();
+            //Console.ReadLine();
         }       
         
         public static void CleanDir(string path)
