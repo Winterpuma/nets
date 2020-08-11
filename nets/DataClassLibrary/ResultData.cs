@@ -6,8 +6,9 @@ namespace DataClassLibrary
     public class ResultFigPos
     {
         public string name = "noname";
-        public int xCenter, yCenter = 0;
-        public double angle = 0;
+        public int xCenter { get; set; }
+        public int yCenter { get; set; }
+        public double angle { get; set; }
 
 
         public ResultFigPos(string name, int xCenter, int yCenter, double angle = 0)
@@ -24,9 +25,10 @@ namespace DataClassLibrary
         }
     }
 
+
     public class ResultData
     {
-        public List<ResultFigPos> allFigures = new List<ResultFigPos>();
+        public List<ResultFigPos> answer { get; set; } = new List<ResultFigPos>(); 
         public double scale;
         public int lstWidth;
         public int lstHeight;
@@ -47,7 +49,7 @@ namespace DataClassLibrary
                 int xCenter = Convert.ToInt32(oneFigDataSplitted[0]);
                 int yCenter = Convert.ToInt32(oneFigDataSplitted[1]);
                 double angle = Convert.ToDouble(oneFigDataSplitted[2]);
-                allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
+                answer.Add(new ResultFigPos(name, xCenter, yCenter, angle));
                 i++;
             }
         }
@@ -72,7 +74,7 @@ namespace DataClassLibrary
                 yCenter = Convert.ToInt32(tmp[1]);
                 angle = Convert.ToDouble(tmp[2]);
 
-                res.allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
+                res.answer.Add(new ResultFigPos(name, xCenter, yCenter, angle));
                 i++;
             }
             return res;
@@ -105,7 +107,7 @@ namespace DataClassLibrary
                 xCenter = Convert.ToInt32(tmp[1]);
                 yCenter = Convert.ToInt32(tmp[2]);
 
-                allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
+                answer.Add(new ResultFigPos(name, xCenter, yCenter, angle));
             }
         }
 
@@ -136,7 +138,7 @@ namespace DataClassLibrary
                 xCenter = Convert.ToInt32(tmp[1]);
                 yCenter = Convert.ToInt32(tmp[2]);
 
-                allFigures.Add(new ResultFigPos(name, xCenter, yCenter, angle));
+                answer.Add(new ResultFigPos(name, xCenter, yCenter, angle));
             }
         }
 
@@ -154,7 +156,7 @@ namespace DataClassLibrary
         /// <returns>(45,50),(55,65),(0,15)</returns>
         public string GetApproxLocationForNextFig(int indFig, double newScale, int newLstWidth, int newLstHeight)
         {
-            ResultFigPos figRes = allFigures[indFig];
+            ResultFigPos figRes = answer[indFig];
 
             double kScale = newScale / scale;
 
@@ -189,7 +191,7 @@ namespace DataClassLibrary
 
         public override string ToString()
         {
-            return String.Join("\n", allFigures);
+            return String.Join("\n", answer);
         }
     }
 }

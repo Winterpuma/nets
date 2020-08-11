@@ -9,7 +9,7 @@ namespace IO
     {
         public static Bitmap SaveOneSingleListResult(List<Figure> data, ResultData res, int width, int height, string path)
         {
-            List<Color> color = GetNRandomColors(res.allFigures.Count);
+            List<Color> color = GetNRandomColors(res.answer.Count);
             Bitmap b = GetResultBitmap(data, res, width, height, color);
             b.Save(path + "0.png");
             return b;
@@ -60,7 +60,7 @@ namespace IO
             int i = 1;
             Random random = new Random();
 
-            List<Color> color = GetNRandomColors(res[0].allFigures.Count);
+            List<Color> color = GetNRandomColors(res[0].answer.Count);
 
             foreach (ResultData resultData in res)
             {
@@ -74,9 +74,9 @@ namespace IO
         {
             Bitmap b = new Bitmap(width, height);
             
-            for (int i = 0; i < res.allFigures.Count; i++)
+            for (int i = 0; i < res.answer.Count; i++)
             {
-                ResultFigPos figPos = res.allFigures[i];
+                ResultFigPos figPos = res.answer[i];
                 Figure figData = data[i];
                 DeltaRepresentation solutionFig = figData.rotated[(int)figPos.angle];
                 DeltaRepresentation solutionFigWithoutScaling;

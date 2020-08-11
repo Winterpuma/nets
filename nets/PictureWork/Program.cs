@@ -12,7 +12,8 @@ namespace PictureWork
     class Program
     {
         // Параметры
-        static string pathSrc = @"D:\GitHub\pics\realData0\"; // Путь к директории с фигурами
+        //static string pathSrc = @"D:\GitHub\pics\realData0\"; // Путь к директории с фигурами
+        static string pathSrc = @"C:\Users\tanya\Downloads\realData0\";
         static string pathProlog = @"D:\GitHub\nets\nets\PictureWork\"; // Путь к директории с кодом пролога
 
 
@@ -29,7 +30,16 @@ namespace PictureWork
 
         static void Main(string[] args)
         {
-            ;// test3;
+            List<Figure> data = Figure.LoadFigures(pathSrc, srcFigColor, angleStep, scale, borderDistance);
+            data.Sort(Figure.CompareFiguresBySize);
+            Figure.UpdIndexes(data);
+
+            SolutionChecker.LoadFigures(data, "", 1);
+
+
+            string queryStr = QueryCreator.GetAnsQuery(lstSize.Width, lstSize.Height, 1, new List<int>() { 0, 1, 2 });
+            PrologServer.Initialize("");
+            var res = PrologServer.GetAnyResult(queryStr);
         }
         
         static void oldMain(string[] args)

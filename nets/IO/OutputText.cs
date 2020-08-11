@@ -23,7 +23,7 @@ namespace IO
         private static string GetOneSIngleListResult(List<Figure> data, ResultData res, int listN = 0)
         {
             List<string> allFigs = new List<string>();
-            foreach (ResultFigPos rfp in res.allFigures)
+            foreach (ResultFigPos rfp in res.answer)
                 allFigs.Add(GetOneFigureResult(data, rfp));
 
             return "[Лист" + listN + "\n\t" + String.Join("\n\t", allFigs) + "\n]";

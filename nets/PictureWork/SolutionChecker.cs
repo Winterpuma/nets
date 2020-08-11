@@ -52,12 +52,17 @@ namespace PictureWork
             return true;
         }*/
 
-        public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, string pathProlog, params double[] scaleCoefs)
+        /// <summary>
+        /// Загрузка фигур в файл пролога
+        /// </summary>
+        public static void LoadFigures(List<Figure> data, string pathProlog, params double[] scaleCoefs)
         {
-            // Загрузка фигур в файл пролога
             FigureFileOperations.CreateNewFigFile(pathProlog + "figInfo.pl");
             FigureFileOperations.AddManyFigs(data, scaleCoefs);
+        }
 
+        public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, string pathProlog, params double[] scaleCoefs)
+        {
             // Получение результата
             List<int> indexes = new List<int>();
             foreach (Figure f in data)
