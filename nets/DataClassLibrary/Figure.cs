@@ -51,7 +51,7 @@ namespace DataClassLibrary
             borderDistance = (int)Math.Floor(parentFig.borderDistance * scaleCoef); //? ok?
 
             bitmap = editedFig;
-            LoadFigureFromItsBitmap(borderDistance);
+            LoadFigureFromItsBitmap(borderDistance, parentFig.rotated);
         }
 
         private void LoadFigureFromItsBitmap(int borderDistance)
@@ -74,8 +74,26 @@ namespace DataClassLibrary
                 rotated.Add(angle, originalDeltas.GetTurnedDelta(angle, 0, 0));
             }
         }
-        
-        
+
+        private void LoadFigureFromItsBitmap(int borderDistance, Dictionary<int, DeltaRepresentation> angles)
+        {
+            noScaling = new DeltaRepresentation(bitmap, figColor);
+            if (noScaling.deltas.Count == 0)
+                throw new Exception("Empty figure, maybe different color?"); ;
+
+            DeltaRepresentation originalDeltas;
+            if (borderDistance == 0)
+                originalDeltas = noScaling;
+            else
+                originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
+            
+            foreach (int angle in angles.Keys)
+            {
+                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle, 0, 0));
+            }
+        }
+
+
         public static List<Figure> LoadFigures(string path, Color figColor, int angleStep = 1, double scale = 1, int borderDistance = 0)
         {
             string[] files = Directory.GetFiles(path);

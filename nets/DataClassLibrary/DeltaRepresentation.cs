@@ -81,6 +81,8 @@ namespace DataClassLibrary
         /// </summary>
         public DeltaRepresentation GetTurnedDelta(double angle, int centerX, int centerY)
         {
+            if (angle == 0)
+                return this;
             DeltaRepresentation res = new DeltaRepresentation();
             res.angle = this.angle + angle;
 
