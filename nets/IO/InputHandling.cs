@@ -95,7 +95,7 @@ namespace IO
             }
         }
 
-        public static void ConvertPDFDirToScaledImg(string dirSrcPath, string dirDstPath, int scale)
+        public static void ConvertPDFDirToScaledImg(string dirSrcPath, string dirDstPath, double scale)
         {
             string[] files = Directory.GetFiles(dirSrcPath);
 

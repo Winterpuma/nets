@@ -13,40 +13,26 @@ namespace PictureWork
     {
         // Параметры
         //static string pathSrc = @"D:\GitHub\pics\realData0\"; // Путь к директории с фигурами
-        static string pathSrc = @"C:\Users\tanya\Downloads\realData0\";
+        static string pathSrc = @"C:\Users\tanya\Downloads\9kx3k\";
         static string pathProlog = @"D:\GitHub\nets\nets\PictureWork\"; // Путь к директории с кодом пролога
 
 
         static Color srcFigColor = Color.FromArgb(155, 155, 155); // Цвет фигур(0, 0, 0) - черный 
-        static Size lstSize = new Size(300, 100);//14612, 5055);//(1000, 800);//(3980, 820); // Размер листа
-        static double scale = 1; // Коэф-т масштабирования
+        static Size lstSize = new Size(7500, 2500);//14612, 5055); // Размер листа
+        static double scale = 0.1; // Коэф-т первоначального масштабирования
 
         static int angleStep = 30; // Шаг поворотов фигур
         static int borderDistance = 0;
-        static double[] scaleCoefs = { 0.3, 1 };
+        static double[] scaleCoefs = { 0.25, 0.5, 1};//{ 0.03, 0.1, 0.3, 1 };
 
         static string pathTmp = "tmp/";
         static string pathRes = "result/";
-        /*
-        static void Main(string[] args)
-        {
-            List<Figure> data = Figure.LoadFigures(pathSrc, srcFigColor, angleStep, scale, borderDistance);
-            data.Sort(Figure.CompareFiguresBySize);
-            Figure.UpdIndexes(data);
-
-            SolutionChecker.LoadFigures(data, "", 1);
-
-
-            string queryStr = QueryCreator.GetAnsQuery(lstSize.Width, lstSize.Height, 1, new List<int>() { 0, 1, 2 });
-            PrologServer.Initialize("");
-            var res = PrologServer.GetAnyResult(queryStr);
-        }*/
         
         static void Main(string[] args)
-        {   
+        {
             //Environment.SetEnvironmentVariable("SWI_HOME_DIR", @"D:\\Program Files (x86)\\swipl");
             //Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
-            
+
             CleanDir(pathTmp);
             CleanDir(pathRes);
 
@@ -64,7 +50,7 @@ namespace PictureWork
             List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale, borderDistance);
             data.Sort(Figure.CompareFiguresBySize);
             Figure.UpdIndexes(data);
-            Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
+            //Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
             SolutionChecker.LoadFigures(data, "", scaleCoefs);
 
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
@@ -83,7 +69,7 @@ namespace PictureWork
             var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, pathProlog, scaleCoefs);
             //List<ResultData> result = new List<ResultData>();
             //result.Add(res);
-            var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scale);
+            var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, new List<double>(scaleCoefs));
             if (result == null)
                 Log("Prolog finished. No answer.");
             else
@@ -99,7 +85,7 @@ namespace PictureWork
 
             Console.WriteLine("Process finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Log("Finished.");
-            //Console.ReadLine();
+            Console.ReadLine();
         }       
         
         public static void CleanDir(string path)

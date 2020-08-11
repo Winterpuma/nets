@@ -45,7 +45,7 @@ namespace DataClassLibrary
             path = parentFig.path;
             name = parentFig.name;
             id = parentFig.id;
-            this.scaleCoef = parentFig.scaleCoef * scaleCoef;
+            this.scaleCoef = scaleCoef;//parentFig.scaleCoef * scaleCoef;
             angleStep = parentFig.angleStep;
             figColor = parentFig.figColor;
             borderDistance = (int)Math.Floor(parentFig.borderDistance * scaleCoef); //? ok?
@@ -103,7 +103,7 @@ namespace DataClassLibrary
             foreach (string f in files)
             {
                 Figure fig = new Figure(f, id, figColor, angleStep, borderDistance);
-                fig.scaleCoef = scale;
+                //fig.scaleCoef = scale;
                 data.Add(fig);
                 id++;
             }
@@ -133,6 +133,7 @@ namespace DataClassLibrary
                 return this;
             Size scaledSize = new Size((int)(bitmap.Width * scaleCoef), (int)(bitmap.Height * scaleCoef));
             Bitmap scaledBitmap = new Bitmap(bitmap, scaledSize);
+            //scaledBitmap.Save("hm.png");
             return new Figure(this, scaledBitmap, scaleCoef);
         }
 

@@ -159,14 +159,28 @@ namespace DataClassLibrary
             ResultFigPos figRes = answer[indFig];
 
             double kScale = newScale / scale;
+            int dMove = (kScale > 1) ? (int)Math.Ceiling(kScale) * 2 : 1;
+            int space = newLstWidth / 20;
+            space = Math.Max(dMove, space);
 
-            int newXCenter = (int) ((figRes.xCenter - (lstWidth / 2)) * kScale) + (newLstWidth / 2);
-            int newYCenter = (int) ((figRes.yCenter - (lstHeight / 2)) * kScale) + (newLstHeight / 2);
-            
-            int dMove = (kScale > 1) ? (int) Math.Ceiling(kScale) + 2 : 1;
+            int newXCenter = (int)(((figRes.xCenter - ((double)lstWidth / 2)) * kScale) + ((double)newLstWidth / 2));
+            int newYCenter = (int)(((figRes.yCenter - ((double)lstHeight / 2)) * kScale) + ((double)newLstHeight / 2));
 
-            return GetFigRange(newXCenter, dMove, newLstWidth) + "," +
-                GetFigRange(newYCenter, dMove, newLstHeight) + "," +
+            /*
+            //int newXCenter = (int)(figRes.xCenter * kScale); 
+            //int newYCenter = (int)(figRes.yCenter * kScale);
+            int space = 1;
+            int xL = (int)((figRes.xCenter - space) * dMove);
+            int xR = (int)((figRes.xCenter + 2*space) * dMove);
+            int yL = (int)((figRes.yCenter - space) * dMove);
+            int yR = (int)((figRes.yCenter + 2*space) * dMove);
+            /*
+            return "(" + xL + "," + xR + ")," +
+                "(" + yL + "," + yR + ")," +
+                GetFigRange((int)figRes.angle, 3, 360);
+            *////*
+            return GetFigRange(newXCenter + dMove, space, newLstWidth) + "," +
+                GetFigRange(newYCenter + dMove, space, newLstHeight) + "," +
                 GetFigRange((int)figRes.angle, 3, 360); // 359? а если угол отрицательный, то по хорошему тоже нужно проверить
         }
 
