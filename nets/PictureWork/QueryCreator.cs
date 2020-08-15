@@ -355,6 +355,63 @@ namespace PictureWork
             return queryStr;
         }
 
+        public static string GetAnsQuery(List<int> width, List<int> height, List<double> scales, List<int> figInd)
+        {
+            List<string> queryForEachScale = new List<string>();
+            for (int iSize = 1; iSize < scales.Count; iSize++)
+            {
+                ;//TODO
+            }
+        }
+
+        private static string GetFieldAndFigsFirstQuery(int i, List<int> figInd)
+        {
+            ;//TODO
+        }
+
+        private static string GetFieldAndFigsQueryWithPrevRes(int i, List<int> figInd)
+        {
+            List<string> figNames = new List<string>();
+            string queryStr =
+                TemplateGenerate(i) +
+                TemplateFigs(i, figInd, figNames) +
+                TemplateKscale(i) +
+                TemplateGetNextApproc(i, figNames) +
+                TemplatePlace(i);
+            return queryStr;
+        }
+
+        private static string TemplateGenerate(int i)
+        {
+            return "generate(Width" + i + ", Height" + i + ", Field" + i + ")";
+        }
+
+        private static string TemplateFigs(int i, List<int> figInd, List<string> figNames)
+        {
+            string queryStr = "";
+            foreach (int ind in figInd)
+            {
+                figNames.Add("Fig" + ind + i);
+                queryStr += "fig" + ind + "(Fig" + ind + i + ", Scale" + i + "),";
+            }
+            return queryStr;
+        }
+
+        private static string TemplateKscale(int i)
+        {
+            return "Kscale" + i + " is Scale" + i + "/Scale" + (i - 1);
+        }
+
+        private static string TemplateGetNextApproc(int i, List<string> figNames)
+        {
+            return "getNextApprocCoords(Kscale" + i + ",[" + String.Join(",", figNames) + "], Ans" + (i - 1) + "ApprocForNewScale" + i;
+        }
+
+        private static string TemplatePlace(int i)
+        {
+            return "place_it3_2_helper(ApprocFigNewScale" + i + ",Field" + i + ",Ans" + i + ",_)";
+        }
+
 
         public static List<string> CreateListOfResulVars(int n)
         {

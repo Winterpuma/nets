@@ -163,17 +163,15 @@ namespace DataClassLibrary
             int space = newLstWidth / 20;
             space = Math.Max(dMove, space);
 
-            int newXCenter = (int)(((figRes.xCenter - ((double)lstWidth / 2)) * kScale) + ((double)newLstWidth / 2));
-            int newYCenter = (int)(((figRes.yCenter - ((double)lstHeight / 2)) * kScale) + ((double)newLstHeight / 2));
+            int newXCenter = (int) (figRes.xCenter * kScale);
+            int newYCenter = (int) (figRes.yCenter * kScale);
 
-            /*
-            //int newXCenter = (int)(figRes.xCenter * kScale); 
-            //int newYCenter = (int)(figRes.yCenter * kScale);
-            int space = 1;
-            int xL = (int)((figRes.xCenter - space) * dMove);
-            int xR = (int)((figRes.xCenter + 2*space) * dMove);
-            int yL = (int)((figRes.yCenter - space) * dMove);
-            int yR = (int)((figRes.yCenter + 2*space) * dMove);
+
+            int magicNum = 10;
+            int xL = (int)((figRes.xCenter -            magicNum) * kScale);
+            int xR = (int)((figRes.xCenter + dMove +    magicNum) * kScale);
+            int yL = (int)((figRes.yCenter -            magicNum) * kScale);
+            int yR = (int)((figRes.yCenter + dMove +    magicNum) * kScale);
             /*
             return "(" + xL + "," + xR + ")," +
                 "(" + yL + "," + yR + ")," +
@@ -182,6 +180,33 @@ namespace DataClassLibrary
             return GetFigRange(newXCenter + dMove, space, newLstWidth) + "," +
                 GetFigRange(newYCenter + dMove, space, newLstHeight) + "," +
                 GetFigRange((int)figRes.angle, 3, 360); // 359? а если угол отрицательный, то по хорошему тоже нужно проверить
+        }
+
+        public string GetApproxLocationForNextFig2(int indFig, double newScale, int newLstWidth, int newLstHeight)
+        {
+            ResultFigPos figRes = answer[indFig];
+
+            double kScale = newScale / scale;
+            int dMove = (kScale > 1) ? (int)Math.Ceiling(kScale) * 2 : 1;
+
+            int newXCenter = (int)(figRes.xCenter * kScale); 
+            int newYCenter = (int)(figRes.yCenter * kScale);
+
+            int magicNum = 10;
+            int xL = newXCenter - magicNum;
+            int xR = newXCenter + magicNum;
+            int yL = newYCenter - magicNum;
+            int yR = newYCenter + magicNum;
+            /*
+            int xL = (int)((figRes.xCenter - magicNum) * kScale);
+            int xR = (int)((figRes.xCenter + dMove + magicNum) * kScale);
+            int yL = (int)((figRes.yCenter - magicNum) * kScale);
+            int yR = (int)((figRes.yCenter + dMove + magicNum) * kScale);*/
+            
+            return "(" + xL + "," + xR + ")," +
+                "(" + yL + "," + yR + ")," +
+                GetFigRange((int)figRes.angle, 3, 360);
+            
         }
 
         private string GetFigRange(int center, int dCenter, int maxSize)

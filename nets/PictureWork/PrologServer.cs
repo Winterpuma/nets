@@ -59,6 +59,9 @@ namespace PictureWork
 
         }
 
+        /// <summary>
+        /// Получение ответа для одного размера с нуля
+        /// </summary>
         public static ResultData GetAnyResult(int width, int height, double scale, List<int> figInd)
         {
             Console.WriteLine("~~~~~~ SCALE: " + scale);
@@ -67,12 +70,25 @@ namespace PictureWork
             return GetAnyResult(queryStr);
         }
 
+        /// <summary>
+        /// Получение ответа для одного размера на основе предыдущего размещения в другом масштабе
+        /// </summary>
         public static ResultData GetAnyResult(int width, int height, double scale, ResultData prevScaleRes, List<int> figInd)
         {
             Console.WriteLine("~~~~~~ SCALE: " + scale);
             // Предполагается, что файл с фигурами уже загружен
             string queryStr = QueryCreator.GetAnsQuery(width, height, scale, prevScaleRes, figInd);
             Console.WriteLine(queryStr);
+            return GetAnyResult(queryStr);
+        }
+
+        /// <summary>
+        /// Получение ответа, основанного на последовательной итерации размеров фигур внутри пролога
+        /// </summary>
+        public static ResultData GetAnyResult(List<int> width, List<int> height, List<double> scales, List<int> figInd)
+        {
+            // Предполагается, что файл с фигурами уже загружен
+            string queryStr = QueryCreator.GetAnsQuery(width, height, scales, figInd);
             return GetAnyResult(queryStr);
         }
 
