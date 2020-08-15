@@ -98,7 +98,7 @@ namespace PictureWork
             using (StreamWriter file =
                 new StreamWriter(fileName))
             {
-                file.WriteLine(_queryName + "(Ans) :- " + strToAppend);
+                file.WriteLine(strToAppend);//_queryName + "(Ans) :- " + strToAppend);
             }
 
         }

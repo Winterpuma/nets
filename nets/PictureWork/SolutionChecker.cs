@@ -68,7 +68,21 @@ namespace PictureWork
             foreach (Figure f in data)
                 indexes.Add(f.id);
 
-            return GetWorkingArrangementPreDefFigs(indexes, new List<double>(scaleCoefs), w, h);
+            List<int> widthScaled, heightScaled;
+            FillLists(w, h, out widthScaled, out heightScaled, new List<double>(scaleCoefs));
+
+            return GetWorkingArrangementPreDefFigs(indexes, new List<double>(scaleCoefs), widthScaled, heightScaled);
+        }
+
+        private static void FillLists(int wLast, int hLast, out List<int> w, out List<int> h, List<double> scaleCoefs)
+        {
+            w = new List<int>();
+            h = new List<int>();
+            foreach (double d in scaleCoefs)
+            {
+                w.Add((int)(wLast * d));
+                h.Add((int)(hLast * d));
+            }
         }
 
         private static ResultData DoesCurrentListFitPreDefFigs2(List<int> figInd, List<double> scaleCoefs, int w, int h)
@@ -94,7 +108,25 @@ namespace PictureWork
             return res;
         }
 
+        private static ResultData DoesCurrentListFitPreDefFigs2(List<int> figInd, List<double> scaleCoefs, List<int> w, List<int> h)
+        {
+            ResultData res = PrologServer.GetAnyResult(w, h, scaleCoefs, figInd);
+            if (res == null)
+                return null;
+            Console.WriteLine(res);
+            //res.SetLstInfo(w.FindLast(), newH, scaleCoefs[0]);
+
+            return res;
+        }
+
         private static bool DoesCurrentListFitPreDefFigs(List<int> figInd, List<double> scaleCoefs, int w, int h)
+        {
+            var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);
+
+            return (res == null) ? false : true;
+        }
+
+        private static bool DoesCurrentListFitPreDefFigs(List<int> figInd, List<double> scaleCoefs, List<int> w, List<int> h)
         {
             var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);
 
@@ -359,7 +391,7 @@ namespace PictureWork
         return null;
     }*/
 
-        public static List<List<int>> GetWorkingArrangementPreDefFigs(List<int> data, List<double> scaleCoefs, int w, int h,
+        public static List<List<int>> GetWorkingArrangementPreDefFigs(List<int> data, List<double> scaleCoefs, List<int> w, List<int> h,
             List<List<int>> result = null)
         {
             if (result == null)
@@ -410,7 +442,7 @@ namespace PictureWork
         /// <summary>
         /// Известно разделение фигур по листам, ищется расположение
         /// </summary>
-        public static List<ResultData> PlacePreDefinedArrangement(List<List<int>> arrangement, int w, int h, List<double> scaleCoefs)
+        public static List<ResultData> PlacePreDefinedArrangement(List<List<int>> arrangement, int wLast, int hLast, List<double> scaleCoefs)
         {
             List<ResultData> results = new List<ResultData>();
             foreach (List<int> figInd in arrangement)
@@ -418,6 +450,8 @@ namespace PictureWork
                 List<int> figInd = new List<int>();
                 for (int i = 0; i < curLst.Count; i++)
                     figInd.Add(curLst[i].id);*/
+                List<int> w, h;
+                FillLists(wLast, hLast, out w, out h, scaleCoefs);
 
                 var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);// PrologSolutionFinder.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
                 if (res == null)

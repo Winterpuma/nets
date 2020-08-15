@@ -358,25 +358,55 @@ namespace PictureWork
         public static string GetAnsQuery(List<int> width, List<int> height, List<double> scales, List<int> figInd)
         {
             List<string> queryForEachScale = new List<string>();
+            queryForEachScale.Add(GetFieldAndFigsFirstQuery(figInd, 0));
             for (int iSize = 1; iSize < scales.Count; iSize++)
-            {
-                ;//TODO
-            }
+                queryForEachScale.Add(GetFieldAndFigsQueryWithPrevRes(iSize, figInd));
+
+            return "myQuery(Ans" + (width.Count - 1) + "):-\n\t" +
+                GetConstants(width, "Width") + "\n\t" +
+                GetConstants(height, "Height") + "\n\t" +
+                GetConstants(scales, "Scale") + "\n\t" +
+                String.Join(",\n\t", queryForEachScale) + ".";
         }
 
-        private static string GetFieldAndFigsFirstQuery(int i, List<int> figInd)
+        private static string GetConstants(List<int> constants, string varName)
         {
-            ;//TODO
+            string queryStr = "";
+            for (int i = 0; i < constants.Count; i++)
+                queryStr += varName + i + " is " + constants[i] + ",";
+            return queryStr;
+        }
+
+        private static string GetConstants(List<double> constants, string varName)
+        {
+            string queryStr = "";
+            for (int i = 0; i < constants.Count; i++)
+                queryStr += varName + i + " is " + constants[i].ToString(System.Globalization.CultureInfo.InvariantCulture) + ",";
+            return queryStr;
+        }
+
+        private static string GetFieldAndFigsFirstQuery(List<int> figInd, int i = 0)
+        {
+            List<string> figNames = new List<string>();
+            string queryStr =
+                TemplateGenerate(i) + ",";
+            for (int j = 0; j < figInd.Count; j++)
+            {
+                queryStr += "fig" + figInd[j] + "(Fig" + figInd[j] + i + ",Scale" + i + "),";
+                figNames.Add("((0,Width" + i + "),(0,Height" + i + "), (0,359),Fig" + figInd[j] + i + ")");
+            }
+            queryStr += "place_it3_2_helper([" + String.Join(",", figNames) + "],Field" + i + ", Ans" + i + ", _)";
+            return queryStr;
         }
 
         private static string GetFieldAndFigsQueryWithPrevRes(int i, List<int> figInd)
         {
             List<string> figNames = new List<string>();
             string queryStr =
-                TemplateGenerate(i) +
-                TemplateFigs(i, figInd, figNames) +
-                TemplateKscale(i) +
-                TemplateGetNextApproc(i, figNames) +
+                TemplateGenerate(i) + ",\n\t" +
+                TemplateFigs(i, figInd, figNames) + "\n\t" +
+                TemplateKscale(i) + ",\n\t" +
+                TemplateGetNextApproc(i, figNames) + ",\n\t" +
                 TemplatePlace(i);
             return queryStr;
         }
@@ -404,7 +434,7 @@ namespace PictureWork
 
         private static string TemplateGetNextApproc(int i, List<string> figNames)
         {
-            return "getNextApprocCoords(Kscale" + i + ",[" + String.Join(",", figNames) + "], Ans" + (i - 1) + "ApprocForNewScale" + i;
+            return "getNextApprocCoords(Kscale" + i + ",[" + String.Join(",", figNames) + "], Ans" + (i - 1) + ", ApprocFigNewScale" + i + ")";
         }
 
         private static string TemplatePlace(int i)
