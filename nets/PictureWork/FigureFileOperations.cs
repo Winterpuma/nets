@@ -43,18 +43,20 @@ namespace PictureWork
         /// <summary>
         /// Добавляет фигуру нескольких размеров в файл
         /// </summary>
-        public static void AddFigAllSizes(Figure figure, params double[] scaleCoefs)
+        public static void AddFigAllSizes(Figure figure, List<double> scaleCoefs)
         {
             foreach (double coef in scaleCoefs)
             {
-                AddNewFig(figure.GetScaledImage(coef));
+                var f = figure.GetScaledImage(coef);
+                //f.DeleteWrongAngles(100, 100);
+                AddNewFig(f);
             }
         }
         
         /// <summary>
         /// Добавляет несколько фигур нескольких размеров в файл
         /// </summary>
-        public static void AddManyFigs(List<Figure> data, params double[] scaleCoefs)
+        public static void AddManyFigs(List<Figure> data, List<double> scaleCoefs)
         {
             foreach (Figure fig in data)
             {

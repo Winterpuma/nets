@@ -7,29 +7,37 @@ using DataClassLibrary;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Configuration;
 
 namespace PictureWork
 {
     static class PrologServer
     {
         // C:\Program Files\swipl\bin
-        static string serverAdress = "http://localhost:8080/";
-        static string prologPath = @"C:\Program Files\swipl\bin";
+        static string serverAdress;// = "http://localhost:8080/";
+        static string pathPrologBin;// = @"C:\Program Files\swipl\bin";
         static string codePath = "";
         private static readonly string _mainName = "mainServer.pl";
         private static readonly string _qFName = "queryFile.pl";
-        private static readonly string _queryName = "myQuery";
+
+        private static readonly int _timeoutMin;// = 5;
 
 
         static public bool IsInitialized = false;
 
         static public void Initialize()
         {
-            Environment.SetEnvironmentVariable("Path", prologPath);
+            Environment.SetEnvironmentVariable("Path", pathPrologBin);
             string strCmdText = "/C swipl " + codePath + _mainName;
             System.Diagnostics.Process.Start("CMD.exe", strCmdText);
             IsInitialized = true;
+        }
+        static PrologServer()
+        {
+            codePath = ConfigurationManager.AppSettings.Get("pathPrologCode");
+            pathPrologBin = ConfigurationManager.AppSettings.Get("pathPrologBin");
+            serverAdress = ConfigurationManager.AppSettings.Get("serverAdress");
+            _timeoutMin = Convert.ToInt32(ConfigurationManager.AppSettings.Get("serverAnswerMinTimeout"));
         }
 
         private static ResultData GetAnyResult(string query)
@@ -37,10 +45,13 @@ namespace PictureWork
             if (!IsInitialized)
                 Initialize();
             CreaterQueryFile(_qFName, query);
+
             try
             {
                 string ans = getAns().Result;
                 if (ans == "NoAnswer")
+                    return null;
+                if (ans.Contains("Time limit exceeded"))
                     return null;
                 var options = new JsonSerializerOptions
                 {
@@ -51,6 +62,7 @@ namespace PictureWork
 
                 return result;
             }
+            
             catch (AggregateException)
             {
                 Console.WriteLine("Exit by timer");
@@ -114,7 +126,8 @@ namespace PictureWork
             };
 
             var content = new FormUrlEncodedContent(values);
-            
+
+            client.Timeout = TimeSpan.FromMinutes(_timeoutMin);
             var response = await client.PostAsync(serverAdress, content);
 
             var responseString = await response.Content.ReadAsStringAsync();

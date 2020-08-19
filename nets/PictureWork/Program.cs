@@ -5,6 +5,8 @@ using System.Drawing;
 using System.Linq;
 using DataClassLibrary;
 using IO;
+using System.Configuration;
+using System.Collections.Specialized;
 
 
 namespace PictureWork
@@ -12,26 +14,49 @@ namespace PictureWork
     class Program
     {
         // Параметры
-        //static string pathSrc = @"D:\GitHub\pics\realData0\"; // Путь к директории с фигурами
-        static string pathSrc = @"C:\Users\tanya\Downloads\9kx3k\";
-        static string pathProlog = @"D:\GitHub\nets\nets\PictureWork\"; // Путь к директории с кодом пролога
+        static string pathSrc; // Путь к директории с фигурами
+        static string pathPrologCode; // Путь к директории с кодом пролога
 
+        static string pathTmp; // Путь для сохранения первично отмасштабированных фигур
+        static string pathRes; // Путь для сохранения результата и лога
 
-        static Color srcFigColor = Color.FromArgb(155, 155, 155); // Цвет фигур(0, 0, 0) - черный 
-        static Size lstSize = new Size(7500, 2500);//14612, 5055); // Размер листа
-        static double scale = 0.1; // Коэф-т первоначального масштабирования
+        static Color srcFigColor; // Цвет фигур на загружаемой картинке
+        static Size lstSize; // Размер листа
+        static double scale; // Коэф-т первоначального масштабирования
 
-        static int angleStep = 30; // Шаг поворотов фигур
-        static int borderDistance = 0;
-        static double[] scaleCoefs = { 0.25, 0.5, 1};//{ 0.03, 0.1, 0.3, 1 };
+        static int angleStep; // Шаг поворотов фигур
+        static int borderDistance; // Отступ от границы фигур (чтобы не слипались)
+        static List<double> scaleCoefs = new List<double>();
 
-        static string pathTmp = "tmp/";
-        static string pathRes = "result/";
         
+        static void InitConfiguration()
+        {
+            pathSrc = ConfigurationManager.AppSettings.Get("pathSrc");
+            pathPrologCode = ConfigurationManager.AppSettings.Get("pathPrologCode");
+
+            pathTmp = ConfigurationManager.AppSettings.Get("pathTmp");
+            pathRes = ConfigurationManager.AppSettings.Get("pathRes");
+
+            int sizex = Convert.ToInt32(ConfigurationManager.AppSettings.Get("lstSizeX"));
+            int sizey = Convert.ToInt32(ConfigurationManager.AppSettings.Get("lstSizeY"));
+            lstSize = new Size(sizex, sizey);
+
+            scale = Convert.ToDouble(ConfigurationManager.AppSettings.Get("scale"));
+            angleStep = Convert.ToInt32(ConfigurationManager.AppSettings.Get("angleStep"));
+            borderDistance = Convert.ToInt32(ConfigurationManager.AppSettings.Get("borderDistance"));
+
+            string hexCol = ConfigurationManager.AppSettings.Get("figColor");
+            srcFigColor = ColorTranslator.FromHtml(hexCol);
+
+            string scCoefs = ConfigurationManager.AppSettings.Get("scaleCoefs");
+            foreach (string curCoef in scCoefs.Split(' '))
+                scaleCoefs.Add(Convert.ToDouble(curCoef));
+
+        }
+
         static void Main(string[] args)
         {
-            //Environment.SetEnvironmentVariable("SWI_HOME_DIR", @"D:\\Program Files (x86)\\swipl");
-            //Environment.SetEnvironmentVariable("Path", @"D:\\Program Files (x86)\\swipl\\bin");
+            InitConfiguration();
 
             CleanDir(pathTmp);
             CleanDir(pathRes);
@@ -57,16 +82,16 @@ namespace PictureWork
             Log("Loaded Figs.");
 
             // Группировка фигур по листам
-            //List<List<Figure>> preDefArr = new List<List<Figure>>();
-            //preDefArr.Add(FormOneListArrangement(data, 0, 1, 2));
-            //preDefArr.Add(FormOneListArrangement(data, 4, 5, 6, 8, 9, 13, 14));
+            //List<List<int>> preDefArr = new List<List<int>>();
+            //preDefArr.Add(new List<int>() { 0, 1, 2, 3, 4 });
+            //preDefArr.Add(FormOneListArrangement(data, 0, 1, 2, 3, 4));
             //SortFigures(preDefArr);
 
 
             // Поиск решения
             Console.WriteLine("Starting result finding. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             //var result = PrologSolutionFinder.GetAnyResult(scaledLstSize.Width, scaledLstSize.Height, scale, figInd);
-            var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, pathProlog, scaleCoefs);
+            var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, pathPrologCode, scaleCoefs);
             //List<ResultData> result = new List<ResultData>();
             //result.Add(res);
             var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, new List<double>(scaleCoefs));
@@ -90,6 +115,12 @@ namespace PictureWork
         
         public static void CleanDir(string path)
         {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+                return;
+            }
+                
             DirectoryInfo dir = new DirectoryInfo(path);
 
             foreach (FileInfo file in dir.GetFiles())
