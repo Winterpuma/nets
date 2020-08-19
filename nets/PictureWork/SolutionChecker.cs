@@ -4,8 +4,42 @@ using DataClassLibrary;
 
 namespace PictureWork
 {
-    public class SolutionChecker
+    public static class SolutionChecker
     {
+        private static List<List<int>> badPositions;
+
+        private static void InitBadPos()
+        {
+            badPositions = new List<List<int>>();
+        }
+
+        private static void AddBadPos(List<int> badPositioning)
+        {
+            badPositions.Add(badPositioning);
+        }
+
+        private static bool IsPosBad(List<int> pos)
+        {
+            foreach (List<int> curBP in badPositions)
+            {
+                if (Equals(pos, curBP))
+                    return true;
+            }
+            return false;
+        }
+
+        static bool Equals<T>(List<T> a, List<T> b)
+        {
+            if (a == null) return b == null;
+            if (b == null || a.Count != b.Count) return false;
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (!Equals(a[i], b[i]))
+                    return false;
+            }
+            return true;
+        }
+
         #region Проверки 
         /// <summary>
         /// Считает сумму дельт
@@ -55,22 +89,27 @@ namespace PictureWork
         /// <summary>
         /// Загрузка фигур в файл пролога
         /// </summary>
-        public static void LoadFigures(List<Figure> data, string pathProlog, params double[] scaleCoefs)
+        public static void LoadFigures(List<Figure> data, string pathProlog, List<double> scaleCoefs)
         {
             FigureFileOperations.CreateNewFigFile(pathProlog + "figInfo.pl");
             FigureFileOperations.AddManyFigs(data, scaleCoefs);
         }
 
-        public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, string pathProlog, params double[] scaleCoefs)
+        public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, string pathProlog, List<double> scaleCoefs)
         {
-            // Получение результата
+            // Заполнение массива индексов для поиска результата
             List<int> indexes = new List<int>();
             foreach (Figure f in data)
-                indexes.Add(f.id);
+            {
+                for (int i = 0; i < f.amount; i++)
+                    indexes.Add(f.id);
+            }
 
+            // Заполнение массивов размеров листов
             List<int> widthScaled, heightScaled;
-            FillLists(w, h, out widthScaled, out heightScaled, new List<double>(scaleCoefs));
+            FillLists(w, h, out widthScaled, out heightScaled, scaleCoefs);
 
+            InitBadPos();
             return GetWorkingArrangementPreDefFigs(indexes, new List<double>(scaleCoefs), widthScaled, heightScaled);
         }
 
@@ -110,9 +149,15 @@ namespace PictureWork
 
         private static ResultData DoesCurrentListFitPreDefFigs2(List<int> figInd, List<double> scaleCoefs, List<int> w, List<int> h)
         {
+            if (IsPosBad(figInd))
+                return null;
+
             ResultData res = PrologServer.GetAnyResult(w, h, scaleCoefs, figInd);
             if (res == null)
+            {
+                AddBadPos(figInd);
                 return null;
+            }
             Console.WriteLine(res);
             //res.SetLstInfo(w.FindLast(), newH, scaleCoefs[0]);
 

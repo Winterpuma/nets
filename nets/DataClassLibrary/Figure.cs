@@ -9,10 +9,12 @@ namespace DataClassLibrary
 {
     public class Figure
     {
-        private string path;
         public string name = "noname";
         public int id = -1;
         public double scaleCoef = 1;
+        public int amount = 6;
+
+        private string path;
         Bitmap bitmap;
         int angleStep;
         public int borderDistance;
