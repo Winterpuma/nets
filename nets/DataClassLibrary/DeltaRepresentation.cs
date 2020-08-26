@@ -22,6 +22,9 @@ namespace DataClassLibrary
 
         public DeltaRepresentation() { }
 
+        /// <summary>
+        /// Загрузка пикселей заданного цвета
+        /// </summary>
         public DeltaRepresentation(Bitmap bmp, Color figColor)
         {
             this.bmp = bmp;
@@ -45,6 +48,35 @@ namespace DataClassLibrary
             }
             CenterDeltaRepresentation();
         }
+
+        /// <summary>
+        /// Загрузка всех пикселей, кроме белого
+        /// </summary>
+        public DeltaRepresentation(Bitmap bmp)
+        {
+            Color backColor = Color.White;
+            this.bmp = bmp;
+
+            xCenter = bmp.Width / 2;
+            yCenter = bmp.Height / 2;
+
+            for (int xCur = 0; xCur < bmp.Width; xCur++)
+            {
+                for (int yCur = 0; yCur < bmp.Height; yCur++)
+                {
+                    Color curColor = bmp.GetPixel(xCur, yCur);
+                    if (!IsColorsEqual(curColor, backColor))
+                    {
+                        int xDelta = xCenter - xCur;
+                        int yDelta = yCenter - yCur;
+
+                        deltas.Add(new Point(xDelta, yDelta));
+                    }
+                }
+            }
+            CenterDeltaRepresentation();
+        }
+
 
         public DeltaRepresentation(Bitmap bmp, Color figColor, int scaleBorders)
         {
