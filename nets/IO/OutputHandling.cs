@@ -91,9 +91,9 @@ namespace IO
                 }
 
                 PlaceDeltasOnABitmap(b, solutionFigWithoutScaling.deltas, figPos.xCenter, figPos.yCenter, color[i]);
-                b.Save(i + ".png");
+                //b.Save(i + ".png");
             }
-            b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
+            //b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
             return b;
         }
 
@@ -102,7 +102,7 @@ namespace IO
         {
             foreach (Point p in deltas)
             {
-                if (centerY + p.Y > 0 && centerX - p.X < 300)
+                if (centerY + p.Y >= 0 && centerX + p.X >= 0)
                     bmp.SetPixel(centerX + p.X, centerY + p.Y, color);
             }
         }

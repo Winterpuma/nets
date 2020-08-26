@@ -39,8 +39,8 @@ namespace DataClassLibrary
                     Color curColor = bmp.GetPixel(xCur, yCur);
                     if (IsColorsEqual(curColor, figColor))
                     {
-                        int xDelta = xCenter - xCur;
-                        int yDelta = yCenter - yCur;
+                        int xDelta = xCur;
+                        int yDelta = yCur;
 
                         deltas.Add(new Point(xDelta, yDelta));
                     }
