@@ -45,10 +45,10 @@ namespace IO
         }
 
         /// <summary>
-        /// 
+        /// Масштабирование директории картинок
         /// </summary>
-        /// <param name="dirSrcPath"></param>
-        /// <param name="dirDstPath"></param>
+        /// <param name="dirSrcPath">Директория исходных картинок</param>
+        /// <param name="dirDstPath">Директория результирующих картинок</param>
         /// <param name="scale">Во сколько раз уменьшить</param>
         public static void ScaleWholeDirectory(string dirSrcPath, string dirDstPath, int scale)
         {
@@ -57,17 +57,17 @@ namespace IO
             
             foreach (string f in files)
             {
-                Image img = new Bitmap(f);
-                Image yourImage = ResizeImage(img, scale);
-                yourImage.Save(dirDstPath + Path.GetFileName(f));
+                using (Image img = new Bitmap(f))
+                using (Image scaledImage = ResizeImage(img, scale))
+                    scaledImage.Save(dirDstPath + Path.GetFileName(f));
             }
         }
 
         /// <summary>
-        /// 
+        /// Масштабирование директории картинок
         /// </summary>
-        /// <param name="dirSrcPath"></param>
-        /// <param name="dirDstPath"></param>
+        /// <param name="dirSrcPath">Директория исходных картинок</param>
+        /// <param name="dirDstPath">Директория результирующих картинок</param>
         /// <param name="scale">Коэффициент по отношению к старому размеру</param>
         public static void ScaleWholeDirectory(string dirSrcPath, string dirDstPath, double scale)
         {
@@ -76,9 +76,9 @@ namespace IO
 
             foreach (string f in files)
             {
-                Image img = new Bitmap(f);
-                Image yourImage = ResizeImage(img, scale);
-                yourImage.Save(dirDstPath + Path.GetFileName(f));
+                using (Image img = new Bitmap(f))
+                using (Image scaledImage = ResizeImage(img, scale))
+                   scaledImage.Save(dirDstPath + Path.GetFileName(f));
             }
         }
 
