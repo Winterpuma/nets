@@ -7,10 +7,12 @@ namespace PictureWork
     public static class SolutionChecker
     {
         private static List<List<int>> badPositions;
+        private static List<List<int>> goodPositions;
 
-        private static void InitBadPos()
+        private static void InitPos()
         {
             badPositions = new List<List<int>>();
+            goodPositions = new List<List<int>>(); // а можно запоминать и рез (словарик там)
         }
 
         private static void AddBadPos(List<int> badPositioning)
@@ -18,9 +20,24 @@ namespace PictureWork
             badPositions.Add(badPositioning);
         }
 
+        private static void AddGoodPos(List<int> goodPositioning)
+        {
+            //goodPositions.Add(goodPositioning);
+        }
+
         private static bool IsPosBad(List<int> pos)
         {
             foreach (List<int> curBP in badPositions)
+            {
+                if (Equals(pos, curBP))
+                    return true;
+            }
+            return false;
+        }
+
+        private static bool IsPosGood(List<int> pos)
+        {
+            foreach (List<int> curBP in goodPositions)
             {
                 if (Equals(pos, curBP))
                     return true;
@@ -109,7 +126,7 @@ namespace PictureWork
             List<int> widthScaled, heightScaled;
             FillLists(w, h, out widthScaled, out heightScaled, scaleCoefs);
 
-            InitBadPos();
+            InitPos();
             return GetWorkingArrangementPreDefFigs(indexes, new List<double>(scaleCoefs), widthScaled, heightScaled);
         }
 
@@ -152,12 +169,17 @@ namespace PictureWork
             if (IsPosBad(figInd))
                 return null;
 
+            if (IsPosGood(figInd))
+                return new ResultData(); 
+
             ResultData res = PrologServer.GetAnyResult(w, h, scaleCoefs, figInd);
             if (res == null)
             {
                 AddBadPos(figInd);
                 return null;
             }
+
+            AddGoodPos(figInd);
             Console.WriteLine(res);
             //res.SetLstInfo(w.FindLast(), newH, scaleCoefs[0]);
 

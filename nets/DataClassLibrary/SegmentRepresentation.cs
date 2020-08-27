@@ -16,6 +16,11 @@ namespace DataClassLibrary
                 segments.Add(curGroup.Key, GetSegmentsOutOfLine(curGroup.Value));
         }
 
+        public string GetMinMaxYLine()
+        {
+            return "(" + segments.Keys.Min() + "," + segments.Keys.Max() + ")";
+        }
+
 
         private List<Segment> GetSegmentsOutOfLine(List<int> line)
         {

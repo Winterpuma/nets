@@ -21,6 +21,8 @@ namespace PictureWork
         static string pathRes; // Путь для сохранения результата и лога
 
         static Color srcFigColor; // Цвет фигур на загружаемой картинке
+        static int figAmount; // Кол-во фигур
+
         static Size lstSize; // Размер листа
         static double scale; // Коэф-т первоначального масштабирования
 
@@ -52,6 +54,7 @@ namespace PictureWork
             foreach (string curCoef in scCoefs.Split(' '))
                 scaleCoefs.Add(Convert.ToDouble(curCoef));
 
+            figAmount = Convert.ToInt32(ConfigurationManager.AppSettings.Get("figAmount"));
         }
 
         static void Main(string[] args)
@@ -72,11 +75,11 @@ namespace PictureWork
 
             // Загрузка фигур
             Console.WriteLine("Starting process. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale, borderDistance);
+            List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale, borderDistance, figAmount);
             data.Sort(Figure.CompareFiguresBySize);
             Figure.UpdIndexes(data);
-            //Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
-            SolutionChecker.LoadFigures(data, "", scaleCoefs);
+            Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
+            SolutionChecker.LoadFigures(data, pathPrologCode, scaleCoefs);
 
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Log("Loaded Figs.");
@@ -94,7 +97,7 @@ namespace PictureWork
             var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, pathPrologCode, scaleCoefs);
             //List<ResultData> result = new List<ResultData>();
             //result.Add(res);
-            var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, new List<double>(scaleCoefs));
+            var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scaleCoefs);
             if (result == null)
                 Log("Prolog finished. No answer.");
             else

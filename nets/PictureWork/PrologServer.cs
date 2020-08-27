@@ -28,6 +28,8 @@ namespace PictureWork
         static public void Initialize()
         {
             Environment.SetEnvironmentVariable("Path", pathPrologBin);
+            if (!File.Exists(codePath + _mainName))
+                throw new Exception("main code path \"" + codePath + _mainName + "\" doesn't exist");
             string strCmdText = "/C swipl " + codePath + _mainName;
             System.Diagnostics.Process.Start("CMD.exe", strCmdText);
             IsInitialized = true;
@@ -44,7 +46,7 @@ namespace PictureWork
         {
             if (!IsInitialized)
                 Initialize();
-            CreaterQueryFile(_qFName, query);
+            CreaterQueryFile(codePath + _qFName, query);
 
             try
             {

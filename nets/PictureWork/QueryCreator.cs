@@ -316,7 +316,8 @@ namespace PictureWork
             {
                 SegmentRepresentation sr = new SegmentRepresentation(curDelta.Value.GetDictRepresentation());
                 allAngles.Add("(" +
-                    curDelta.Key + ", [" + String.Join(",", sr.segments[0]) + "]," + CreateFigFromDict(sr.segments) + ")");
+                    curDelta.Key + ", [" + String.Join(",", sr.segments[0]) + "]," + sr.GetMinMaxYLine() + ","
+                    + CreateFigFromDict(sr.segments) + ")");
                 
             }
 
@@ -336,7 +337,7 @@ namespace PictureWork
                 queryStr += "fig" + i + "(Fig" + i + "," + scaleStr + "),";
                 figNames.Add("((0," + (width - 1) + "),(0," + (height - 1) + "), (0,359),Fig" + i + ")");
             }
-            queryStr += "place_it3_2_helper([" + String.Join(",", figNames) + "],Field, Ans, _).";
+            queryStr += "place_it3_3_helper([" + String.Join(",", figNames) + "],Field, Ans, _).";
             return queryStr;
         }
 
@@ -351,7 +352,7 @@ namespace PictureWork
                 figLocationInfo.Add("(" + prevScaleRes.GetApproxLocationForNextFig(j, scale, width, height) + 
                     ", Fig" + figInd[j] + ")");
             }
-            queryStr += "place_it3_2_helper([" + String.Join(",", figLocationInfo) + "],Field, Ans, _).";
+            queryStr += "place_it3_3_helper([" + String.Join(",", figLocationInfo) + "],Field, Ans, _).";
             return queryStr;
         }
 
@@ -395,7 +396,7 @@ namespace PictureWork
                 queryStr += "fig" + figInd[j] + "(Fig" + figInd[j] + i + ",Scale" + i + "),";
                 figNames.Add("((0,Width" + i + "),(0,Height" + i + "), (0,359),Fig" + figInd[j] + i + ")");
             }
-            queryStr += "place_it3_2_helper([" + String.Join(",", figNames) + "],Field" + i + ", Ans" + i + ", _)";
+            queryStr += "place_it3_3_helper([" + String.Join(",", figNames) + "],Field" + i + ", Ans" + i + ", _)";
             return queryStr;
         }
 
@@ -439,7 +440,7 @@ namespace PictureWork
 
         private static string TemplatePlace(int i)
         {
-            return "place_it3_2_helper(ApprocFigNewScale" + i + ",Field" + i + ",Ans" + i + ",_)";
+            return "place_it3_3_helper(ApprocFigNewScale" + i + ",Field" + i + ",Ans" + i + ",_)";
         }
 
 

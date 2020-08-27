@@ -12,7 +12,7 @@ namespace DataClassLibrary
         public string name = "noname";
         public int id = -1;
         public double scaleCoef = 1;
-        public int amount = 6;
+        public int amount = 1;
 
         private string path;
         Bitmap bitmap;
@@ -28,7 +28,7 @@ namespace DataClassLibrary
             get { return rotated[i].deltas; }
         }
 
-        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 0)
+        public Figure(string path, int id, Color figColor, int angleStep = 1, int borderDistance = 0, int figAmount = 1)
         {
             this.path = path;
             name = Path.GetFileName(path);
@@ -37,7 +37,8 @@ namespace DataClassLibrary
             this.angleStep = angleStep;
             this.figColor = figColor;
             this.borderDistance = borderDistance;
-            
+            amount = figAmount;
+
             bitmap = new Bitmap(path);
             LoadFigureFromItsBitmap(borderDistance);
         }
@@ -58,7 +59,6 @@ namespace DataClassLibrary
 
         private void LoadFigureFromItsBitmap(int borderDistance)
         {
-
             noScaling = new DeltaRepresentation(bitmap, figColor);
             if (noScaling.deltas.Count == 0)
                 throw new Exception("Empty figure, maybe different color?"); ;
@@ -96,7 +96,7 @@ namespace DataClassLibrary
         }
 
 
-        public static List<Figure> LoadFigures(string path, Color figColor, int angleStep = 1, double scale = 1, int borderDistance = 0)
+        public static List<Figure> LoadFigures(string path, Color figColor, int angleStep = 1, double scale = 1, int borderDistance = 0, int figAmount = 1)
         {
             string[] files = Directory.GetFiles(path);
             List<Figure> data = new List<Figure>();
@@ -104,7 +104,7 @@ namespace DataClassLibrary
             int id = 0;
             foreach (string f in files)
             {
-                Figure fig = new Figure(f, id, figColor, angleStep, borderDistance);
+                Figure fig = new Figure(f, id, figColor, angleStep, borderDistance, figAmount);
                 //fig.scaleCoef = scale;
                 data.Add(fig);
                 id++;
