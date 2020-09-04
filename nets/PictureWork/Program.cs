@@ -31,6 +31,9 @@ namespace PictureWork
         static List<double> scaleCoefs = new List<double>();
 
         
+        /// <summary>
+        /// Инициализация параметров на основе файла конфигурации
+        /// </summary>
         static void InitConfiguration()
         {
             pathSrc = ConfigurationManager.AppSettings.Get("pathSrc");
@@ -65,13 +68,15 @@ namespace PictureWork
             CleanDir(pathRes);
 
 
+            Log("Started. Scale: " + scale + " angleStep:" + angleStep + " lstSize: " + lstSize.Width + "x" + lstSize.Height);
+
             // Загрузка из PDF и масштабирование
             //InputHandling.ConvertPDFDirToScaledImg(pathSrc, pathTmp, scale);
 
-            Log("Started. Scale: " + scale + " angleStep:" + angleStep + " lstSize: " + lstSize.Width + "x" + lstSize.Height);
             // Масштабирование
             Size scaledLstSize = new Size((int)(lstSize.Width * scale), (int)(lstSize.Height * scale));
             InputHandling.ScaleWholeDirectory(pathSrc, pathTmp, scale);
+
 
             // Загрузка фигур
             Console.WriteLine("Starting process. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
@@ -84,19 +89,10 @@ namespace PictureWork
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Log("Loaded Figs.");
 
-            // Группировка фигур по листам
-            //List<List<int>> preDefArr = new List<List<int>>();
-            //preDefArr.Add(new List<int>() { 0, 1, 2, 3, 4 });
-            //preDefArr.Add(FormOneListArrangement(data, 0, 1, 2, 3, 4));
-            //SortFigures(preDefArr);
-
 
             // Поиск решения
             Console.WriteLine("Starting result finding. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            //var result = PrologSolutionFinder.GetAnyResult(scaledLstSize.Width, scaledLstSize.Height, scale, figInd);
             var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, pathPrologCode, scaleCoefs);
-            //List<ResultData> result = new List<ResultData>();
-            //result.Add(res);
             var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scaleCoefs);
             if (result == null)
                 Log("Prolog finished. No answer.");
@@ -105,7 +101,6 @@ namespace PictureWork
                 Log("Prolog finished. Answer was found.");
                 // Отображение решения
                 Console.WriteLine("Starting visualization. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-                //OutputImage.SaveOneSingleListResult(data, result, scaledLstSize.Width, scaledLstSize.Height, pathRes);
                 OutputImage.SaveResult(data, preDefArr, result, pathRes, scaledLstSize.Width, scaledLstSize.Height);
                 OutputText.SaveResult(preDefArr, data, result, pathRes + "result.txt");
             }
@@ -116,6 +111,9 @@ namespace PictureWork
             Console.ReadLine();
         }       
         
+        /// <summary>
+        /// Создание новой директории или удаление содержимого существующей
+        /// </summary>
         public static void CleanDir(string path)
         {
             if (!Directory.Exists(path))
@@ -135,34 +133,10 @@ namespace PictureWork
                 curDir.Delete(true);
             }
         }
-
-        static void PrintResult(List<string> res)
-        {
-            Console.WriteLine();
-            foreach (string s in res)
-                Console.WriteLine(s);
-            if (res == null || !res.Any())
-                Console.WriteLine("Result is empty");
-        }
-
-        static void SortFigures(List<List<Figure>> arr)
-        {
-            for (int i = 0; i < arr.Count; i++)
-            {
-                arr[i].Sort(Figure.CompareFiguresBySize);
-            }
-        }
-
-        static List<Figure> FormOneListArrangement(List<Figure> data, params int[] ind)
-        {
-            List<Figure> res = new List<Figure>();
-            foreach(int i in ind)
-            {
-                res.Add(data[i]);
-            }
-            return res;
-        }
         
+        /// <summary>
+        /// Примитивная функция логирования сообщения
+        /// </summary>
         static void Log(string msg)
         {
             string time = "[" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + "] ";
