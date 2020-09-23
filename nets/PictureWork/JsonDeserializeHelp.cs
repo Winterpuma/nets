@@ -36,13 +36,13 @@ namespace PictureWork
                 throw new JsonException();
             };
 
-            int x = default;
+            int x = 0;
             bool xSet = false;
 
-            int y = default;
+            int y = 0;
             bool ySet = false;
 
-            int a = default;
+            int a = 0;
             bool aSet = false;
 
             // Get the first property.
