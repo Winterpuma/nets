@@ -9,6 +9,12 @@ namespace IO
 {
     public static class InputHandling
     {
+        /// <summary>
+        /// Создает черно-белую копию картинки
+        /// </summary>
+        /// <param name="bmp">Исходная картинка</param>
+        /// <param name="figColor">Цвет детали</param>
+        /// <returns>Черно белая картинка</returns>
         public static Bitmap MakeBlackAndWhite(Bitmap bmp, Color figColor)
         {
             for (int xCur = 0; xCur < bmp.Width; xCur++)
@@ -82,19 +88,32 @@ namespace IO
             }
         }
 
-        public static void ScaleWholeDirectory(string dirSrcPath, string dirDstPath, Size newSize)
+
+        /// <summary>
+        /// Масштабирование картинок из разных директорий
+        /// </summary>
+        /// <param name="dirSrcPath">Директория исходных картинок</param>
+        /// <param name="dirDstPath">Директория результирующих картинок</param>
+        /// <param name="scale">Во сколько раз уменьшить</param>
+        public static void ScaleAllFigs(List<string> dirSrcPath, string dirDstPath, double scale)
         {
-            string[] files = Directory.GetFiles(dirSrcPath);
             List<Figure> data = new List<Figure>();
 
-            foreach (string f in files)
+            foreach (string f in dirSrcPath)
             {
-                Image img = new Bitmap(f);
-                Image yourImage = ResizeImage(img, newSize);
-                yourImage.Save(dirDstPath + Path.GetFileName(f));
+                using (Image img = new Bitmap(f))
+                using (Image scaledImage = ResizeImage(img, scale))
+                    scaledImage.Save(dirDstPath + Path.GetFileName(f));
             }
         }
+        
 
+        /// <summary>
+        /// Масштабирование директории pdf-деталей в png
+        /// </summary>
+        /// <param name="dirSrcPath"></param>
+        /// <param name="dirDstPath"></param>
+        /// <param name="scale"></param>
         public static void ConvertPDFDirToScaledImg(string dirSrcPath, string dirDstPath, double scale)
         {
             string[] files = Directory.GetFiles(dirSrcPath);
@@ -119,6 +138,11 @@ namespace IO
             }
         }
 
+        /// <summary>
+        /// Преобразование директории pdf в png без масштабирования
+        /// </summary>
+        /// <param name="dirSrcPath"></param>
+        /// <param name="dirDstPath"></param>
         public static void ConvertPDFDirToImg(string dirSrcPath, string dirDstPath)
         {
             string[] files = Directory.GetFiles(dirSrcPath);
