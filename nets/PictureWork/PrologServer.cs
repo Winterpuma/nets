@@ -27,6 +27,8 @@ namespace PictureWork
 
         static public void Initialize()
         {
+            if (pathPrologBin == null)
+                throw new Exception("prolog bin path is not inited");
             Environment.SetEnvironmentVariable("Path", pathPrologBin);
             if (!File.Exists(codePath + _mainName))
                 throw new Exception("main code path \"" + codePath + _mainName + "\" doesn't exist");
@@ -34,6 +36,8 @@ namespace PictureWork
             System.Diagnostics.Process.Start("CMD.exe", strCmdText);
             IsInitialized = true;
         }
+
+
         static PrologServer()
         {
             codePath = ConfigurationManager.AppSettings.Get("pathPrologCode");
@@ -41,6 +45,7 @@ namespace PictureWork
             serverAdress = ConfigurationManager.AppSettings.Get("serverAdress");
             _timeoutMin = Convert.ToInt32(ConfigurationManager.AppSettings.Get("serverAnswerMinTimeout"));
         }
+        
 
         private static ResultData GetAnyResult(string query)
         {
