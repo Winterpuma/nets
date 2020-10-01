@@ -77,7 +77,7 @@ namespace DataClassLibrary
             borderDistance = (int)Math.Floor(parentFig.borderDistance * scaleCoef); //? ok?
 
             bitmap = editedFig;
-            LoadFigureFromItsBitmap(borderDistance, parentFig.rotated);
+            LoadFigureFromItsBitmap(borderDistance, parentFig.rotated.Keys.ToList());
         }
 
 
@@ -124,7 +124,7 @@ namespace DataClassLibrary
             else
                 originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
             
-            foreach (int angle in angles.Keys)
+            foreach (int angle in angles)
             {
                 rotated.Add(angle, originalDeltas.GetTurnedDelta(angle, 0, 0));
             }

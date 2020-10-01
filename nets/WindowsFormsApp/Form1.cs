@@ -107,7 +107,7 @@ namespace WindowsFormsApp
 
             // Загрузка фигур
             Console.WriteLine("Starting process. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, scale, borderDistance, figAmount);
+            List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, borderDistance, figAmount);
             data.Sort(Figure.CompareFiguresBySize);
             Figure.UpdIndexes(data);
             Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
