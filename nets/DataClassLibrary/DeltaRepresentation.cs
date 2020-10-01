@@ -22,8 +22,9 @@ namespace DataClassLibrary
 
         public DeltaRepresentation() { }
 
+
         /// <summary>
-        /// Загрузка пикселей заданного цвета
+        /// Загрузка пикселей заданного цвета из изображения
         /// </summary>
         public DeltaRepresentation(Bitmap bmp, Color figColor)
         {
@@ -48,6 +49,7 @@ namespace DataClassLibrary
             }
             CenterDeltaRepresentation();
         }
+
 
         /// <summary>
         /// Загрузка всех пикселей, кроме белого
@@ -78,6 +80,12 @@ namespace DataClassLibrary
         }
 
 
+        /// <summary>
+        /// Загрузка дельта представления с дополнительными точками по периметру
+        /// </summary>
+        /// <param name="bmp">Изображение фигуры</param>
+        /// <param name="figColor">Цвет фигуры</param>
+        /// <param name="scaleBorders">Прирост в пикселях</param>
         public DeltaRepresentation(Bitmap bmp, Color figColor, int scaleBorders)
         {
             this.bmp = bmp;
@@ -138,6 +146,10 @@ namespace DataClassLibrary
         }
 
 
+        /// <summary>
+        /// Обертка для получения словаря у-групп
+        /// </summary>
+        /// <returns></returns>
         public SortedDictionary<int, List<int>> GetDictRepresentation()
         {
             if (dictRepresentation == null)
@@ -146,6 +158,11 @@ namespace DataClassLibrary
         }
 
 
+        /// <summary>
+        /// Преобразует список дельт в представление отсортированного по у словаря (у-группы)
+        /// </summary>
+        /// <param name="deltas"></param>
+        /// <returns>Словарь: у - ключ, значение - список х на этом у</returns>
         private static SortedDictionary<int, List<int>> TransformDeltaToDict(List<Point> deltas)
         {
             SortedDictionary<int, List<int>> res = new SortedDictionary<int, List<int>>();
@@ -199,10 +216,10 @@ namespace DataClassLibrary
             return specialDots;
         }
 
+
         /// <summary>
-        /// 
+        /// Возвращает контур (крайние значения по х)
         /// </summary>
-        /// <returns>Возвращает контур дельты</returns>
         public SortedDictionary<int, List<int>> GetOutline()
         {
             if (outline != null)
@@ -215,21 +232,6 @@ namespace DataClassLibrary
                 var borderDots = new List<int>();
                 borderDots.Add(yGroup.Value.Min());
                 borderDots.Add(yGroup.Value.Max());
-                /*
-                int prevX = yGroup.Value[0];
-                borderDots.Add(prevX);
-                prevX++; // чтобы в цикле не добавлять повторно
-
-                foreach (int curX in yGroup.Value)
-                {
-                    if (prevX - 1 != curX)
-                    {
-                        borderDots.Add(prevX);
-                        borderDots.Add(curX);
-                    }
-                    prevX = curX;
-                }
-                borderDots.Add(prevX);*/
 
                 outline.Add(yGroup.Key, borderDots.Distinct().ToList());
             }
@@ -245,6 +247,11 @@ namespace DataClassLibrary
             return (a.R == b.R && a.G == b.G && a.B == b.B);
         }
 
+
+        /// <summary>
+        /// Центрирует данное представление
+        /// Нужно когда изначально в файле фигура была не четко по центру
+        /// </summary>
         private void CenterDeltaRepresentation()
         {
             if (deltas.Count == 0)
@@ -265,11 +272,20 @@ namespace DataClassLibrary
             }
         }
 
+
+        /// <summary>
+        /// Возвращает ширину фигуры
+        /// </summary>
+        /// <returns></returns>
         public int GetWidth()
         {
             return deltas.Max(p => p.X) - deltas.Min(p => p.X);
         }
 
+
+        /// <summary>
+        /// Возвращает высоту фигуры
+        /// </summary>
         public int GetHeight()
         {
             return deltas.Max(p => p.Y) - deltas.Min(p => p.Y);
