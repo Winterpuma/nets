@@ -7,6 +7,9 @@ using DataClassLibrary;
 
 namespace IO
 {
+    /// <summary>
+    /// Класс функций для считывания информации о деталях
+    /// </summary>
     public static class InputHandling
     {
         /// <summary>
@@ -35,20 +38,24 @@ namespace IO
             return bmp;
         }
 
+
         public static Image ResizeImage(Image imgToResize, Size size)
         {
             return (Image)(new Bitmap(imgToResize, size));
         }
+
 
         public static Image ResizeImage(Image img, int scale)
         {
             return (Image)(new Bitmap(img, new Size(img.Width / scale, img.Height / scale)));
         }
 
+
         public static Image ResizeImage(Image img, double scale)
         {
             return (Image)(new Bitmap(img, new Size((int)(img.Width * scale), (int)(img.Height * scale))));
         }
+
 
         /// <summary>
         /// Масштабирование директории картинок
@@ -68,6 +75,7 @@ namespace IO
                     scaledImage.Save(dirDstPath + Path.GetFileName(f));
             }
         }
+
 
         /// <summary>
         /// Масштабирование директории картинок
@@ -137,6 +145,7 @@ namespace IO
                 }                
             }
         }
+
 
         /// <summary>
         /// Преобразование директории pdf в png без масштабирования

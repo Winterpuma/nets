@@ -5,6 +5,9 @@ using System.IO;
 
 namespace IO
 {
+    /// <summary>
+    /// Класс функций представления результата в текстовой форме
+    /// </summary>
     public static class OutputText
     {
 
@@ -13,19 +16,24 @@ namespace IO
             [%имя фигуры%  %х% %у% %угол поворота%]
         ]
         */
+        
 
-        private static string GetOneFigureResult(List<Figure> data, ResultFigPos res)
-        {
-            Figure curFig = data[Convert.ToInt32(res.name)]; // или -1?
-            return '[' + curFig.name + ' ' + res.xCenter + ' ' + res.yCenter + ' ' + res.angle + ']';
-        }
-
+        /// <summary>
+        /// Генерирует текстовую строку для одной фигуры
+        /// </summary>
         private static string GetOneFigureResult(Figure curFig, ResultFigPos res)
         {
             return '[' + curFig.name + ' ' + res.xCenter + ' ' + res.yCenter + ' ' + res.angle + ']';
         }
 
 
+        /// <summary>
+        /// Генерирует текстовую строку для одного листа
+        /// </summary>
+        /// <param name="arrangement">Индексы выбранных в этот лист фигур</param>
+        /// <param name="data">Список всех фигур</param>
+        /// <param name="res">Размещение</param>
+        /// <param name="listN">Индекс текущего листа</param>
         private static string GetOneSIngleListResult(List<int> arrangement,  List<Figure> data, ResultData res, int listN = 0)
         {
             List<string> allFigs = new List<string>();
@@ -37,6 +45,13 @@ namespace IO
             return "[Лист" + listN + "\n\t" + String.Join("\n\t", allFigs) + "\n]";
         }
 
+
+        /// <summary>
+        /// Генерирует текстовую строку для нескольких листов решения
+        /// </summary>
+        /// <param name="arrangement">Список размещений фигур на листах</param>
+        /// <param name="data">Список всех фигур</param>
+        /// <param name="res">Список размещений на листах</param>
         private static string GetMultipleListsRes(List<List<int>> arrangement, List<Figure> data, List<ResultData> res)
         {
             List<string> allLists = new List<string>();
@@ -51,11 +66,6 @@ namespace IO
         /// Сохраняет результат единственного расположения фигур на
         /// нескольких листах
         /// </summary>
-        /// <param name="arrangement"></param>
-        /// <param name="resultData"></param>
-        /// <param name="path"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
         public static void SaveResult(List<List<int>> arrangement, List<Figure> data, List<ResultData> resultData, string path)
         {
             string formedText = GetMultipleListsRes(arrangement, data, resultData);

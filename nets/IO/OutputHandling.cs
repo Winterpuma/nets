@@ -5,8 +5,20 @@ using DataClassLibrary;
 
 namespace IO
 {
+    /// <summary>
+    /// Класс функций представления результата в визуальной форме
+    /// </summary>
     public static class OutputImage
     {
+        /// <summary>
+        /// Сохраняет найденное однолистное решение
+        /// </summary>
+        /// <param name="data">Список фигур</param>
+        /// <param name="res">Решение</param>
+        /// <param name="width">Ширина холста</param>
+        /// <param name="height">Высота холста</param>
+        /// <param name="path">Путь для сохранения файла</param>
+        /// <returns></returns>
         public static Bitmap SaveOneSingleListResult(List<Figure> data, ResultData res, int width, int height, string path)
         {
             List<Color> color = GetNRandomColors(res.answer.Count);
@@ -14,6 +26,7 @@ namespace IO
             b.Save(path + "0.png");
             return b;
         }
+
 
         /// <summary>
         /// Сохраняет результат единственного расположения фигур на
@@ -34,6 +47,16 @@ namespace IO
             }
         }
 
+
+        /// <summary>
+        /// Сохраняет одну общую расстановку на множестве листов 
+        /// </summary>
+        /// <param name="data">Список фигур</param>
+        /// <param name="arrangement">Расстановка фигур по листам</param>
+        /// <param name="resultData">Список результатов для листов</param>
+        /// <param name="path">Путь для сохранения результатов</param>
+        /// <param name="width">Ширина листа</param>
+        /// <param name="height">Высота листа</param>
         public static void SaveResult(List<Figure> data, List<List<int>> arrangement, List<ResultData> resultData, string path, int width, int height)
         {
             for (int i = 0; i < resultData.Count; i++)
@@ -46,6 +69,7 @@ namespace IO
                 b.Save(path + i + ".png");
             }
         }
+
 
         /// <summary>
         /// Сохраняет все возможные результаты одного листа в графическом виде в указанную папку
@@ -70,7 +94,17 @@ namespace IO
             }
         }
         
-        public static Bitmap GetResultBitmap(List<Figure> data, ResultData res, int width, int height, List<Color> color)
+
+        /// <summary>
+        /// Располагает фигуры в соответствии с найденным решением
+        /// </summary>
+        /// <param name="data">Список фигур</param>
+        /// <param name="res">Найденное решение</param>
+        /// <param name="width">Ширина холста</param>
+        /// <param name="height">Высота холста</param>
+        /// <param name="color">Цвета фигур</param>
+        /// <returns>Изображение расположенных фигур</returns>
+        private static Bitmap GetResultBitmap(List<Figure> data, ResultData res, int width, int height, List<Color> color)
         {
             Bitmap b = new Bitmap(width, height);
             
@@ -91,13 +125,19 @@ namespace IO
                 }
 
                 PlaceDeltasOnABitmap(b, solutionFigWithoutScaling.deltas, figPos.xCenter, figPos.yCenter, color[i]);
-                //b.Save(i + ".png");
             }
-            //b.RotateFlip(RotateFlipType.RotateNoneFlipXY);
             return b;
         }
 
 
+        /// <summary>
+        /// Располагает массив точек на холсте
+        /// </summary>
+        /// <param name="bmp">Холст</param>
+        /// <param name="deltas">Массив дельт</param>
+        /// <param name="centerX">X-координата центра фигуры на холсте</param>
+        /// <param name="centerY">Y-координата центра фигуры на холсте</param>
+        /// <param name="color">Цвет фигуры на холсте</param>
         public static void PlaceDeltasOnABitmap(Bitmap bmp, List<Point> deltas, int centerX, int centerY, Color color)
         {
             foreach (Point p in deltas)
@@ -107,6 +147,12 @@ namespace IO
             }
         }
 
+
+        /// <summary>
+        /// Генерирует список цветов размера n
+        /// </summary>
+        /// <param name="n">Количество цветов</param>
+        /// <returns>Список цветов</returns>
         private static List<Color> GetNRandomColors(int n)
         {
             Random random = new Random();
