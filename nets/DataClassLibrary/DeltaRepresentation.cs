@@ -128,10 +128,14 @@ namespace DataClassLibrary
 
             List<Point> newDeltas = new List<Point>();
 
+            double cosAngle = Math.Cos(angle);
+            double sinAngle = Math.Sin(angle);
+
+
             foreach (Point p_old in deltas)
             {
-                double newX = centerX + (p_old.X - centerX) * Math.Cos(angle) + (p_old.Y - centerY) * Math.Sin(angle);
-                double newY = centerY - (p_old.X - centerX) * Math.Sin(angle) + (p_old.Y - centerY) * Math.Cos(angle);
+                double newX = centerX + (p_old.X - centerX) * cosAngle + (p_old.Y - centerY) * sinAngle;
+                double newY = centerY - (p_old.X - centerX) * sinAngle + (p_old.Y - centerY) * cosAngle;
                 
                 newDeltas.Add(new Point((int)newX, (int)newY));
                 // также добавляем точки вокруг, чтобы устранить дырки
