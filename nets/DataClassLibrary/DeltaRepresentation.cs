@@ -119,7 +119,7 @@ namespace DataClassLibrary
         /// <summary>
         /// Возвращает повернутую DeltaRepresentation на заданный угол относительно заданной точки
         /// </summary>
-        public DeltaRepresentation GetTurnedDelta(double angle, int centerX, int centerY)
+        public DeltaRepresentation GetTurnedDelta(double angle)
         {
             if (angle == 0)
                 return this;
@@ -134,8 +134,8 @@ namespace DataClassLibrary
 
             foreach (Point p_old in deltas)
             {
-                double newX = centerX + (p_old.X - centerX) * cosAngle + (p_old.Y - centerY) * sinAngle;
-                double newY = centerY - (p_old.X - centerX) * sinAngle + (p_old.Y - centerY) * cosAngle;
+                double newX = p_old.X * cosAngle + p_old.Y * sinAngle;
+                double newY = p_old.X * sinAngle + p_old.Y * cosAngle;
                 
                 newDeltas.Add(new Point((int)newX, (int)newY));
                 // также добавляем точки вокруг, чтобы устранить дырки

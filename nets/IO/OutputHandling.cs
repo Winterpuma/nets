@@ -121,7 +121,7 @@ namespace IO
                     if (figPos.angle == 0)
                         solutionFigWithoutScaling =  figData.noScaling;
                     else
-                        solutionFigWithoutScaling = figData.noScaling.GetTurnedDelta(solutionFig.angle, solutionFig.xCenter, solutionFig.yCenter);
+                        solutionFigWithoutScaling = figData.noScaling.GetTurnedDelta(solutionFig.angle);
                 }
 
                 PlaceDeltasOnABitmap(b, solutionFigWithoutScaling.deltas, figPos.xCenter, figPos.yCenter, color[i]);

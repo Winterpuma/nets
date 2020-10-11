@@ -101,7 +101,7 @@ namespace DataClassLibrary
             
             for (int angle = angleStep; angle < 360; angle += angleStep)
             {
-                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle, 0, 0));
+                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle));
             }
         }
 
@@ -126,7 +126,7 @@ namespace DataClassLibrary
             
             foreach (int angle in angles)
             {
-                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle, 0, 0));
+                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle));
             }
         }
 
@@ -172,7 +172,7 @@ namespace DataClassLibrary
             for (int angle = angleStep; angle < 360; angle += angleStep)
             {
                 Console.Write(" " + angle);
-                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle, 0, 0));
+                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle));
             }
         }
 
