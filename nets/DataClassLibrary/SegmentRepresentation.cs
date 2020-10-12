@@ -44,7 +44,7 @@ namespace DataClassLibrary
 
             foreach (int point in line)
             {
-                if (point != prev + 1) // если сегмент прервался
+                if (point != prev + 1 && point != prev) // если сегмент прервался
                 {
                     res.Add(new Segment { start = start, end = prev });
                     start = point;

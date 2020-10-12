@@ -143,8 +143,8 @@ namespace DataClassLibrary
                 newDeltas.Add(new Point((int)newX-1, (int)newY));
             }
 
-            // Убирает дубликаты
-            res.deltas = newDeltas.Distinct().ToList();
+            // Попытка не убирать дубликаты, а обработать этот случай на моменте с превращением в сегменты
+            res.deltas = newDeltas;//.Distinct().ToList();
 
             return res;
         }
