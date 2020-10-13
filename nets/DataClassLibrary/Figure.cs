@@ -16,12 +16,12 @@ namespace DataClassLibrary
 
         private string path;            // расположение исходного файла фигуры (img/pdf)
         Bitmap bitmap;                  // неизмененное изображение фигуры
-        int angleStep;                  // шаг прироста углов при генерации поворотов
+        public int angleStep;                  // шаг прироста углов при генерации поворотов
         public int borderDistance;      // увеличение площади фигуры на это кол-во пикселей
         Color figColor;                 // цвет фигуры
 
-        public DeltaRepresentation noScaling;
-        public Dictionary<int, DeltaRepresentation> rotated = new Dictionary<int, DeltaRepresentation>();
+        public DeltaRepresentation noScaling;           // Дельта представление загруженной картинки
+        public DeltaRepresentation withBorderDistance;  // Дельта представление загруженной картинки с отступами по краям
 
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace DataClassLibrary
         /// <returns>Массив точек</returns>
         public List<Point> this[int i]
         {
-            get { return rotated[i].deltas; }
+            get { return withBorderDistance.GetTurnedDelta(i).deltas; }
         }
 
 
@@ -77,12 +77,12 @@ namespace DataClassLibrary
             borderDistance = (int)Math.Floor(parentFig.borderDistance * scaleCoef); //? ok?
 
             bitmap = editedFig;
-            LoadFigureFromItsBitmap(borderDistance, parentFig.rotated.Keys.ToList());
+            LoadFigureFromItsBitmap(borderDistance);
         }
 
 
         /// <summary>
-        /// Загрузка дельт и их поворотов из картинки
+        /// Загрузка дельт из картинки
         /// </summary>
         /// <param name="borderDistance">Количество пикселей прироста в ширине фигуры</param>
         private void LoadFigureFromItsBitmap(int borderDistance)
@@ -90,46 +90,13 @@ namespace DataClassLibrary
             noScaling = new DeltaRepresentation(bitmap, figColor);
             if (noScaling.deltas.Count == 0)
                 throw new Exception("Empty figure, maybe different color?"); ;
-
-            DeltaRepresentation originalDeltas;
-            if (borderDistance == 0)
-                originalDeltas = noScaling;
-            else
-                originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
-
-            rotated.Add(0, originalDeltas);
             
-            for (int angle = angleStep; angle < 360; angle += angleStep)
-            {
-                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle));
-            }
-        }
-
-
-        /// <summary>
-        /// Загрузка дельт и их поворотов из картинки 
-        /// (Для мастабирования из существующей)
-        /// </summary>
-        /// <param name="borderDistance">Количество пикселей прироста в ширине фигуры</param>
-        /// <param name="angles">Список необходимых для генерации углов (родительские)</param>
-        private void LoadFigureFromItsBitmap(int borderDistance, List<int> angles)
-        {
-            noScaling = new DeltaRepresentation(bitmap, figColor);
-            if (noScaling.deltas.Count == 0)
-                throw new Exception("Empty figure, maybe different color?"); ;
-
-            DeltaRepresentation originalDeltas;
             if (borderDistance == 0)
-                originalDeltas = noScaling;
+                withBorderDistance = noScaling;
             else
-                originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
-            
-            foreach (int angle in angles)
-            {
-                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle));
-            }
+                withBorderDistance = new DeltaRepresentation(bitmap, figColor, borderDistance);
         }
-
+        
 
         /// <summary>
         /// Загружает все фигуры из одной директории
@@ -157,23 +124,12 @@ namespace DataClassLibrary
 
 
         /// <summary>
-        /// Перезагружает все повороты фигуры для нового количества дополнительных пикселей
+        /// Перезагружает withBorderDistance для нового количества дополнительных пикселей
         /// </summary>
         /// <param name="borderDistance">Количество доп пикселей с каждой из сторон</param>
         public void ChangeBorderDistance(int borderDistance)
         {
-            rotated.Clear();
-
-            DeltaRepresentation originalDeltas = new DeltaRepresentation(bitmap, figColor, borderDistance);
-
-            rotated.Add(0, originalDeltas);
-            Console.WriteLine("Loaded original delta. Delta len " + originalDeltas.deltas.Count);
-
-            for (int angle = angleStep; angle < 360; angle += angleStep)
-            {
-                Console.Write(" " + angle);
-                rotated.Add(angle, originalDeltas.GetTurnedDelta(angle));
-            }
+            withBorderDistance = new DeltaRepresentation(bitmap, figColor, borderDistance);
         }
 
 
@@ -213,38 +169,6 @@ namespace DataClassLibrary
             {
                 data[i].id = i;
             }
-        }
-
-
-        /// <summary>
-        /// Перманентно удаляет все непомещающиеся на листе повороты фигуры
-        /// </summary>
-        /// <param name="w">Ширина листа</param>
-        /// <param name="h">Высота листа</param>
-        public void DeleteWrongAngles(int w, int h)
-        {
-            List<int> anglesToDelete = new List<int>();
-            foreach (KeyValuePair<int, DeltaRepresentation> curAngle in rotated)
-            {
-                if (w < curAngle.Value.GetWidth() || h < curAngle.Value.GetHeight())
-                    anglesToDelete.Add(curAngle.Key);
-            }
-
-            foreach (int i in anglesToDelete)
-                rotated.Remove(i);
-        }
-
-
-        /// <summary>
-        /// Перманентно удаляет все непомещающиеся на листе повороты всех переданных фигур
-        /// </summary>
-        /// <param name="w">Ширина листа</param>
-        /// <param name="h">Высота листа</param>
-        /// <param name="data">Список фигур</param>
-        public static void DeleteWrongAngles(int w, int h, List<Figure> data)
-        {
-            foreach (Figure f in data)
-                f.DeleteWrongAngles(w, h);
         }
     }
 }

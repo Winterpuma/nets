@@ -112,18 +112,14 @@ namespace IO
             {
                 ResultFigPos figPos = res.answer[i];
                 Figure figData = data[i];
-                DeltaRepresentation solutionFig = figData.rotated[(int)figPos.angle];
                 DeltaRepresentation solutionFigWithoutScaling;
-                if (figData.borderDistance == 0)
-                    solutionFigWithoutScaling = solutionFig;
-                else
-                {
-                    if (figPos.angle == 0)
-                        solutionFigWithoutScaling =  figData.noScaling;
-                    else
-                        solutionFigWithoutScaling = figData.noScaling.GetTurnedDelta(solutionFig.angle);
-                }
 
+                if (figPos.angle == 0)
+                    solutionFigWithoutScaling = figData.noScaling;
+                else
+                    solutionFigWithoutScaling = figData.noScaling.GetTurnedDelta((int)figPos.angle);
+
+                
                 PlaceDeltasOnABitmap(b, solutionFigWithoutScaling.deltas, figPos.xCenter, figPos.yCenter, color[i]);
             }
             return b;

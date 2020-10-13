@@ -294,5 +294,19 @@ namespace DataClassLibrary
         {
             return deltas.Max(p => p.Y) - deltas.Min(p => p.Y);
         }
+
+
+        /// <summary>
+        /// Проверка помещается ли фигура на листе
+        /// </summary>
+        /// <param name="w">Ширина листа</param>
+        /// <param name="h">Высота листа</param>
+        /// <returns>True если помещается</returns>
+        public bool WouldDeltaFit(int w, int h)
+        {
+            if (w < GetWidth() || h < GetHeight())
+                return false;
+            return true;
+        }
     }
 }

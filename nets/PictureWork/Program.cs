@@ -83,7 +83,7 @@ namespace PictureWork
             List<Figure> data = Figure.LoadFigures(pathTmp, srcFigColor, angleStep, borderDistance, figAmount);
             data.Sort(Figure.CompareFiguresBySize);
             Figure.UpdIndexes(data);
-            Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
+            //Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
             SolutionChecker.LoadFigures(data, pathPrologCode, scaleCoefs);
 
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
