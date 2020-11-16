@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
-using System.Linq;
+using System.Configuration;
+using System.Globalization;
 using DataClassLibrary;
 using IO;
-using System.Configuration;
-using System.Collections.Specialized;
-
 
 namespace PictureWork
 {
@@ -46,7 +44,7 @@ namespace PictureWork
             int sizey = Convert.ToInt32(ConfigurationManager.AppSettings.Get("lstSizeY"));
             lstSize = new Size(sizex, sizey);
 
-            scale = Convert.ToDouble(ConfigurationManager.AppSettings.Get("scale"));
+            scale = Convert.ToDouble(ConfigurationManager.AppSettings.Get("scale"), CultureInfo.InvariantCulture);
             angleStep = Convert.ToInt32(ConfigurationManager.AppSettings.Get("angleStep"));
             borderDistance = Convert.ToInt32(ConfigurationManager.AppSettings.Get("borderDistance"));
 
@@ -55,7 +53,7 @@ namespace PictureWork
 
             string scCoefs = ConfigurationManager.AppSettings.Get("scaleCoefs");
             foreach (string curCoef in scCoefs.Split(' '))
-                scaleCoefs.Add(Convert.ToDouble(curCoef));
+                scaleCoefs.Add(Convert.ToDouble(curCoef, CultureInfo.InvariantCulture));
 
             figAmount = Convert.ToInt32(ConfigurationManager.AppSettings.Get("figAmount"));
         }
