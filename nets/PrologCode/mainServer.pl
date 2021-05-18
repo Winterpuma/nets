@@ -14,6 +14,12 @@
 :- use_module(library(http/http_error)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_server)).
+:- use_module(library(http/thread_httpd)).
+:- use_module(library(http/http_header)).
+:- use_module(library(http/http_multipart_plugin)).
+:- use_module(library(http/http_client)).
+:- use_module(library(http/html_write)).
+:- use_module(library(option)).
 
 :- consult(figInfo).
 :- consult(queryFile).
