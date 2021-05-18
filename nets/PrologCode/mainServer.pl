@@ -222,3 +222,35 @@ getNextApprocCoords(Kscale, [CurFig|TailFigs], [CurFigAns|TailAns], [CurApproc|T
 	getNextApprocCoords(Kscale, TailFigs, TailAns, TailApproc).
 
 
+% Загрузка файла через post, используя multipart
+:- http_handler(root(upload/Filename), upload(Filename), []).
+
+upload(Filename, Request) :-
+	multipart_post_request(Request), !,
+	http_read_data(Request, Parts,
+		       [ on_filename(save_file)
+		       ]),
+	memberchk(file=file(OrigFileName, Saved), Parts),
+	mv(Saved, Filename),
+	format('Content-type: text/plain~n~n'),
+	format('Saved your file "~w" into "~w"~n', [OrigFileName, Filename]).
+upload(_Request) :-
+	throw(http_reply(bad_request(bad_file_upload))).
+
+multipart_post_request(Request) :-
+	memberchk(method(post), Request),
+	memberchk(content_type(ContentType), Request),
+	http_parse_header_value(
+	    content_type, ContentType,
+	    media(multipart/'form-data', _)).
+
+:- public save_file/3.
+
+save_file(In, file(FileName, File), Options) :-
+	option(filename(FileName), Options),
+	setup_call_cleanup(
+	    tmp_file_stream(octet, File, Out),
+	    copy_stream_data(In, Out),
+	    close(Out)).
+
+:- multifile prolog:message//1.
