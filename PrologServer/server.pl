@@ -1,3 +1,7 @@
+:- module(server,
+      [ server/1            % ?Port
+      ]).
+
 :- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_error)).
@@ -9,13 +13,17 @@
 :- use_module(library(http/http_client)).
 :- use_module(library(http/html_write)).
 :- use_module(library(option)).
+:- use_module(library(http/http_files)).
+:- use_module(library(http/http_unix_daemon)).
+:- use_module(library(http/http_log)).
+:- use_module(library(http/http_dyn_workers)).
+
 
 :- consult(solutionFinder).
 
-:- initialization server.
 
-server() :-
-	http_server(http_dispatch, [port(8080)]).
+server(Port) :-
+	http_server(http_dispatch, [port(Port), workers(16)]).
 
 
 % Найти ответ
