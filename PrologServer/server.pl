@@ -19,7 +19,8 @@
 :- use_module(library(http/http_dyn_workers)).
 
 
-:- consult(solutionFinder).
+%:- consult(solutionFinder).
+:- consult(/app/solutionFinder).
 
 
 server(Port) :-
@@ -30,7 +31,8 @@ server(Port) :-
 :- http_handler(/, queen, [methods([get,post]),time_limit(6000)]).
 
 queen(_R):-
-    consult([figInfo,queryFile]),
+	%consult(figInfo),
+	%consult(queryFile),
 	myQuery(Ans),
 	reply_json(json{answer:Ans}).
 
@@ -47,9 +49,10 @@ upload(Filename, Request) :-
 		       [ on_filename(save_file)
 		       ]),
 	memberchk(file=file(OrigFileName, Saved), Parts),
-	mv(Saved, Filename),
+	%mv(Saved, Filename),
+	consult(Saved),
 	format('Content-type: text/plain~n~n'),
-	format('Saved your file "~w" into "~w"~n', [OrigFileName, Filename]).
+	format('Saved your file "~w" into "~w"~n', [OrigFileName, Saved]).
 
 upload(_Request) :-
 	throw(http_reply(bad_request(bad_file_upload))).
