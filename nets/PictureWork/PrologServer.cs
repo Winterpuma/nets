@@ -8,6 +8,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Configuration;
+using System.Net;
 
 namespace PictureWork
 {
@@ -23,7 +24,7 @@ namespace PictureWork
         private static readonly int _timeoutMin;// = 5;
 
 
-        static public bool IsInitialized = false;
+        static public bool IsInitialized = true; // инициализируем вручную до этого
 
         static public void Initialize()
         {
@@ -51,7 +52,7 @@ namespace PictureWork
         {
             if (!IsInitialized)
                 Initialize();
-            CreaterQueryFile(codePath + _qFName, query);
+            CreaterQueryFileOnServer(query);
 
             try
             {
@@ -112,17 +113,33 @@ namespace PictureWork
         }
 
 
-        private static void CreaterQueryFile(string fileName, string strToAppend)
+        private static void CreaterQueryFileOnServer(string query)
         {
+            string tmpFile = $"tmp_{_qFName}";
             using (StreamWriter file =
-                new StreamWriter(fileName))
+                new StreamWriter(tmpFile))
             {
-                file.WriteLine(strToAppend);//_queryName + "(Ans) :- " + strToAppend);
+                file.WriteLine(query);//_queryName + "(Ans) :- " + strToAppend);
             }
 
+            UploadFile(tmpFile, _qFName);
         }
 
-        
+        public static void UploadFile(string srcFilename, string dstFilename)
+		{
+            if (!IsInitialized)
+                Initialize();
+
+            String uriString = $"{serverAdress}upload/{dstFilename}";
+
+            WebClient myWebClient = new WebClient();
+
+            byte[] responseArray = myWebClient.UploadFile(uriString, srcFilename);
+
+            // Decode and display the response.
+            //Console.WriteLine("\nResponse Received. The contents of the file uploaded are:\n{0}",
+            //    System.Text.Encoding.ASCII.GetString(responseArray));
+        }
             
         public static async Task<string> getAns()
         {

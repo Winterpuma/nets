@@ -104,12 +104,14 @@ namespace PictureWork
         }*/
 
         /// <summary>
-        /// Загрузка фигур в файл пролога
+        /// Загрузка фигур в файл пролога и выгрузка на сервер
         /// </summary>
         public static void LoadFigures(List<Figure> data, string pathProlog, List<double> scaleCoefs)
         {
-            FigureFileOperations.CreateNewFigFile(pathProlog + "figInfo.pl");
+            string tmpFilename = "tmpFigInfo.pl";
+            FigureFileOperations.CreateNewFigFile(tmpFilename);//pathProlog + "figInfo.pl");
             FigureFileOperations.AddManyFigs(data, scaleCoefs);
+            PrologServer.UploadFile(tmpFilename, "figInfo.pl");
         }
 
         public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, string pathProlog, List<double> scaleCoefs)

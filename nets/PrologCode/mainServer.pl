@@ -21,14 +21,15 @@
 :- use_module(library(http/html_write)).
 :- use_module(library(option)).
 
-:- consult(figInfo).
-:- consult(queryFile).
+%:- consult(figInfo).
+%:- consult(queryFile).
 
 server() :-
 	http_server(http_dispatch, [port(8080)]).
 
 queen(_R):-
-	make,
+	%make,
+        consult([figInfo,queryFile]),
 	myQuery(Ans),
 	reply_json(json{answer:Ans}).
 
