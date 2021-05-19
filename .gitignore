@@ -266,5 +266,5 @@ tmp/
 nets/PictureWork/tmp_main.pl
 nets/tmp_main.pl
 nets/PictureWork/figInfo.pl
-nets/PrologCode/queryFile.pl
-nets/PrologCode/figInfo.pl
+PrologServer/queryFile.pl
+PrologServer/figInfo.pl
