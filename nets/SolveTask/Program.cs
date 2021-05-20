@@ -13,7 +13,6 @@ namespace SolveTask
     {
         // Параметры
         static string pathSrc; // Путь к директории с фигурами
-        static string pathPrologCode; // Путь к директории с кодом пролога
 
         static string pathTmp; // Путь для сохранения первично отмасштабированных фигур
         static string pathRes; // Путь для сохранения результата и лога
@@ -35,7 +34,6 @@ namespace SolveTask
         static void InitConfiguration()
         {
             pathSrc = ConfigurationManager.AppSettings.Get("pathSrc");
-            pathPrologCode = ConfigurationManager.AppSettings.Get("pathPrologCode");
 
             pathTmp = ConfigurationManager.AppSettings.Get("pathTmp");
             pathRes = ConfigurationManager.AppSettings.Get("pathRes");
@@ -58,7 +56,7 @@ namespace SolveTask
             figAmount = Convert.ToInt32(ConfigurationManager.AppSettings.Get("figAmount"));
         }
 
-        static void Main(string[] args)
+        static void Main()
         {
             InitConfiguration();
 
@@ -82,7 +80,7 @@ namespace SolveTask
             data.Sort(Figure.CompareFiguresBySize);
             Figure.UpdIndexes(data);
             //Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
-            SolutionChecker.LoadFigures(data, pathPrologCode, scaleCoefs);
+            SolutionChecker.LoadFigures(data, scaleCoefs);
 
             Console.WriteLine("Figure loading finished. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
             Log("Loaded Figs.");
@@ -90,7 +88,7 @@ namespace SolveTask
 
             // Поиск решения
             Console.WriteLine("Starting result finding. " + DateTime.Now.Minute + ":" + DateTime.Now.Second);
-            var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, pathPrologCode, scaleCoefs);
+            var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, scaleCoefs);
             var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scaleCoefs);
             if (result == null)
                 Log("Prolog finished. No answer.");

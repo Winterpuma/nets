@@ -12,7 +12,7 @@ namespace SolveTask
         private static List<List<int>> badPositions;
         private static List<List<int>> goodPositions;
 
-        private static ServerCluster prologCluster = new ServerCluster(new List<string>() { ConfigurationManager.AppSettings.Get("serverAdress") });
+        private static readonly ServerCluster prologCluster = new ServerCluster(new List<string>() { ConfigurationManager.AppSettings.Get("serverAdress") });
 
         private static void InitPos()
         {
@@ -78,40 +78,10 @@ namespace SolveTask
             return sum;
         }
 
-        /*
-        /// <summary>
-        /// Проверяет помещается ли текущее размещение деталей на одном листе
-        /// </summary>
-        private static bool DoesCurrentListFit(List<Figure> list, int w, int h)
-        {
-            int area = w * h;
-            if (CountDeltas(list) > area || !PrologSolutionFinder.DoesFiguresFit(list, w, h))
-                return false;
-            else
-                return true;
-        }
-
-        private static bool DoesCurrentListFitPreDefFigs(List<Figure> data, int w, int h, double scale = 1)
-        {
-            int area = w * h;
-            if (CountDeltas(data) > area)
-                return false;
-
-
-            int[] figInd = new int[data.Count];
-            for (int i = 0; i < figInd.Length; i++)
-                figInd[i] = data[i].id;
-
-            if (!PrologSolutionFinder.DoesFiguresFit(w, h, scale, figInd))
-                return false;
-
-            return true;
-        }*/
-
         /// <summary>
         /// Загрузка фигур в файл пролога и выгрузка на сервер
         /// </summary>
-        public static void LoadFigures(List<Figure> data, string pathProlog, List<double> scaleCoefs)
+        public static void LoadFigures(List<Figure> data, List<double> scaleCoefs)
         {
             string tmpFilename = "tmpFigInfo.pl";
             FigureFileOperations.CreateNewFigFile(tmpFilename);//pathProlog + "figInfo.pl");
@@ -119,7 +89,7 @@ namespace SolveTask
             prologCluster.UploadFileToCluster(tmpFilename, "figInfo.pl");
         }
 
-        public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, string pathProlog, List<double> scaleCoefs)
+        public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, List<double> scaleCoefs)
         {
             // Заполнение массива индексов для поиска результата
             List<int> indexes = new List<int>();
@@ -206,51 +176,6 @@ namespace SolveTask
 
             return (res == null) ? false : true;
         }
-
-        /*
-        /// <summary>
-        /// Проверяет помещается ли текущее размещение деталей по площади дельт и 
-        /// перебор решений пролога
-        /// </summary>
-        private static bool DoesCurrentArrangementFit(List<List<Figure>> sequence, int w, int h)
-        {
-            int area = w * h;
-            foreach (List<Figure> curLstArrangement in sequence)
-            {
-                if (CountDeltas(curLstArrangement) > area || !PrologSolutionFinder.DoesFiguresFit(curLstArrangement, w, h))
-                    return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Проверяет нет ли пустых листов внутри расстановки
-        /// </summary>
-        private static bool ArrangementIsBad(List<List<Figure>> arrangement)
-        {
-            foreach (List<Figure> i in arrangement)
-            {
-                if (i.Count == 0)
-                    return true;
-            }
-            return false;
-        }
-        
-        
-        /// <summary>
-        /// Проверяет помещаются ли фигуры на M листах
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="MLists">Количество листов</param>
-        /// <returns></returns>
-        private static bool DoesFiguresFitOnMLists(List<Figure> data, int width, int height, int MLists)
-        {
-            if (GetWorkingArrangement(data, width, height, MLists) != null)
-                return true;
-            return false;
-        }*/
         #endregion
 
         private static void Dbg1(List<List<int>> curSequence, ConsoleColor col = ConsoleColor.Yellow)
@@ -413,57 +338,6 @@ namespace SolveTask
         }*/
         #endregion
 
-        /*
-    /// <summary>
-    /// Получает единственное подходящее решение или null 
-    /// без привязки к количеству листов
-    /// </summary>
-    public static List<List<Figure>> GetWorkingArrangement(List<Figure> data, int w, int h,
-        List<List<Figure>> result = null)
-    {
-        if (result == null)
-        {
-            result = new List<List<Figure>>();
-            result.Add(new List<Figure>());
-            result[0].Add(data[0]); // первую фигуру всегда в новый лист
-            data.RemoveAt(0);
-        }
-        if (data.Count == 0)
-        {
-            Dbg1(result);
-            return result;
-        }
-
-        Figure currentFig = data[0];
-        var nextData = new List<Figure>(data);
-        nextData.RemoveAt(0);
-
-
-        // Пытаемся последовательно добавлять в уже существующие листы
-        for (int i = 0; i < result.Count; i++)
-        {
-            var newCurLst = new List<Figure>(result[i]);
-            newCurLst.Add(currentFig);
-            if (DoesCurrentListFit(newCurLst, w, h))
-            {
-                result[i].Add(currentFig);
-                var curResult = GetWorkingArrangement(nextData, w, h, result);
-                if (curResult != null)
-                    return result;
-            }
-        }
-
-        // Если не получилось добавить к существующим, кладем в новый
-        var tmp = new List<Figure>();
-        tmp.Add(currentFig);
-        var newResult = new List<List<Figure>>(result);
-        newResult.Add(tmp);
-        var curRes = GetWorkingArrangement(nextData, w, h, newResult);
-        if (curRes != null)
-            return curRes;
-
-        return null;
-    }*/
 
         public static List<List<int>> GetWorkingArrangementPreDefFigs(List<int> data, List<double> scaleCoefs, List<int> w, List<int> h,
             List<List<int>> result = null)
@@ -520,12 +394,8 @@ namespace SolveTask
         {
             List<ResultData> results = new List<ResultData>();
             foreach (List<int> figInd in arrangement)
-            {/*
-                List<int> figInd = new List<int>();
-                for (int i = 0; i < curLst.Count; i++)
-                    figInd.Add(curLst[i].id);*/
-                List<int> w, h;
-                FillLists(wLast, hLast, out w, out h, scaleCoefs);
+            {
+                FillLists(wLast, hLast, out var w, out var h, scaleCoefs);
 
                 var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);// PrologSolutionFinder.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
                 if (res == null)
