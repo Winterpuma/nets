@@ -88,9 +88,9 @@
       <Project>{2c7f7d43-e8d4-474c-a4f0-eab15cce1a18}</Project>
       <Name>IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PictureWork\SolveTaskProlog.csproj">
+    <ProjectReference Include="..\PictureWork\SolveTask.csproj">
       <Project>{fa2f71ad-a336-49f7-aef5-01da13737ab0}</Project>
-      <Name>SolveTaskProlog</Name>
+      <Name>SolveTask</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
