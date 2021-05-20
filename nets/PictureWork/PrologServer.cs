@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DataClassLibrary;
 using System.IO;
@@ -12,46 +10,25 @@ using System.Net;
 
 namespace PictureWork
 {
-    static class PrologServer
+    class PrologServer
     {
-        // C:\Program Files\swipl\bin
-        static string serverAdress;// = "http://localhost:8080/";
-        static string pathPrologBin;// = @"C:\Program Files\swipl\bin";
-        static string codePath = "";
-        private static readonly string _mainName = "mainServer.pl";
+        private readonly string serverAdress;
+        private readonly int _timeoutMin;
+
         private static readonly string _qFName = "queryFile.pl";
 
-        private static readonly int _timeoutMin;// = 5;
-
-
-        static public bool IsInitialized = true; // инициализируем вручную до этого
-
-        static public void Initialize()
+        public PrologServer(string serverAdress)
         {
-            if (pathPrologBin == null)
-                throw new Exception("prolog bin path is not inited");
-            Environment.SetEnvironmentVariable("Path", pathPrologBin);
-            if (!File.Exists(codePath + _mainName))
-                throw new Exception("main code path \"" + codePath + _mainName + "\" doesn't exist");
-            string strCmdText = "/C swipl " + codePath + _mainName;
-            System.Diagnostics.Process.Start("CMD.exe", strCmdText);
-            IsInitialized = true;
-        }
-
-
-        static PrologServer()
-        {
-            codePath = ConfigurationManager.AppSettings.Get("pathPrologCode");
-            pathPrologBin = ConfigurationManager.AppSettings.Get("pathPrologBin");
-            serverAdress = ConfigurationManager.AppSettings.Get("serverAdress");
+            this.serverAdress = serverAdress;
             _timeoutMin = Convert.ToInt32(ConfigurationManager.AppSettings.Get("serverAnswerMinTimeout"));
         }
         
-
-        private static ResultData GetAnyResult(string query)
+        /// <summary>
+        /// Получение ответа соответствующей query
+        /// </summary>
+        /// <returns>Набор расположений фигур</returns>
+        public ResultData GetAnyResult(string query)
         {
-            if (!IsInitialized)
-                Initialize();
             CreaterQueryFileOnServer(query);
 
             try
@@ -76,44 +53,13 @@ namespace PictureWork
                 Console.WriteLine("Exit by timer");
                 return null;
             }
-
         }
 
         /// <summary>
-        /// Получение ответа для одного размера с нуля
+        /// Создание файла запроса на сервера
         /// </summary>
-        public static ResultData GetAnyResult(int width, int height, double scale, List<int> figInd)
-        {
-            Console.WriteLine("~~~~~~ SCALE: " + scale);
-            // Предполагается, что файл с фигурами уже загружен
-            string queryStr = QueryCreator.GetAnsQuery(width, height, scale, figInd);
-            return GetAnyResult(queryStr);
-        }
-
-        /// <summary>
-        /// Получение ответа для одного размера на основе предыдущего размещения в другом масштабе
-        /// </summary>
-        public static ResultData GetAnyResult(int width, int height, double scale, ResultData prevScaleRes, List<int> figInd)
-        {
-            Console.WriteLine("~~~~~~ SCALE: " + scale);
-            // Предполагается, что файл с фигурами уже загружен
-            string queryStr = QueryCreator.GetAnsQuery(width, height, scale, prevScaleRes, figInd);
-            Console.WriteLine(queryStr);
-            return GetAnyResult(queryStr);
-        }
-
-        /// <summary>
-        /// Получение ответа, основанного на последовательной итерации размеров фигур внутри пролога
-        /// </summary>
-        public static ResultData GetAnyResult(List<int> width, List<int> height, List<double> scales, List<int> figInd)
-        {
-            // Предполагается, что файл с фигурами уже загружен
-            string queryStr = QueryCreator.GetAnsQuery(width, height, scales, figInd);
-            return GetAnyResult(queryStr);
-        }
-
-
-        private static void CreaterQueryFileOnServer(string query)
+        /// <param name="query">Текст запроса</param>
+        private void CreaterQueryFileOnServer(string query)
         {
             string tmpFile = $"tmp_{_qFName}";
             using (StreamWriter file =
@@ -125,14 +71,15 @@ namespace PictureWork
             UploadFile(tmpFile, _qFName);
         }
 
-        public static void UploadFile(string srcFilename, string dstFilename)
+        /// <summary>
+        /// Загрузка файла на сервер
+        /// </summary>
+        /// <param name="srcFilename">Загружаемый файл</param>
+        /// <param name="dstFilename">Название файла на сервере</param>
+        public void UploadFile(string srcFilename, string dstFilename)
 		{
-            if (!IsInitialized)
-                Initialize();
-
-            String uriString = $"{serverAdress}upload/{dstFilename}";
-
-            WebClient myWebClient = new WebClient();
+            var uriString = $"{serverAdress}upload/{dstFilename}";
+            var myWebClient = new WebClient();
 
             byte[] responseArray = myWebClient.UploadFile(uriString, srcFilename);
 
@@ -140,8 +87,12 @@ namespace PictureWork
             //Console.WriteLine("\nResponse Received. The contents of the file uploaded are:\n{0}",
             //    System.Text.Encoding.ASCII.GetString(responseArray));
         }
-            
-        public static async Task<string> getAns()
+        
+        /// <summary>
+        /// Получение ответа myQuery предиката
+        /// </summary>
+        /// <returns>Ответ сервера</returns>
+        public async Task<string> getAns()
         {
             HttpClient client = new HttpClient();
             var values = new Dictionary<string, string>
@@ -158,6 +109,5 @@ namespace PictureWork
 
             return responseString;
         }
-
     }
 }
