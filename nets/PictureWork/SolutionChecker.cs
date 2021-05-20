@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using DataClassLibrary;
 
 namespace PictureWork
@@ -8,6 +9,8 @@ namespace PictureWork
     {
         private static List<List<int>> badPositions;
         private static List<List<int>> goodPositions;
+
+        private static ServerCluster prologCluster = new ServerCluster(new List<string>() { ConfigurationManager.AppSettings.Get("serverAdress") });
 
         private static void InitPos()
         {
@@ -111,7 +114,7 @@ namespace PictureWork
             string tmpFilename = "tmpFigInfo.pl";
             FigureFileOperations.CreateNewFigFile(tmpFilename);//pathProlog + "figInfo.pl");
             FigureFileOperations.AddManyFigs(data, scaleCoefs);
-            PrologServer.UploadFile(tmpFilename, "figInfo.pl");
+            prologCluster.UploadFileToCluster(tmpFilename, "figInfo.pl");
         }
 
         public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, string pathProlog, List<double> scaleCoefs)
@@ -147,7 +150,7 @@ namespace PictureWork
         {
             int newW = (int)(w * scaleCoefs[0]);
             int newH = (int)(h * scaleCoefs[0]);
-            ResultData res = PrologServer.GetAnyResult(newW, newH, scaleCoefs[0], figInd);
+            ResultData res = prologCluster.GetAnyResult(newW, newH, scaleCoefs[0], figInd);
             if (res == null)
                 return null;
             Console.WriteLine(res);
@@ -156,7 +159,7 @@ namespace PictureWork
             {
                 newW = (int)(w * scaleCoefs[i]);
                 newH = (int)(h * scaleCoefs[i]);
-                res = PrologServer.GetAnyResult(newW, newH, scaleCoefs[i], res, figInd);
+                res = prologCluster.GetAnyResult(newW, newH, scaleCoefs[i], res, figInd);
                 if (res == null)
                     return null;
                 Console.WriteLine(res);
@@ -174,7 +177,7 @@ namespace PictureWork
             if (IsPosGood(figInd))
                 return new ResultData(); 
 
-            ResultData res = PrologServer.GetAnyResult(w, h, scaleCoefs, figInd);
+            ResultData res = prologCluster.GetAnyResult(w, h, scaleCoefs, figInd);
             if (res == null)
             {
                 AddBadPos(figInd);
@@ -543,7 +546,7 @@ namespace PictureWork
             List<ResultData> results = new List<ResultData>();
             foreach (List<int> figInd in arrangement)
             {
-                var res = PrologServer.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
+                var res = prologCluster.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
                 if (res == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
