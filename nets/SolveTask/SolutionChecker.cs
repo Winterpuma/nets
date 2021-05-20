@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Configuration;
 using DataClassLibrary;
+using SolveTask.Server;
+using SolveTask.ServerCodeGenerators;
 
-namespace PictureWork
+namespace SolveTask
 {
     public static class SolutionChecker
     {

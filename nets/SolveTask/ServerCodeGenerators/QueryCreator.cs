@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Drawing;
 using DataClassLibrary;
 
-namespace PictureWork
+namespace SolveTask.ServerCodeGenerators
 {
     static class QueryCreator
     {

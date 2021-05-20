@@ -7,7 +7,7 @@ using System.Globalization;
 using DataClassLibrary;
 using IO;
 
-namespace PictureWork
+namespace SolveTask
 {
     class Program
     {

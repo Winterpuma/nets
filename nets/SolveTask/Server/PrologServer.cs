@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Configuration;
 using System.Net;
 
-namespace PictureWork
+namespace SolveTask.Server
 {
     class PrologServer
     {

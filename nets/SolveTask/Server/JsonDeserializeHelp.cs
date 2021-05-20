@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataClassLibrary;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PictureWork
+namespace SolveTask.Server
 {
-
     public class ResultFigPosConverter : JsonConverter<ResultFigPos>
     {
         private readonly JsonEncodedText xVal = JsonEncodedText.Encode("xCenter");
