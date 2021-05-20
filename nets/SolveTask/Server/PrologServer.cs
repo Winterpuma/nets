@@ -1,53 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using DataClassLibrary;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Configuration;
 using System.Net;
+using System.Text;
 
 namespace SolveTask.Server
 {
-    class PrologServer
+    class PrologServer : IServer
     {
-        private readonly string serverAdress;
-        private readonly int _timeoutMin;
+		private readonly int _timeoutMin;
 
         private static readonly string _qFName = "queryFile.pl";
 
-        public PrologServer(string serverAdress)
+		public string Adress { get; }
+
+		public PrologServer(string serverAdress)
         {
-            this.serverAdress = serverAdress;
+            Adress = serverAdress;
             _timeoutMin = Convert.ToInt32(ConfigurationManager.AppSettings.Get("serverAnswerMinTimeout"));
         }
-        
+
         /// <summary>
         /// Получение ответа соответствующей query
         /// </summary>
         /// <returns>Набор расположений фигур</returns>
-        public ResultData GetAnyResult(string query)
+        public ResultData GetQueryResult(string query)
         {
             CreaterQueryFileOnServer(query);
 
             try
             {
-                string ans = getAns().Result;
+                string ans = GetAnswer();
                 if (ans == "NoAnswer")
                     return null;
                 if (ans.Contains("Time limit exceeded"))
                     return null;
+
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
                 };
                 options.Converters.Add(new ResultFigPosConverter(options));
-                ResultData result = JsonSerializer.Deserialize<ResultData>(ans, options);
 
-                return result;
+                return JsonSerializer.Deserialize<ResultData>(ans, options);
             }
-            
+
             catch (AggregateException)
             {
                 Console.WriteLine("Exit by timer");
@@ -76,38 +76,30 @@ namespace SolveTask.Server
         /// </summary>
         /// <param name="srcFilename">Загружаемый файл</param>
         /// <param name="dstFilename">Название файла на сервере</param>
-        public void UploadFile(string srcFilename, string dstFilename)
-		{
-            var uriString = $"{serverAdress}upload/{dstFilename}";
+        public string UploadFile(string srcFilename, string dstFilename)
+        {
+            var uriString = $"{Adress}upload/{dstFilename}";
             var myWebClient = new WebClient();
 
             byte[] responseArray = myWebClient.UploadFile(uriString, srcFilename);
 
-            // Decode and display the response.
-            //Console.WriteLine("\nResponse Received. The contents of the file uploaded are:\n{0}",
-            //    System.Text.Encoding.ASCII.GetString(responseArray));
+            return Encoding.ASCII.GetString(responseArray);
         }
-        
+
         /// <summary>
         /// Получение ответа myQuery предиката
         /// </summary>
         /// <returns>Ответ сервера</returns>
-        public async Task<string> getAns()
+        public string GetAnswer()
         {
-            HttpClient client = new HttpClient();
-            var values = new Dictionary<string, string>
-            {
-                { "val", "3" }
-            };
+			HttpClient client = new HttpClient
+			{
+				Timeout = TimeSpan.FromMinutes(_timeoutMin)
+			};
 
-            var content = new FormUrlEncodedContent(values);
+			var response = client.GetAsync(Adress).Result;
 
-            client.Timeout = TimeSpan.FromMinutes(_timeoutMin);
-            var response = await client.PostAsync(serverAdress, content);
-
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            return responseString;
+            return response.Content.ReadAsStringAsync().Result;
         }
     }
 }

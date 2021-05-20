@@ -160,6 +160,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerCodeGenerators\FigureFileOperations.cs" />
     <Compile Include="ServerCodeGenerators\QueryCreator.cs" />
+    <Compile Include="Server\IServer.cs" />
     <Compile Include="Server\JsonDeserializeHelp.cs" />
     <Compile Include="Server\PrologServer.cs" />
     <Compile Include="Server\ServerCluster.cs" />
