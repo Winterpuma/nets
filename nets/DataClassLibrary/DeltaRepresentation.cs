@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 
 namespace DataClassLibrary
 {
     public class DeltaRepresentation
     {
-        Bitmap bmp = null;
         public int xCenter, yCenter;
         public double angle = 0;
 
@@ -18,18 +15,13 @@ namespace DataClassLibrary
         SortedDictionary<int, List<int>> outline = null;
         SortedDictionary<int, List<int>> specialDots = null;
 
-
-
         public DeltaRepresentation() { }
-
 
         /// <summary>
         /// Загрузка пикселей заданного цвета из изображения
         /// </summary>
         public DeltaRepresentation(Bitmap bmp, Color figColor)
         {
-            this.bmp = bmp;
-
             xCenter = bmp.Width / 2;
             yCenter = bmp.Height / 2;
 
@@ -57,7 +49,6 @@ namespace DataClassLibrary
         public DeltaRepresentation(Bitmap bmp)
         {
             Color backColor = Color.White;
-            this.bmp = bmp;
 
             xCenter = bmp.Width / 2;
             yCenter = bmp.Height / 2;
@@ -88,8 +79,6 @@ namespace DataClassLibrary
         /// <param name="scaleBorders">Прирост в пикселях</param>
         public DeltaRepresentation(Bitmap bmp, Color figColor, int scaleBorders)
         {
-            this.bmp = bmp;
-
             xCenter = bmp.Width / 2;
             yCenter = bmp.Height / 2;
 
