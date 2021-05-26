@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using DataClassLibrary;
 using System.IO;
 
-namespace PictureWork
+namespace SolveTask.ServerCodeGenerators
 {
     public static class FigureFileOperations
     {
