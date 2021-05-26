@@ -60,7 +60,7 @@ namespace SolveTask.ServerCodeGenerators
                 queryStr += "fig" + i + "(Fig" + i + "," + scaleStr + "),";
                 figNames.Add("((0," + (width - 1) + "),(0," + (height - 1) + "), (0,359),Fig" + i + ")");
             }
-            queryStr += "place_it3_3_helper([" + String.Join(",", figNames) + "],Field, Ans, _).";
+            queryStr += "place_figures_in_range([" + String.Join(",", figNames) + "],Field, Ans, _).";
             return queryStr;
         }
 
@@ -75,7 +75,7 @@ namespace SolveTask.ServerCodeGenerators
                 figLocationInfo.Add("(" + prevScaleRes.GetApproxLocationForNextFig(j, scale, width, height) + 
                     ", Fig" + figInd[j] + ")");
             }
-            queryStr += "place_it3_3_helper([" + String.Join(",", figLocationInfo) + "],Field, Ans, _).";
+            queryStr += "place_figures_in_range([" + String.Join(",", figLocationInfo) + "],Field, Ans, _).";
             return queryStr;
         }
 
@@ -119,7 +119,7 @@ namespace SolveTask.ServerCodeGenerators
                 queryStr += "fig" + figInd[j] + "(Fig" + figInd[j] + i + ",Scale" + i + "),";
                 figNames.Add("((0,Width" + i + "),(0,Height" + i + "), (0,359),Fig" + figInd[j] + i + ")");
             }
-            queryStr += "place_it3_3_helper([" + String.Join(",", figNames) + "],Field" + i + ", Ans" + i + ", _)";
+            queryStr += "place_figures_in_range([" + String.Join(",", figNames) + "],Field" + i + ", Ans" + i + ", _)";
             return queryStr;
         }
 
@@ -158,12 +158,12 @@ namespace SolveTask.ServerCodeGenerators
 
         private static string TemplateGetNextApproc(int i, List<string> figNames)
         {
-            return "getNextApprocCoords(Kscale" + i + ",[" + String.Join(",", figNames) + "], Ans" + (i - 1) + ", ApprocFigNewScale" + i + ")";
+            return "get_next_approc_coords(Kscale" + i + ",[" + String.Join(",", figNames) + "], Ans" + (i - 1) + ", ApprocFigNewScale" + i + ")";
         }
 
         private static string TemplatePlace(int i)
         {
-            return "place_it3_3_helper(ApprocFigNewScale" + i + ",Field" + i + ",Ans" + i + ",_)";
+            return "place_figures_in_range(ApprocFigNewScale" + i + ",Field" + i + ",Ans" + i + ",_)";
         }
 
 
