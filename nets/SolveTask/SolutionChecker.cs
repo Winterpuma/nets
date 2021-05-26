@@ -4,11 +4,14 @@ using System.Configuration;
 using DataClassLibrary;
 using SolveTask.Server;
 using SolveTask.ServerCodeGenerators;
+using SolveTask.Logging;
 
 namespace SolveTask
 {
     public static class SolutionChecker
     {
+        private static readonly ConsoleLogger logger = new ConsoleLogger();
+
         private static List<List<int>> badPositions;
         private static List<List<int>> goodPositions;
 
@@ -133,7 +136,7 @@ namespace SolveTask
             }
 
             AddGoodPos(figInd);
-            Console.WriteLine(res);
+            logger.Log(res);
             //res.SetLstInfo(w.FindLast(), newH, scaleCoefs[0]);
 
             return res;
@@ -147,36 +150,6 @@ namespace SolveTask
         }
         #endregion
 
-        private static void Dbg1(List<List<int>> curSequence, ConsoleColor col = ConsoleColor.Yellow)
-        {
-            Console.ForegroundColor = col;
-            Console.WriteLine("-----------");
-            curSequence.ForEach((item) =>
-            {
-                item.ForEach((fig) =>
-                {
-                    Console.Write(fig + " ");
-                });
-                Console.WriteLine();
-            });
-            Console.WriteLine();
-
-            Console.ResetColor();
-        }
-
-        private static void Dbg1(List<int> curSequence, ConsoleColor col = ConsoleColor.Yellow)
-        {
-            Console.ForegroundColor = col;
-            Console.WriteLine("----------- \nПроверяем лист: ");
-            curSequence.ForEach((fig) =>
-            {
-                    Console.Write(fig + " ");
-            });
-            Console.WriteLine();
-
-            Console.ResetColor();
-        }
-
         public static List<List<int>> GetWorkingArrangementPreDefFigs(List<int> data, List<double> scaleCoefs, List<int> w, List<int> h,
             List<List<int>> result = null)
         {
@@ -189,7 +162,7 @@ namespace SolveTask
             }
             if (data.Count == 0)
             {
-                Dbg1(result);
+                logger.Log(result);
                 return result;
             }
 
@@ -203,7 +176,7 @@ namespace SolveTask
             {
 				var newCurLst = new List<int>(result[i]) { currentFig };
 
-				Dbg1(newCurLst, ConsoleColor.Magenta);
+                logger.Log(newCurLst);
 
                 if (DoesCurrentListFitPreDefFigs(newCurLst, scaleCoefs, w, h))
                 {
@@ -235,9 +208,7 @@ namespace SolveTask
                 var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);
                 if (res == null)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: can't fit figures with given arrangement");
-                    Console.ResetColor();
+                    logger.LogError("Error: can't fit figures with given arrangement");
                     return null;
                 }
                 else
