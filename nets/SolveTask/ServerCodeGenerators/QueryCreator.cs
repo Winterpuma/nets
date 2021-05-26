@@ -6,7 +6,11 @@ namespace SolveTask.ServerCodeGenerators
 {
     static class QueryCreator
     {
-        
+        private static readonly string GenerateField = "generate";
+        private static readonly string Query = "myQuery";
+        private static readonly string PlaceFiguresInRange = "place_figures_in_range";
+        private static readonly string GetNextApprocCoords = "get_next_approc_coords";
+
         /// <summary>
         /// [(-1,[(0,1)]),
         /// (0,[(-1, 2)]),
@@ -52,7 +56,7 @@ namespace SolveTask.ServerCodeGenerators
 
         public static string GetAnsQuery(int width, int height, double scale, List<int> figInd)
         {
-            string queryStr = "generate(" + (width - 1) + "," + (height - 1) + ", Field),";
+            string queryStr = $"{GenerateField}(" + (width - 1) + "," + (height - 1) + ", Field),";
             List<string> figNames = new List<string>();
             string scaleStr = scale.ToString(System.Globalization.CultureInfo.InvariantCulture);
             foreach (int i in figInd)
@@ -60,13 +64,13 @@ namespace SolveTask.ServerCodeGenerators
                 queryStr += "fig" + i + "(Fig" + i + "," + scaleStr + "),";
                 figNames.Add("((0," + (width - 1) + "),(0," + (height - 1) + "), (0,359),Fig" + i + ")");
             }
-            queryStr += "place_figures_in_range([" + String.Join(",", figNames) + "],Field, Ans, _).";
+            queryStr += $"{PlaceFiguresInRange}([" + String.Join(",", figNames) + "],Field, Ans, _).";
             return queryStr;
         }
 
         public static string GetAnsQuery(int width, int height, double scale, ResultData prevScaleRes, List<int> figInd)
         {
-            string queryStr = "generate(" + (width - 1) + "," + (height - 1) + ", Field),";
+            string queryStr = $"{GenerateField}(" + (width - 1) + "," + (height - 1) + ", Field),";
             List<string> figLocationInfo = new List<string>();
             string scaleStr = scale.ToString(System.Globalization.CultureInfo.InvariantCulture);
             for (int j = 0; j < figInd.Count; j++)
@@ -75,7 +79,7 @@ namespace SolveTask.ServerCodeGenerators
                 figLocationInfo.Add("(" + prevScaleRes.GetApproxLocationForNextFig(j, scale, width, height) + 
                     ", Fig" + figInd[j] + ")");
             }
-            queryStr += "place_figures_in_range([" + String.Join(",", figLocationInfo) + "],Field, Ans, _).";
+            queryStr += $"{PlaceFiguresInRange}([" + String.Join(",", figLocationInfo) + "],Field, Ans, _).";
             return queryStr;
         }
 
@@ -86,7 +90,7 @@ namespace SolveTask.ServerCodeGenerators
             for (int iSize = 1; iSize < scales.Count; iSize++)
                 queryForEachScale.Add(GetFieldAndFigsQueryWithPrevRes(iSize, figInd));
 
-            return "myQuery(Ans" + (width.Count - 1) + "):-\n\t" +
+            return $"{Query}(Ans" + (width.Count - 1) + "):-\n\t" +
                 GetConstants(width, "Width") + "\n\t" +
                 GetConstants(height, "Height") + "\n\t" +
                 GetConstants(scales, "Scale") + "\n\t" +
@@ -119,7 +123,7 @@ namespace SolveTask.ServerCodeGenerators
                 queryStr += "fig" + figInd[j] + "(Fig" + figInd[j] + i + ",Scale" + i + "),";
                 figNames.Add("((0,Width" + i + "),(0,Height" + i + "), (0,359),Fig" + figInd[j] + i + ")");
             }
-            queryStr += "place_figures_in_range([" + String.Join(",", figNames) + "],Field" + i + ", Ans" + i + ", _)";
+            queryStr += $"{PlaceFiguresInRange}([" + String.Join(",", figNames) + "],Field" + i + ", Ans" + i + ", _)";
             return queryStr;
         }
 
@@ -137,7 +141,7 @@ namespace SolveTask.ServerCodeGenerators
 
         private static string TemplateGenerate(int i)
         {
-            return "generate(Width" + i + ", Height" + i + ", Field" + i + ")";
+            return $"{GenerateField}(Width" + i + ", Height" + i + ", Field" + i + ")";
         }
 
         private static string TemplateFigs(int i, List<int> figInd, List<string> figNames)
@@ -158,12 +162,12 @@ namespace SolveTask.ServerCodeGenerators
 
         private static string TemplateGetNextApproc(int i, List<string> figNames)
         {
-            return "get_next_approc_coords(Kscale" + i + ",[" + String.Join(",", figNames) + "], Ans" + (i - 1) + ", ApprocFigNewScale" + i + ")";
+            return $"{GetNextApprocCoords}(Kscale" + i + ",[" + String.Join(",", figNames) + "], Ans" + (i - 1) + ", ApprocFigNewScale" + i + ")";
         }
 
         private static string TemplatePlace(int i)
         {
-            return "place_figures_in_range(ApprocFigNewScale" + i + ",Field" + i + ",Ans" + i + ",_)";
+            return $"{PlaceFiguresInRange}(ApprocFigNewScale" + i + ",Field" + i + ",Ans" + i + ",_)";
         }
 
 
