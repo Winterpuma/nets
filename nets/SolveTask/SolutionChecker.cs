@@ -99,11 +99,10 @@ namespace SolveTask
                     indexes.Add(f.id);
             }
 
-            // Заполнение массивов размеров листов
-            List<int> widthScaled, heightScaled;
-            FillLists(w, h, out widthScaled, out heightScaled, scaleCoefs);
+			// Заполнение массивов размеров листов
+			FillLists(w, h, out var widthScaled, out var heightScaled, scaleCoefs);
 
-            InitPos();
+			InitPos();
             return GetWorkingArrangementPreDefFigs(indexes, new List<double>(scaleCoefs), widthScaled, heightScaled);
         }
 
@@ -116,29 +115,6 @@ namespace SolveTask
                 w.Add((int)(wLast * d));
                 h.Add((int)(hLast * d));
             }
-        }
-
-        private static ResultData DoesCurrentListFitPreDefFigs2(List<int> figInd, List<double> scaleCoefs, int w, int h)
-        {
-            int newW = (int)(w * scaleCoefs[0]);
-            int newH = (int)(h * scaleCoefs[0]);
-            ResultData res = prologCluster.GetAnyResult(newW, newH, scaleCoefs[0], figInd);
-            if (res == null)
-                return null;
-            Console.WriteLine(res);
-            res.SetLstInfo(newW, newH, scaleCoefs[0]);
-            for (int i = 1; i < scaleCoefs.Count; i++)
-            {
-                newW = (int)(w * scaleCoefs[i]);
-                newH = (int)(h * scaleCoefs[i]);
-                res = prologCluster.GetAnyResult(newW, newH, scaleCoefs[i], res, figInd);
-                if (res == null)
-                    return null;
-                Console.WriteLine(res);
-                res.SetLstInfo(newW, newH, scaleCoefs[i]);
-            }
-
-            return res;
         }
 
         private static ResultData DoesCurrentListFitPreDefFigs2(List<int> figInd, List<double> scaleCoefs, List<int> w, List<int> h)
@@ -163,18 +139,11 @@ namespace SolveTask
             return res;
         }
 
-        private static bool DoesCurrentListFitPreDefFigs(List<int> figInd, List<double> scaleCoefs, int w, int h)
-        {
-            var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);
-
-            return (res == null) ? false : true;
-        }
-
         private static bool DoesCurrentListFitPreDefFigs(List<int> figInd, List<double> scaleCoefs, List<int> w, List<int> h)
         {
             var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);
 
-            return (res == null) ? false : true;
+            return res != null;
         }
         #endregion
 
@@ -208,145 +177,14 @@ namespace SolveTask
             Console.ResetColor();
         }
 
-        private static int GetHalf(int min, int max)
-        {
-            return min + (int)Math.Floor((double)((max - min) / 2));
-        }
-
-        #region Поиск решения на конкретном кол-ве листов
-        /*
-        /// <summary>
-        /// Получает единственное подходящее решение или null
-        /// </summary>
-        public static List<List<Figure>> GetWorkingArrangement(List<Figure> data, int w, int h, int nEmpty,
-            List<List<Figure>> result = null)
-        {
-            if (result == null)
-            {
-                result = new List<List<Figure>>();
-                result.Add(new List<Figure>());
-                result[0].Add(data[0]); // первую фигуру всегда в новый лист
-                data.RemoveAt(0);
-                nEmpty--;
-            }
-            if (data.Count == 0)
-            {
-                Dbg1(result);
-                if (nEmpty == 0)
-                    return result;
-                else
-                    return null;
-            }
-
-            Figure currentFig = data[0];
-            var nextData = new List<Figure>(data);
-            nextData.RemoveAt(0);
-
-            // Если остались свободные листы, то пытаемся в новый
-            if (nEmpty > 0)
-            {
-                var tmp = new List<Figure>();
-                tmp.Add(currentFig);
-                var newResult = new List<List<Figure>>(result);
-                newResult.Add(tmp);
-                var curRes = GetWorkingArrangement(nextData, w, h, nEmpty - 1, newResult);
-                if (curRes != null)
-                    return curRes;
-            }
-
-            // Если не получилось добавление в новый, то
-            // пытаемся последовательно добавлять в уже существующие листы
-            for (int i = 0; i < result.Count; i++)
-            {
-                var newCurLst = new List<Figure>(result[i]);
-                newCurLst.Add(currentFig);
-                if (DoesCurrentListFit(newCurLst, w, h))
-                {
-                    result[i].Add(currentFig);
-                    var curRes = GetWorkingArrangement(nextData, w, h, nEmpty, result);
-                    if (curRes != null)
-                        return result;
-                }
-            }
-            
-            return null;
-        }
-        */
-        /*
-        /// <summary>
-        /// Поиск расположения на минимальном кол-ве листов половинным делением
-        /// </summary>
-        public static List<List<Figure>> FindMinArrangementHalfDiv(List<Figure> data, int width, int height)
-        {
-            int maxLstNumber = data.Count;
-            int minLstNumber = 1;
-            List<List<Figure>> res = new List<List<Figure>>();
-
-            do
-            {
-                int curLstNumber = GetHalf(minLstNumber, maxLstNumber);
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine("------ min: " + minLstNumber + " max: " + maxLstNumber + " cur: " + curLstNumber + "  " +
-                    DateTime.Now.Minute + ":" + DateTime.Now.Second);
-                Console.ResetColor();
-                
-                var tmp = GetWorkingArrangement(new List<Figure>(data), width, height, curLstNumber);
-                if (tmp != null) // было найдено решение для текущего кол-ва листов
-                {
-                    maxLstNumber = curLstNumber;
-                    res = tmp;
-                    Console.WriteLine("Yes");
-                }
-                else
-                {
-                    minLstNumber = curLstNumber + 1;
-                    Console.WriteLine(curLstNumber + ": No");
-                }
-            }
-            while (maxLstNumber != minLstNumber);
-
-            return res;
-        }
-
-        /// <summary>
-        /// Поиск расположения на минимальном кол-ве листов
-        /// Попытки найти решение на убывающем кол-ве листов.
-        /// </summary>
-        public static List<List<Figure>> FindMinArrangementDec(List<Figure> data, int width, int height)
-        {
-            int curLstNumber = data.Count;
-            List<List<Figure>> res = new List<List<Figure>>();
-
-            while (curLstNumber > 0)
-            {
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine("------ cur: " + curLstNumber + "  " +
-                    DateTime.Now.Minute + ":" + DateTime.Now.Second);
-                Console.ResetColor();
-
-                var tmp = GetWorkingArrangement(new List<Figure>(data), width, height, curLstNumber);
-                if (tmp != null) // было найдено решение для текущего кол-ва листов
-                {
-                    res = tmp;
-                    curLstNumber--;
-                }
-                else
-                    return res;
-            }
-
-            return res;
-        }*/
-        #endregion
-
-
         public static List<List<int>> GetWorkingArrangementPreDefFigs(List<int> data, List<double> scaleCoefs, List<int> w, List<int> h,
             List<List<int>> result = null)
         {
             if (result == null)
             {
-                result = new List<List<int>>();
-                result.Add(new List<int>());
-                result[0].Add(data[0]); // первую фигуру всегда в новый лист
+				result = new List<List<int>> { new List<int>() };
+
+				result[0].Add(data[0]); // первую фигуру всегда в новый лист
                 data.RemoveAt(0);
             }
             if (data.Count == 0)
@@ -363,9 +201,10 @@ namespace SolveTask
             // Пытаемся последовательно добавлять в уже существующие листы
             for (int i = 0; i < result.Count; i++)
             {
-                var newCurLst = new List<int>(result[i]);
-                newCurLst.Add(currentFig);
-                Dbg1(newCurLst, ConsoleColor.Magenta);
+				var newCurLst = new List<int>(result[i]) { currentFig };
+
+				Dbg1(newCurLst, ConsoleColor.Magenta);
+
                 if (DoesCurrentListFitPreDefFigs(newCurLst, scaleCoefs, w, h))
                 {
                     result[i].Add(currentFig);
@@ -375,50 +214,25 @@ namespace SolveTask
                 }
             }
 
-            // Если не получилось добавить к существующим, кладем в новый
-            var tmp = new List<int>();
-            tmp.Add(currentFig);
-            var newResult = new List<List<int>>(result);
-            newResult.Add(tmp);
-            var curRes = GetWorkingArrangementPreDefFigs(nextData, scaleCoefs, w, h, newResult);
-            if (curRes != null)
-                return curRes;
+			// Если не получилось добавить к существующим, кладем в новый
+			var tmp = new List<int> { currentFig };
+			var newResult = new List<List<int>>(result) { tmp };
+			var curRes = GetWorkingArrangementPreDefFigs(nextData, scaleCoefs, w, h, newResult);
 
-            return null;
-        }
+			return curRes ?? null;
+		}
 
-        /// <summary>
-        /// Известно разделение фигур по листам, ищется расположение
-        /// </summary>
-        public static List<ResultData> PlacePreDefinedArrangement(List<List<int>> arrangement, int wLast, int hLast, List<double> scaleCoefs)
+		/// <summary>
+		/// Известно разделение фигур по листам, ищется расположение
+		/// </summary>
+		public static List<ResultData> PlacePreDefinedArrangement(List<List<int>> arrangement, int wLast, int hLast, List<double> scaleCoefs)
         {
             List<ResultData> results = new List<ResultData>();
             foreach (List<int> figInd in arrangement)
             {
                 FillLists(wLast, hLast, out var w, out var h, scaleCoefs);
 
-                var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);// PrologSolutionFinder.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
-                if (res == null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: can't fit figures with given arrangement");
-                    Console.ResetColor();
-                    return null;
-                }
-                else
-                {
-                    results.Add(res);
-                }
-            }
-            return results;
-        }
-
-        public static List<ResultData> PlacePreDefinedArrangement(List<List<int>> arrangement, int w, int h, double scale)
-        {
-            List<ResultData> results = new List<ResultData>();
-            foreach (List<int> figInd in arrangement)
-            {
-                var res = prologCluster.GetAnyResult(w, h, scale, figInd);//GetAnyResult(curLst, w, h);
+                var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);
                 if (res == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
