@@ -1,15 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using DataClassLibrary;
 
 namespace SolveTask.ServerCodeGenerators
 {
     static class QueryCreator
     {
+        private static readonly CultureInfo CultureInfo = CultureInfo.InvariantCulture;
+
         private static readonly string GenerateField = "generate";
         private static readonly string Query = "myQuery";
         private static readonly string PlaceFiguresInRange = "place_figures_in_range";
         private static readonly string GetNextApprocCoords = "get_next_approc_coords";
+
+        private static string JoinArray(IEnumerable<string> array) =>
+            "[" + String.Join(", ", array) + "]";
+
+        private static string JoinArray(IEnumerable<Segment> array) =>
+            "[" + String.Join(", ", array) + "]";
+
+        private static string PredicateCall(string name, params string[] arguments) =>
+            $"{name}({String.Join(", ", arguments)})";
+
+        private static string PlaceFiguresInRangeLine(List<string> figLocationInfo, string index = "") =>
+            PredicateCall(PlaceFiguresInRange, JoinArray(figLocationInfo), $"Field{index}", $"Ans{index}", "_");
+
+
+        //private static string Generat
 
         /// <summary>
         /// [(-1,[(0,1)]),
@@ -22,13 +40,17 @@ namespace SolveTask.ServerCodeGenerators
 
             foreach (KeyValuePair<int, List<Segment>> kvp in figure)
             {
-                distinctY.Add("(" + kvp.Key + ",[" + String.Join(",", kvp.Value) + "])");
+                distinctY.Add($"({kvp.Key}, {JoinArray(kvp.Value)})");
             }
 
-            return "[" + String.Join(",", distinctY) + "]";
+            return JoinArray(distinctY);
         }
         
-
+        /// <summary>
+        /// Создание фигур одного размера
+        /// </summary>
+        /// <param name="oneSizeFig"></param>
+        /// <returns></returns>
         public static string CreateFigOneSize(Figure oneSizeFig)
         {
             List<string> allAngles = new List<string>();
@@ -36,35 +58,31 @@ namespace SolveTask.ServerCodeGenerators
             int angleStep = oneSizeFig.angleStep;
             DeltaRepresentation deltaToTurn = oneSizeFig.withBorderDistance;
 
-            for (int i = 0; i < 360; i += angleStep)
+            for (int angle = 0; angle < 360; angle += angleStep)
             {
-                DeltaRepresentation curDelta = deltaToTurn.GetTurnedDelta(i); //TODO using?? // TODO WouldDeltaFit check
-                
+                DeltaRepresentation curDelta = deltaToTurn.GetTurnedDelta(angle); //TODO using?? // TODO WouldDeltaFit check
                 {
                     SegmentRepresentation sr = new SegmentRepresentation(curDelta.GetDictRepresentation());
-                    allAngles.Add("(" +
-                        i + ", [" + String.Join(",", sr.segments[0]) + "]," + sr.GetMinMaxYLine() + ","
-                        + CreateFigFromDict(sr.segments) + ")");
+                    allAngles.Add($"({angle}, {JoinArray(sr.segments[0])}, {sr.GetMinMaxYLine()}, {CreateFigFromDict(sr.segments)})");
                 }
             }
 
-            string scaleStr = oneSizeFig.scaleCoef.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string scaleStr = oneSizeFig.scaleCoef.ToString(CultureInfo);
 
-            return "fig" + oneSizeFig.id + "(Fig, " + scaleStr + ") :- " +
-                "Fig = [" + String.Join(",", allAngles) + "].";
+            return $"fig{oneSizeFig.id}(Fig, {scaleStr}) :- Fig = {JoinArray(allAngles)}.";
         }
 
         public static string GetAnsQuery(int width, int height, double scale, List<int> figInd)
         {
             string queryStr = $"{GenerateField}(" + (width - 1) + "," + (height - 1) + ", Field),";
             List<string> figNames = new List<string>();
-            string scaleStr = scale.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string scaleStr = scale.ToString(CultureInfo);
             foreach (int i in figInd)
             {
                 queryStr += "fig" + i + "(Fig" + i + "," + scaleStr + "),";
                 figNames.Add("((0," + (width - 1) + "),(0," + (height - 1) + "), (0,359),Fig" + i + ")");
             }
-            queryStr += $"{PlaceFiguresInRange}([" + String.Join(",", figNames) + "],Field, Ans, _).";
+            queryStr += PlaceFiguresInRangeLine(figNames) + ".";
             return queryStr;
         }
 
@@ -72,22 +90,25 @@ namespace SolveTask.ServerCodeGenerators
         {
             string queryStr = $"{GenerateField}(" + (width - 1) + "," + (height - 1) + ", Field),";
             List<string> figLocationInfo = new List<string>();
-            string scaleStr = scale.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string scaleStr = scale.ToString(CultureInfo);
             for (int j = 0; j < figInd.Count; j++)
             {
                 queryStr += "fig" + figInd[j] + "(Fig" + figInd[j] + "," + scaleStr + "),";
                 figLocationInfo.Add("(" + prevScaleRes.GetApproxLocationForNextFig(j, scale, width, height) + 
                     ", Fig" + figInd[j] + ")");
             }
-            queryStr += $"{PlaceFiguresInRange}([" + String.Join(",", figLocationInfo) + "],Field, Ans, _).";
+            queryStr += PlaceFiguresInRangeLine(figLocationInfo) + ".";
             return queryStr;
         }
 
         public static string GetAnsQuery(List<int> width, List<int> height, List<double> scales, List<int> figInd)
         {
-            List<string> queryForEachScale = new List<string>();
-            queryForEachScale.Add(GetFieldAndFigsFirstQuery(figInd, 0));
-            for (int iSize = 1; iSize < scales.Count; iSize++)
+			List<string> queryForEachScale = new List<string>
+			{
+				GetFieldAndFigsFirstQuery(figInd, 0)
+			};
+
+			for (int iSize = 1; iSize < scales.Count; iSize++)
                 queryForEachScale.Add(GetFieldAndFigsQueryWithPrevRes(iSize, figInd));
 
             return $"{Query}(Ans" + (width.Count - 1) + "):-\n\t" +
@@ -109,21 +130,22 @@ namespace SolveTask.ServerCodeGenerators
         {
             string queryStr = "";
             for (int i = 0; i < constants.Count; i++)
-                queryStr += varName + i + " is " + constants[i].ToString(System.Globalization.CultureInfo.InvariantCulture) + ",";
+                queryStr += varName + i + " is " + constants[i].ToString(CultureInfo) + ",";
             return queryStr;
         }
 
         private static string GetFieldAndFigsFirstQuery(List<int> figInd, int i = 0)
         {
             List<string> figNames = new List<string>();
-            string queryStr =
-                TemplateGenerate(i) + ",";
+            string queryStr = TemplateGenerate(i) + ",";
+
             for (int j = 0; j < figInd.Count; j++)
             {
-                queryStr += "fig" + figInd[j] + "(Fig" + figInd[j] + i + ",Scale" + i + "),";
-                figNames.Add("((0,Width" + i + "),(0,Height" + i + "), (0,359),Fig" + figInd[j] + i + ")");
+                queryStr += $"fig{figInd[j]}(Fig{figInd[j]}{i}, Scale{i}),";
+                figNames.Add($"((0,Width{i}), (0,Height{i}), (0,359), Fig{figInd[j]}{i})");
             }
-            queryStr += $"{PlaceFiguresInRange}([" + String.Join(",", figNames) + "],Field" + i + ", Ans" + i + ", _)";
+
+            queryStr += PlaceFiguresInRangeLine(figNames, i.ToString());
             return queryStr;
         }
 
@@ -134,14 +156,14 @@ namespace SolveTask.ServerCodeGenerators
                 TemplateGenerate(i) + ",\n\t" +
                 TemplateFigs(i, figInd, figNames) + "\n\t" +
                 TemplateKscale(i) + ",\n\t" +
-                TemplateGetNextApproc(i, figNames) + ",\n\t" +
+                TemplateGetNextApprocCoords(i, figNames) + ",\n\t" +
                 TemplatePlace(i);
             return queryStr;
         }
 
         private static string TemplateGenerate(int i)
         {
-            return $"{GenerateField}(Width" + i + ", Height" + i + ", Field" + i + ")";
+            return PredicateCall(GenerateField, $"Width{i}", $"Height{i}", $"Field{i}");
         }
 
         private static string TemplateFigs(int i, List<int> figInd, List<string> figNames)
@@ -149,47 +171,25 @@ namespace SolveTask.ServerCodeGenerators
             string queryStr = "";
             foreach (int ind in figInd)
             {
-                figNames.Add("Fig" + ind + i);
-                queryStr += "fig" + ind + "(Fig" + ind + i + ", Scale" + i + "),";
+                figNames.Add($"Fig{ind}{i}");
+                queryStr += $"fig{ind}(Fig{ind}{i}, Scale{i}),";
             }
             return queryStr;
         }
 
         private static string TemplateKscale(int i)
         {
-            return "Kscale" + i + " is Scale" + i + "/Scale" + (i - 1);
+            return $"Kscale{i} is Scale{i}/Scale{i - 1}";
         }
 
-        private static string TemplateGetNextApproc(int i, List<string> figNames)
+        private static string TemplateGetNextApprocCoords(int i, List<string> figNames)
         {
-            return $"{GetNextApprocCoords}(Kscale" + i + ",[" + String.Join(",", figNames) + "], Ans" + (i - 1) + ", ApprocFigNewScale" + i + ")";
+            return PredicateCall(GetNextApprocCoords, $"Kscale{i}", JoinArray(figNames), $"Ans{i - 1}", $"ApprocFigNewScale{i}");
         }
 
         private static string TemplatePlace(int i)
         {
-            return $"{PlaceFiguresInRange}(ApprocFigNewScale" + i + ",Field" + i + ",Ans" + i + ",_)";
-        }
-
-
-        public static List<string> CreateListOfResulVars(int n)
-        {
-            List<string> args = new List<string>();
-            for (int i = 1; i <= n; i++)
-                args.Add("Fig" + i + "pos");
-            return args;
-        }
-
-        public static List<string> CreateListOfArgs(int n)
-        {
-            List<string> args = new List<string>();
-            for (int i = 1; i <= n; i++)
-                args.Add("(X" + i + ",Y" + i + ")");
-            return args;
-        }
-
-        public static string CreateArgs(int n)
-        {
-            return "(" + String.Join(",", CreateListOfArgs(n)) + ")";
+            return PredicateCall(PlaceFiguresInRange, $"ApprocFigNewScale{i}", $"Field{i}", $"Ans{i}", "_");
         }
     }
 }
