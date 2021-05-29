@@ -5,82 +5,18 @@ using DataClassLibrary;
 using SolveTask.Server;
 using SolveTask.ServerCodeGenerators;
 using SolveTask.Logging;
+using System.IO;
 
 namespace SolveTask
 {
     public static class SolutionChecker
     {
+        private static readonly ServerCluster prologCluster = new ServerCluster(new List<string>() { ConfigurationManager.AppSettings.Get("serverAdress") });
+        private static PlacementsStorage positions;
+
         private static readonly ConsoleLogger logger = new ConsoleLogger();
 
-        private static List<List<int>> badPositions;
-        private static List<List<int>> goodPositions;
-
-        private static readonly ServerCluster prologCluster = new ServerCluster(new List<string>() { ConfigurationManager.AppSettings.Get("serverAdress") });
-
-        private static void InitPos()
-        {
-            badPositions = new List<List<int>>();
-            goodPositions = new List<List<int>>(); // а можно запоминать и рез (словарик там)
-        }
-
-        private static void AddBadPos(List<int> badPositioning)
-        {
-            badPositions.Add(badPositioning);
-        }
-
-        private static void AddGoodPos(List<int> goodPositioning)
-        {
-            //goodPositions.Add(goodPositioning);
-        }
-
-        private static bool IsPosBad(List<int> pos)
-        {
-            foreach (List<int> curBP in badPositions)
-            {
-                if (Equals(pos, curBP))
-                    return true;
-            }
-            return false;
-        }
-
-        private static bool IsPosGood(List<int> pos)
-        {
-            foreach (List<int> curBP in goodPositions)
-            {
-                if (Equals(pos, curBP))
-                    return true;
-            }
-            return false;
-        }
-
-        static bool Equals<T>(List<T> a, List<T> b)
-        {
-            if (a == null) return b == null;
-            if (b == null || a.Count != b.Count) return false;
-            for (int i = 0; i < a.Count; i++)
-            {
-                if (!Equals(a[i], b[i]))
-                    return false;
-            }
-            return true;
-        }
-
         #region Проверки 
-        /// <summary>
-        /// Считает сумму дельт
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        private static int CountDeltas(List<Figure> data)
-        {
-            int sum = 0;
-            foreach(Figure f in data)
-            {
-                sum += f[0].Count;
-            }
-            return sum;
-        }
-
         /// <summary>
         /// Загрузка фигур в файл пролога и выгрузка на сервер
         /// </summary>
@@ -94,21 +30,31 @@ namespace SolveTask
 
         public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, List<double> scaleCoefs)
         {
-            // Заполнение массива индексов для поиска результата
-            List<int> indexes = new List<int>();
+            positions = new PlacementsStorage();
+
+            ReplaceFiguresWithIndexes(data, out var indexes);
+			FillLists(w, h, out var widthScaled, out var heightScaled, scaleCoefs);
+
+            return GetWorkingArrangementPreDefFigs(indexes, new List<double>(scaleCoefs), widthScaled, heightScaled);
+        }
+
+        /// <summary>
+        /// Заполнение массива индексов для поиска результата
+        /// </summary>
+        private static void ReplaceFiguresWithIndexes(List<Figure> data, out List<int> indexes)
+		{
+            indexes = new List<int>();
+
             foreach (Figure f in data)
             {
                 for (int i = 0; i < f.amount; i++)
                     indexes.Add(f.id);
             }
-
-			// Заполнение массивов размеров листов
-			FillLists(w, h, out var widthScaled, out var heightScaled, scaleCoefs);
-
-			InitPos();
-            return GetWorkingArrangementPreDefFigs(indexes, new List<double>(scaleCoefs), widthScaled, heightScaled);
         }
 
+        /// <summary>
+        /// Заполнение массивов размеров листов
+        /// </summary>
         private static void FillLists(int wLast, int hLast, out List<int> w, out List<int> h, List<double> scaleCoefs)
         {
             w = new List<int>();
@@ -122,22 +68,27 @@ namespace SolveTask
 
         private static ResultData DoesCurrentListFitPreDefFigs2(List<int> figInd, List<double> scaleCoefs, List<int> w, List<int> h)
         {
-            if (IsPosBad(figInd))
+            if (positions.IsPosBad(figInd))
+            {
+                logger.Log("Позиция известна как неподходящая.");
                 return null;
+            }
 
-            if (IsPosGood(figInd))
-                return new ResultData(); 
+            if (positions.IsPosGood(figInd))
+            {
+                logger.Log("Позиция известна как подходящая.");
+                return new ResultData();
+            }
 
             ResultData res = prologCluster.GetAnyResult(w, h, scaleCoefs, figInd);
             if (res == null)
             {
-                AddBadPos(figInd);
+                positions.AddBadPos(figInd);
                 return null;
             }
 
-            AddGoodPos(figInd);
+            positions.AddGoodPos(figInd);
             logger.Log(res);
-            //res.SetLstInfo(w.FindLast(), newH, scaleCoefs[0]);
 
             return res;
         }
@@ -208,7 +159,7 @@ namespace SolveTask
                 var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);
                 if (res == null)
                 {
-                    logger.LogError("Error: can't fit figures with given arrangement");
+                    logger.LogError("Ошибка: невозможно расположиться фигуры при заданном распределении");
                     return null;
                 }
                 else
