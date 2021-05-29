@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using DataClassLibrary;
+using System.Collections.Generic;
 
 namespace SolveTask
 {
 	class PlacementsStorage
     {
         private List<List<int>> badPositions;
-        private List<List<int>> goodPositions;
+        private List<(List<int>, ResultData)> goodPositions;
 
         public PlacementsStorage()
         {
             badPositions = new List<List<int>>();
-            goodPositions = new List<List<int>>(); // а можно запоминать и рез (словарик там)
+            goodPositions = new List<(List<int>, ResultData)>();
         }
 
         public void AddBadPos(List<int> badPositioning)
@@ -18,9 +19,9 @@ namespace SolveTask
             badPositions.Add(badPositioning);
         }
 
-        public void AddGoodPos(List<int> goodPositioning)
+        public void AddGoodPos(List<int> goodPositioning, ResultData result)
         {
-            goodPositions.Add(goodPositioning);
+            goodPositions.Add((goodPositioning, result));
         }
 
         public bool IsPosBad(List<int> pos)
@@ -35,12 +36,22 @@ namespace SolveTask
 
         public bool IsPosGood(List<int> pos)
         {
-            foreach (List<int> curBP in goodPositions)
+            foreach ((List<int> curBP, _) in goodPositions)
             {
                 if (Equals(pos, curBP))
                     return true;
             }
             return false;
+        }
+
+        public ResultData GetGoodPosition(List<int> pos)
+        {
+            foreach ((List<int> curBP, ResultData res) in goodPositions)
+            {
+                if (Equals(pos, curBP))
+                    return res;
+            }
+            return null;
         }
 
         static bool Equals<T>(List<T> a, List<T> b)

@@ -16,7 +16,17 @@ namespace SolveTask
         private static readonly ConsoleLogger logger = new ConsoleLogger();
         private static readonly ServerCluster prologCluster = new ServerCluster(File.ReadAllLines(ConfigurationManager.AppSettings.Get("serverAddressesFile")));
 
-        #region Проверки 
+        public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, List<double> scaleCoefs)
+        {
+            positions = new PlacementsStorage();
+
+            ReplaceFiguresWithIndexes(data, out var indexes);
+            FillLists(w, h, out var widthScaled, out var heightScaled, scaleCoefs);
+
+            return GetWorkingArrangementPreDefFigs(indexes, new List<double>(scaleCoefs), widthScaled, heightScaled);
+        }
+
+        #region Вспомогательные функции 
         /// <summary>
         /// Загрузка фигур в файл пролога и выгрузка на сервер
         /// </summary>
@@ -26,16 +36,6 @@ namespace SolveTask
             FigureFileOperations.CreateNewFigFile(tmpFilename);//pathProlog + "figInfo.pl");
             FigureFileOperations.AddManyFigs(data, scaleCoefs);
             prologCluster.UploadFileToCluster(tmpFilename, "figInfo.pl");
-        }
-
-        public static List<List<int>> FindAnAnswer(List<Figure> data, int w, int h, List<double> scaleCoefs)
-        {
-            positions = new PlacementsStorage();
-
-            ReplaceFiguresWithIndexes(data, out var indexes);
-			FillLists(w, h, out var widthScaled, out var heightScaled, scaleCoefs);
-
-            return GetWorkingArrangementPreDefFigs(indexes, new List<double>(scaleCoefs), widthScaled, heightScaled);
         }
 
         /// <summary>
@@ -65,8 +65,12 @@ namespace SolveTask
                 h.Add((int)(hLast * d));
             }
         }
+        #endregion
 
-        private static ResultData DoesCurrentListFitPreDefFigs2(List<int> figInd, List<double> scaleCoefs, List<int> w, List<int> h)
+        /// <summary>
+        /// Расположение фигур на одном листе
+        /// </summary>
+        private static ResultData FitCurrentListArrangement(List<int> figInd, List<double> scaleCoefs, List<int> w, List<int> h)
         {
             if (positions.IsPosBad(figInd))
             {
@@ -77,7 +81,7 @@ namespace SolveTask
             if (positions.IsPosGood(figInd))
             {
                 logger.Log("Позиция известна как подходящая.");
-                return new ResultData();
+                return positions.GetGoodPosition(figInd);
             }
 
             ResultData res = prologCluster.GetAnyResult(w, h, scaleCoefs, figInd);
@@ -87,20 +91,15 @@ namespace SolveTask
                 return null;
             }
 
-            positions.AddGoodPos(figInd);
+            positions.AddGoodPos(figInd, res);
             logger.Log(res);
 
             return res;
         }
 
-        private static bool DoesCurrentListFitPreDefFigs(List<int> figInd, List<double> scaleCoefs, List<int> w, List<int> h)
-        {
-            var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);
-
-            return res != null;
-        }
-        #endregion
-
+        /// <summary>
+        /// Рекурсивное расположение всех фигур
+        /// </summary>
         public static List<List<int>> GetWorkingArrangementPreDefFigs(List<int> data, List<double> scaleCoefs, List<int> w, List<int> h,
             List<List<int>> result = null)
         {
@@ -129,7 +128,7 @@ namespace SolveTask
 
                 logger.Log(newCurLst);
 
-                if (DoesCurrentListFitPreDefFigs(newCurLst, scaleCoefs, w, h))
+                if (FitCurrentListArrangement(newCurLst, scaleCoefs, w, h) != null)
                 {
                     result[i].Add(currentFig);
                     var curResult = GetWorkingArrangementPreDefFigs(nextData, scaleCoefs, w, h, result);
@@ -156,7 +155,7 @@ namespace SolveTask
             {
                 FillLists(wLast, hLast, out var w, out var h, scaleCoefs);
 
-                var res = DoesCurrentListFitPreDefFigs2(figInd, scaleCoefs, w, h);
+                var res = FitCurrentListArrangement(figInd, scaleCoefs, w, h);
                 if (res == null)
                 {
                     logger.LogError("Ошибка: невозможно расположиться фигуры при заданном распределении");
