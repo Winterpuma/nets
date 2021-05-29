@@ -168,7 +168,9 @@
     <Compile Include="Server\JsonDeserializeHelp.cs" />
     <Compile Include="Server\PrologServer.cs" />
     <Compile Include="Server\ServerCluster.cs" />
+    <Compile Include="ParallelTimeoutSolutionChecker.cs" />
     <Compile Include="SolutionChecker.cs" />
+    <Compile Include="SolutionCheckerBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

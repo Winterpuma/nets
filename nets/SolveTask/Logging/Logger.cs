@@ -2,7 +2,7 @@
 
 namespace SolveTask.Logging
 {
-	class Logger
+	public class Logger
 	{
 		public string TimeStamp { get => $"[{DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}]"; }
 

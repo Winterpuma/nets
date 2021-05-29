@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SolveTask
 {
-	class PlacementsStorage
+	public class PlacementsStorage
     {
         private List<List<int>> badPositions;
         private List<(List<int>, ResultData)> goodPositions;

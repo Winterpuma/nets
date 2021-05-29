@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SolveTask.Logging
 {
-	class ConsoleLogger : Logger
+	public class ConsoleLogger : Logger
 	{
         public void Log(List<List<int>> curSequence, ConsoleColor col = ConsoleColor.Yellow)
         {

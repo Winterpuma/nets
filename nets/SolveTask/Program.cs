@@ -14,6 +14,7 @@ namespace SolveTask
     {
         static TxtLogger logger;
         static ConsoleLogger consoleLogger;
+        static SolutionChecker solutionChecker = new SolutionChecker();
 
         // Параметры
         static string pathSrc; // Путь к директории с фигурами
@@ -87,7 +88,7 @@ namespace SolveTask
             data.Sort(Figure.CompareFiguresBySize);
             Figure.UpdIndexes(data);
             //Figure.DeleteWrongAngles(scaledLstSize.Width, scaledLstSize.Height, data);
-            SolutionChecker.LoadFigures(data, scaleCoefs);
+            solutionChecker.LoadFigures(data, scaleCoefs);
 
             consoleLogger.Log("Figure loading finished.");
             logger.Log("Loaded Figs.");
@@ -95,8 +96,8 @@ namespace SolveTask
 
             // Поиск решения
             consoleLogger.Log("Starting result finding.");
-            var preDefArr = SolutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, scaleCoefs);
-            var result = SolutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scaleCoefs);
+            var preDefArr = solutionChecker.FindAnAnswer(data, scaledLstSize.Width, scaledLstSize.Height, scaleCoefs);
+            var result = solutionChecker.PlacePreDefinedArrangement(preDefArr, scaledLstSize.Width, scaledLstSize.Height, scaleCoefs);
             if (result == null)
                 logger.Log("Prolog finished. No answer.");
             else

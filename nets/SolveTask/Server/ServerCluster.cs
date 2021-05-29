@@ -5,7 +5,7 @@ using SolveTask.ServerCodeGenerators;
 
 namespace SolveTask.Server
 {
-	class ServerCluster
+	public class ServerCluster
 	{
 		private readonly List<IServer> cluster;
 
