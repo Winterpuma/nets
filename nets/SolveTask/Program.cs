@@ -14,7 +14,7 @@ namespace SolveTask
     {
         static TxtLogger logger;
         static ConsoleLogger consoleLogger;
-        static SolutionChecker solutionChecker = new SolutionChecker();
+        static ParallelTimeoutSolutionChecker solutionChecker = new ParallelTimeoutSolutionChecker();
 
         // Параметры
         static string pathSrc; // Путь к директории с фигурами

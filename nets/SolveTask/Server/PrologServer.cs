@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Configuration;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SolveTask.Server
 {
@@ -16,6 +17,11 @@ namespace SolveTask.Server
         private static readonly string _qFName = "queryFile.pl";
 
 		public string Adress { get; }
+        public bool Busy { get => currentTask?.Status == TaskStatus.Running; }
+		public TimeSpan BusyTime { get => Busy ? DateTime.Now - startTime : TimeSpan.Zero; }
+
+		public Task<HttpResponseMessage> currentTask;
+        private DateTime startTime;
 
 		public PrologServer(string serverAdress)
         {
@@ -34,20 +40,8 @@ namespace SolveTask.Server
             try
             {
                 string ans = GetAnswer();
-                if (ans == "NoAnswer")
-                    return null;
-                if (ans.Contains("Time limit exceeded"))
-                    return null;
-
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                };
-                options.Converters.Add(new ResultFigPosConverter(options));
-
-                return JsonSerializer.Deserialize<ResultData>(ans, options);
+                return HandleServerResponce(ans);
             }
-
             catch (AggregateException)
             {
                 Console.WriteLine("Exit by timer");
@@ -61,7 +55,7 @@ namespace SolveTask.Server
         /// <param name="query">Текст запроса</param>
         private void CreaterQueryFileOnServer(string query)
         {
-            string tmpFile = $"tmp_{_qFName}";
+            string tmpFile = $"tmp{Guid.NewGuid()}_{_qFName}";
             using (StreamWriter file =
                 new StreamWriter(tmpFile))
             {
@@ -101,5 +95,38 @@ namespace SolveTask.Server
 
             return response.Content.ReadAsStringAsync().Result;
         }
-    }
+
+
+        public Task<HttpResponseMessage> StartTask(string query)
+        {
+            CreaterQueryFileOnServer(query);
+
+            HttpClient client = new HttpClient
+            {
+                Timeout = TimeSpan.FromMinutes(_timeoutMin)
+            };
+
+            var task = client.GetAsync(Adress);
+            startTime = DateTime.Now;
+            currentTask = task;
+
+            return task;
+        }
+
+        public static ResultData HandleServerResponce(string responce)
+		{
+            if (responce == "NoAnswer")
+                return null;
+            if (responce.Contains("Time limit exceeded"))
+                return null;
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+            };
+            options.Converters.Add(new ResultFigPosConverter(options));
+
+            return JsonSerializer.Deserialize<ResultData>(responce, options);
+        }
+	}
 }

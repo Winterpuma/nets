@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using DataClassLibrary;
 using SolveTask.ServerCodeGenerators;
 
@@ -67,6 +69,18 @@ namespace SolveTask.Server
         }
 
         /// <summary>
+        /// Запуск задачи без ожидания
+        /// </summary>
+        public Task<HttpResponseMessage> StartAnyResultTask(List<int> width, List<int> height, List<double> scales, List<int> figInd)
+        {
+            // Предполагается, что файл с фигурами уже загружен
+            string queryStr = QueryCreator.GetAnsQuery(width, height, scales, figInd);
+            int iServer = FindFreeServer();
+
+            return cluster[iServer].StartTask(queryStr);
+        }
+
+        /// <summary>
         /// Загрузка файла на все сервера кластера
         /// </summary>
         /// <param name="srcFilename">Загружаемый файл</param>
@@ -78,5 +92,15 @@ namespace SolveTask.Server
                 server.UploadFile(srcFilename, dstFilename);
 			}
         }
+
+        private int FindFreeServer()
+		{
+            for (int i = 0; i < cluster.Count; i++)
+			{
+                if (!cluster[i].Busy)
+                    return i;
+			}
+            return -1;
+		}
     }
 }

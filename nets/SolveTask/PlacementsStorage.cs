@@ -54,6 +54,11 @@ namespace SolveTask
             return null;
         }
 
+        public static bool IsTwoArrangementsEqual(List<int> a, List<int> b)
+		{
+            return Equals(a, b);
+		}
+
         static bool Equals<T>(List<T> a, List<T> b)
         {
             if (a == null) return b == null;

@@ -68,6 +68,19 @@ namespace SolveTask
                 h.Add((int)(hLast * d));
             }
         }
+
+        protected List<int> MyCopy(List<int> list)
+		{
+            return new List<int>(list);
+        }
+
+        protected List<List<int>> MyCopy(List<List<int>> list)
+		{
+            List<List<int>> res = new List<List<int>>();
+            foreach (List<int> cur in list)
+                res.Add(MyCopy(cur));
+            return res;
+		}
         #endregion
     }
 }
