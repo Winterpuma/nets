@@ -11,10 +11,10 @@ namespace SolveTask
 {
     public static class SolutionChecker
     {
-        private static readonly ServerCluster prologCluster = new ServerCluster(new List<string>() { ConfigurationManager.AppSettings.Get("serverAdress") });
         private static PlacementsStorage positions;
 
         private static readonly ConsoleLogger logger = new ConsoleLogger();
+        private static readonly ServerCluster prologCluster = new ServerCluster(File.ReadAllLines(ConfigurationManager.AppSettings.Get("serverAddressesFile")));
 
         #region Проверки 
         /// <summary>
