@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace SolveTask.Server
 {
@@ -75,7 +76,17 @@ namespace SolveTask.Server
             var uriString = $"{Adress}upload/{dstFilename}";
             var myWebClient = new WebClient();
 
-            byte[] responseArray = myWebClient.UploadFile(uriString, srcFilename);
+            byte[] responseArray;
+
+            try
+			{
+                responseArray = myWebClient.UploadFile(uriString, srcFilename);
+			}
+            catch (WebException)
+			{
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+                responseArray = myWebClient.UploadFile(uriString, srcFilename);
+            }
 
             return Encoding.ASCII.GetString(responseArray);
         }
@@ -126,7 +137,17 @@ namespace SolveTask.Server
             };
             options.Converters.Add(new ResultFigPosConverter(options));
 
-            return JsonSerializer.Deserialize<ResultData>(responce, options);
+            ResultData res;
+            try
+			{
+                res = JsonSerializer.Deserialize<ResultData>(responce, options);
+            }
+            catch (Exception)
+			{
+                return null;
+			}
+
+            return res;
         }
 	}
 }

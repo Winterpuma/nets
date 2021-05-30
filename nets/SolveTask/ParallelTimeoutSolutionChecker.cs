@@ -18,7 +18,7 @@ namespace SolveTask
     public class ParallelTimeoutSolutionChecker : SolutionCheckerBase
     {
         TimeSpan timeout = TimeSpan.FromSeconds(20);
-        Dictionary<int, (List<int>, List<int>, List<List<int>>)> tasksToArrangement;
+        Dictionary<Task, (List<int>, List<int>, List<List<int>>, bool)> tasksToArrangement;
         
         List<double> scaleCoefs;
         List<int> w;
@@ -29,11 +29,8 @@ namespace SolveTask
         /// </summary>
         private ResultData FitCurrentListArrangement(List<int> figInd, List<int> backedData = null, List<List<int>> backedResult = null)
         {
-            if (IsArrangementInProgress(figInd))
-			{
-                logger.Log("Данное размещение уже проверяется.");
-                return null;
-            }
+            if (!Program.IsMainThread)
+                logger.LogError("not in main thread");
 
             if (positions.IsPosBad(figInd))
             {
@@ -47,16 +44,48 @@ namespace SolveTask
                 return positions.GetGoodPosition(figInd);
             }
 
-            var findingTask = prologCluster.StartAnyResultTask(w, h, scaleCoefs, figInd);
-            var finished = SpinWait.SpinUntil(() => findingTask.IsCompleted, timeout); // ожидание таймаута
-
-            if (!finished)
+            if (IsArrangementInProgress(figInd))
             {
-                logger.Log("Переключение на другую задачу");
-                tasksToArrangement.Add(findingTask.Id, (figInd, backedData, backedResult));
-                findingTask.ContinueWith(delegate { HandleResult(findingTask); });
+                logger.Log("Данное размещение уже проверяется.");
+                if (Program.IsMainThread)
+				{
+                    logger.LogError("Т.к. в главной ветке, ожидаем результата.");
+                    var task = GetKeyByArrangement(figInd);
+                    var tmp = tasksToArrangement[task];
+                    tmp.Item4 = false;
+                    tasksToArrangement[task] = tmp;
+                    SpinWait.SpinUntil(() => task.IsCompleted);
+                    logger.LogError("Задача закончилась.");
+                    Thread.Sleep(TimeSpan.FromSeconds(2));
+                }
+                else
+                {
+                    logger.LogError("Прекращаем выполнение в этой ветке.");
+                    Thread.CurrentThread.Abort();
+				}
                 return null;
+            }
+
+            var findingTask = prologCluster.StartAnyResultTask(w, h, scaleCoefs, figInd);
+            var finishedAfterFirstDelay = SpinWait.SpinUntil(() => findingTask.IsCompleted, timeout); // ожидание таймаута
+
+            if (!finishedAfterFirstDelay && Program.IsMainThread)
+            {
+                var nextFigInd = MyCopy(figInd);
+                nextFigInd[nextFigInd.Count - 1]++; //след фигура //TODO:а если нет
+                logger.Log("Добавление другой задачи");
+                logger.Log(nextFigInd);
+                var nextTask = prologCluster.StartAnyResultTask(w, h, scaleCoefs, nextFigInd);
+                tasksToArrangement.Add(nextTask, (nextFigInd, RemoveAllFirst(backedData), backedResult, true)); //other back?????
+                nextTask.ContinueWith(delegate { HandleResult(nextTask); });
 			}
+
+            SpinWait.SpinUntil(() => findingTask.IsCompleted);
+            if (findingTask.IsCanceled || findingTask.IsFaulted)
+			{
+                positions.AddBadPos(figInd);
+                return null;
+            }
 
             string responce = findingTask.Result.Content.ReadAsStringAsync().Result;
             var res = PrologServer.HandleServerResponce(responce);
@@ -75,7 +104,7 @@ namespace SolveTask
 
         private bool IsArrangementInProgress(List<int> arrangement)
 		{
-            foreach (KeyValuePair<int, (List<int>, List<int>, List<List<int>>)> kvp in tasksToArrangement)
+            foreach (KeyValuePair<Task, (List<int>, List<int>, List<List<int>>, bool)> kvp in tasksToArrangement)
 			{
                 if (PlacementsStorage.IsTwoArrangementsEqual(arrangement, kvp.Value.Item1))
                     return true;
@@ -84,9 +113,27 @@ namespace SolveTask
             return false;
         }
 
+        private Task GetKeyByArrangement(List<int> arrangement)
+        {
+            foreach (KeyValuePair<Task, (List<int>, List<int>, List<List<int>>, bool)> kvp in tasksToArrangement)
+            {
+                if (PlacementsStorage.IsTwoArrangementsEqual(arrangement, kvp.Value.Item1))
+                    return kvp.Key;
+            }
+
+            return null;
+        }
+        private List<int> RemoveAllFirst(List<int> list)
+		{
+            int first = list[0];
+
+            return list.FindAll((int el) => el != first);
+		}
+
         private ResultData HandleResult(Task<HttpResponseMessage> task)
         {
-            var backed = tasksToArrangement[task.Id];
+            // TODO: delete from in progress
+            var backed = tasksToArrangement[task];
             var figInd = backed.Item1;
 
             if (task.IsCanceled || task.IsFaulted)
@@ -106,7 +153,8 @@ namespace SolveTask
 
             positions.AddGoodPos(figInd, res);
 
-            GetWorkingArrangement(backed.Item2, backed.Item3);
+            if (backed.Item4)
+                GetWorkingArrangement(backed.Item2, backed.Item3);
 
             return res;
         }
@@ -121,7 +169,7 @@ namespace SolveTask
             this.w = w;
             this.h = h;
 
-            tasksToArrangement = new Dictionary<int, (List<int>, List<int>, List<List<int>>)>();
+            tasksToArrangement = new Dictionary<Task, (List<int>, List<int>, List<List<int>>, bool)>();
 
             return GetWorkingArrangement(data, result);
 		}
@@ -175,6 +223,11 @@ namespace SolveTask
 		/// </summary>
 		public List<ResultData> PlacePreDefinedArrangement(List<List<int>> arrangement, int wLast, int hLast, List<double> scaleCoefs)
         {
+            if (!Program.IsMainThread)
+            {
+                return null;
+            }
+            
             List<ResultData> results = new List<ResultData>();
             foreach (List<int> figInd in arrangement)
             {

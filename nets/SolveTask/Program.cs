@@ -12,6 +12,9 @@ namespace SolveTask
 {
     class Program
     {
+        [ThreadStatic]
+        public static readonly bool IsMainThread = true;
+
         static TxtLogger logger;
         static ConsoleLogger consoleLogger;
         static ParallelTimeoutSolutionChecker solutionChecker = new ParallelTimeoutSolutionChecker();
